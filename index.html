@@ -2039,9 +2039,9 @@ function canViewWeek(w){
 }
 function toggleEdit(){
   if(state.role!=="ops"){ flash("Editing is only available in the Operations view"); return; }
-  if(state.editing){ setEditing(false); releaseLease(); return; }
-  // taking the edit lock: only one person edits at a time when synced to Supabase
-  claimLease(okToEdit=>{ if(okToEdit) setEditing(true); else updateSaveUI(); });
+  // Supabase/Postgres handles concurrent editors with per-key revision checks.
+  // No global edit lease is required.
+  setEditing(!state.editing);
 }
 function enterTemplateMode(id){
   state.tplId = id || (templateEntryFor(new Date())||{}).id || null;
@@ -4558,7 +4558,7 @@ SYNC = {
   lastSaved:null, lastError:"", lease:null, conflict:false,
   flushT:null, pollT:null, beatT:null
 };
-const SYNC_DEBOUNCE = 1200, SYNC_POLL_VIEW = 20000, SYNC_POLL_EDIT = 45000, SYNC_BEAT = 60000;
+const SYNC_DEBOUNCE = 1200, SYNC_POLL_VIEW = 20000, SYNC_POLL_EDIT = 12000, SYNC_BEAT = 60000;
 
 // --- what we send: one entry per week page, one per settings group ---
 // resetEpoch belongs to Supabase rota_meta, not the shared settings store.
@@ -4579,7 +4579,7 @@ function syncDiff(){
   return out;
 }
 function scheduleFlush(){
-  if(!SYNC.on || !SYNC.canEdit || SYNC.refreshing) return;
+  if(!SYNC.on || !SYNC.canEdit || SYNC.refreshing || SYNC.conflict) return;
   clearTimeout(SYNC.flushT);
   SYNC.flushT=setTimeout(flushNow, SYNC_DEBOUNCE);
 }
@@ -4676,7 +4676,10 @@ function handlePermanentSaveRejection(res){
   refreshBootstrap(null,true);
 }
 function flushNow(){
-  if(!SYNC.on || !SYNC.canEdit || SYNC.refreshing) return;
+  // A genuine stale-write conflict must be resolved by reloading/merging; never
+  // automatically retry it with a newer base revision because that could overwrite
+  // the other editor's work.
+  if(!SYNC.on || !SYNC.canEdit || SYNC.refreshing || SYNC.conflict) return;
   if(SYNC.saving){ SYNC.pending=true; return; }
   const changes=syncDiff();
   if(!changes.length){ SYNC.dirty=false; updateSaveUI(); return; }
@@ -4687,12 +4690,16 @@ function flushNow(){
       if(res && res.error==="epoch-mismatch"){ handleEpochMismatch(res.epoch); return; }
       if(res && res.error==="not-editor"){ handlePermanentSaveRejection(res); return; }
       SYNC.lastError = res && res.error ? res.error : "unknown";
-      if(res && res.error==="locked" && res.lease){ SYNC.lease=res.lease; }
+      if(res && res.error==="locked"){ SYNC.lastError="Database still has the old edit lock — run the concurrent-editing SQL upgrade."; }
       updateSaveUI(); setTimeout(flushNow, 6000);
       return;
     }
     if(Number(res.epoch)!==Number(SYNC.epoch)){ handleEpochMismatch(res.epoch); return; }
-    applyServerStatus(res); SYNC.lastError=""; SYNC.rev=res.rev;
+    applyServerStatus(res); SYNC.lastError="";
+    // Do NOT jump SYNC.rev to the save response's global revision here. Another
+    // editor may have saved a different key between our last poll and this save.
+    // Keeping the previous poll revision means the next poll will fetch both their
+    // change and ours, so no concurrent update is accidentally skipped.
     changes.forEach(ch=>{
       if(res.keyRev && res.keyRev[ch.key]!==undefined){
         SYNC.keyRev[ch.key]=res.keyRev[ch.key];
@@ -4711,7 +4718,8 @@ function flushNow(){
 function handleConflicts(list){
   SYNC.conflict=true;
   const tooBig=list.filter(c=>c.error==="too-big");
-  list.forEach(c=>{ if(c.rev!==undefined) SYNC.keyRev[c.key]=c.rev; });
+  // Keep the old base revision for conflicted keys. Advancing it here would make
+  // a later automatic retry look current and could overwrite the other editor.
   updateSaveUI();
   if(tooBig.length && tooBig.length===list.length){
     alert("A page is too large to save ("+tooBig.map(c=>c.key).join(", ")+").\nTry splitting it across two week pages.");
@@ -4747,15 +4755,27 @@ function pollChanges(){
       const ae=document.activeElement;
       const typing = !!ae && (ae.tagName==="INPUT"||ae.tagName==="TEXTAREA"||
                      (ae.getAttribute && ae.getAttribute("contenteditable")==="true"));
-      const hold = mine && (SYNC.dirty || typing);
       if(res.changes && res.changes.length){
-        if(!hold){
-          const map={}; res.changes.forEach(c=>{ map[c.key]={json:c.json, rev:c.rev, deleted:c.deleted}; });
-          applyServerData(map,false);
-          persistLocal(); rebuildWeeks(); buildWeekSel(); renderCurrentView();
-          if(!mine) flash("Rota updated");
-          SYNC.rev=res.rev;
+        if(!typing){
+          // While this editor has unsaved work, merge other people's changes for
+          // different logical keys (for example a different week) but leave locally
+          // dirty keys untouched. If anything is skipped, retain the old global
+          // revision so it will be offered again on the next poll.
+          const dirtyKeys = mine ? new Set(syncDiff().map(ch=>ch.key)) : new Set();
+          const map={}; let skipped=0, applied=0;
+          res.changes.forEach(c=>{
+            if(dirtyKeys.has(c.key)){ skipped++; return; }
+            map[c.key]={json:c.json, rev:c.rev, deleted:c.deleted}; applied++;
+          });
+          if(applied){
+            applyServerData(map,false);
+            persistLocal(); rebuildWeeks(); buildWeekSel(); renderCurrentView();
+            if(!mine) flash("Rota updated");
+          }
+          if(!skipped) SYNC.rev=res.rev;
         }
+        // If actively typing, don't rerender underneath the cursor. The old rev is
+        // retained and all changes will be offered again shortly.
       } else SYNC.rev=res.rev;
       SYNC.lastError="";
     }
@@ -4767,7 +4787,7 @@ function pollChanges(){
   });
 }
 
-// --- Direct Supabase Data API transport + one-editor-at-a-time lease ---
+// --- Direct Supabase Data API transport + concurrent revision-safe editing ---
 // The GitHub Pages site calls carefully restricted Postgres RPC functions
 // directly. Only the public Supabase URL + publishable key live in config.js.
 const SUPABASE_URL = (function(){
@@ -4827,37 +4847,15 @@ function gasCall(fn,args,okCb,failCb){
   }).catch(e=>{ if(failCb) failCb(e); });
 }
 function claimLease(cb){
-  if(!SYNC.on){ cb(true); return; }
-  gasCall("claimEdit", [SYNC.epoch, SYNC.authToken||""], res=>{
-    if(res && res.ok){ applyServerStatus(res); SYNC.lease=res.lease; startHeartbeat(); cb(true); }
-    else if(res && res.error==="epoch-mismatch"){ handleEpochMismatch(res.epoch); cb(false); }
-    else if(res && res.error==="locked"){ SYNC.lease=res.lease; updateSaveUI();
-      alert(shortName(res.lease.email)+" is editing the rota right now.\n\nYou can look around, but editing is locked until they finish (or after 3 minutes of inactivity)."); cb(false); }
-    else if(res && res.error==="not-editor"){
-      applyServerStatus(res);
-      alert("Operations access requires the Operations password.\n\nChoose Operations from the access menu and enter the password.");
-      refreshBootstrap(null,true); cb(false);
-    } else cb(false);
-  }, ()=>{ alert("Couldn't reach the rota server — try again in a moment."); cb(false); });
+  // Kept only for compatibility with older event paths. Concurrent Operations
+  // editing is allowed; authorisation is enforced again on every save.
+  cb(!!(SYNC && SYNC.on && SYNC.canEdit));
 }
-function startHeartbeat(){
-  clearInterval(SYNC.beatT);
-  SYNC.beatT=setInterval(()=>{
-    if(!state.editing || !SYNC.on) return;
-    gasCall("claimEdit",[SYNC.epoch,SYNC.authToken||""],res=>{
-      if(res&&res.ok){ applyServerStatus(res); SYNC.lease=res.lease; updateSaveUI(); return; }
-      if(res&&res.error==="epoch-mismatch"){ handleEpochMismatch(res.epoch); return; }
-      if(res&&res.error==="not-editor"){ handlePermanentSaveRejection(res); return; }
-      if(res&&res.error==="locked"){ SYNC.lease=res.lease||null; SYNC.lastError="locked"; updateSaveUI(); }
-    });
-  }, SYNC_BEAT);
-}
+function startHeartbeat(){ clearInterval(SYNC.beatT); }
 function releaseLease(){
   clearInterval(SYNC.beatT);
-  if(SYNC.on) gasCall("releaseEdit", [SYNC.epoch, SYNC.authToken||""], res=>{
-    if(res&&res.ok) SYNC.lease=null;
-    updateSaveUI();
-  });
+  SYNC.lease=null;
+  updateSaveUI();
 }
 function shortName(email){
   if(!email) return "Someone";
@@ -4916,7 +4914,7 @@ function syncDetailHTML(){
   if(SYNC.on){
     if(SYNC.serverRole) rows.push(["Access level", ROLES[SYNC.serverRole]||SYNC.serverRole]);
     rows.push(["Can edit", SYNC.canEdit?"Yes":"No"]);
-    rows.push(["Editing now", SYNC.lease?shortName(SYNC.lease.email):"Nobody"]);
+    rows.push(["Editing model", "Multiple Operations editors allowed"]);
     rows.push(["Server version", "#"+SYNC.rev]);
     rows.push(["Reset epoch", String(SYNC.epoch)]);
   }
@@ -4926,8 +4924,8 @@ function syncDetailHTML(){
   if(SYNC.conflict) note="Someone changed the rota while this tab was open, so your latest change wasn't saved. Export your edits, then reload.";
   else if(SYNC.lastError==="offline") note="Can't reach the server. Your work is held in this browser and will be sent automatically when the connection returns.";
   else if(!SYNC.on) note="DATABASE NOT CONNECTED. This browser is not sharing changes. Configure the Supabase Project URL and publishable key in index.html; Editor/Operations remain locked until connected.";
-  else if(SYNC.canEdit && state.editing) note="You hold the edit lock. Everything you change is written to Supabase within a couple of seconds.";
-  else if(SYNC.canEdit) note="Operations access is active. Turn on Edit mode in Admin to take the edit lock and make changes.";
+  else if(SYNC.canEdit && state.editing) note="Concurrent editing is enabled. Changes are written to Supabase within a couple of seconds; if two people change the same saved item from stale versions, the later save is stopped as a conflict rather than silently overwriting it.";
+  else if(SYNC.canEdit) note="Operations access is active. Turn on Edit mode in Admin to make changes; more than one Operations user can edit at the same time.";
   else if(SYNC.serverRole==="lead") note="Editor / senior leadership access is active. This view can see unpublished weeks and holiday allowances but cannot edit the rota.";
   else note="You're using Staff access. No account is required; the rota refreshes automatically.";
   return `<h4>Saving &amp; sync</h4>`+
@@ -4946,7 +4944,7 @@ $("#saveNote").addEventListener("click",()=>{
 $("#syncPop").addEventListener("click",e=>{
   if(e.target.closest('[data-act="syncnow"]')){ clearTimeout(SYNC.flushT); flushNow(); $("#syncPop").classList.remove("open"); }
 });
-window.addEventListener("pagehide",()=>{ if(SYNC && SYNC.on && state.editing) releaseLease(); });
+window.addEventListener("pagehide",()=>{ /* no global edit lease in concurrent mode */ });
 window.addEventListener("beforeunload",e=>{
   if(SYNC.on && SYNC.canEdit && (SYNC.dirty||SYNC.saving)){ e.preventDefault(); e.returnValue=""; return ""; }
 });
