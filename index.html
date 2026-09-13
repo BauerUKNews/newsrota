@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v18 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v18.1 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -922,8 +922,8 @@ body.template .tplbanner{display:flex}
 /* drag-and-drop (edit mode) */
 body.editing #grid .dc[data-cell]:not(.bhcell),body.editing #grid .pline[data-cell]{cursor:cell}
 /* fill handle — the little crosshair square at the bottom-right of a selection */
-.fillhandle{position:fixed;display:none;width:10px;height:10px;z-index:70;
-  background:var(--mag);border:1.5px solid #fff;border-radius:2px;cursor:crosshair;
+.fillhandle{position:fixed;display:none;width:18px;height:18px;z-index:70;touch-action:none;
+  background:var(--mag);border:5px solid transparent;background-clip:padding-box;border-radius:6px;cursor:crosshair;
   box-shadow:0 1px 3px rgba(28,22,33,.35)}
 .fillhandle.on{display:block}
 .fillhandle:hover{transform:scale(1.25)}
@@ -1257,11 +1257,11 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
 </div>
 
 <div class="acpop" id="acPop"></div>
-<div class="fillhandle" id="fillHandle" title="Drag to copy this across other cells"></div>
+<div class="fillhandle" id="fillHandle" title="Drag along a row or column to copy. Check the highlighted cells; Escape cancels." aria-label="Drag to copy selected cells"></div>
 <div class="heatpop" id="heatPop"></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v18</span>
+  <span class="pill">News Rota v18.1</span>
   <span>Choose a week or search for a person. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1415,7 +1415,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
 </div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
- <div class="setup-intro"><p><b>Find your rota:</b> use Choose week or search for a person. On a phone, swipe the table sideways to see each day.</p><p><b>Daily totals:</b> holiday and office counts include unpublished weeks. Names and assignments remain private until their week is published.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
+ <div class="setup-intro"><p><b>Find your rota:</b> use Choose week or search for a person. On a phone, swipe the table sideways to see each day.</p><p><b>Daily totals:</b> holiday and office names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
 </div></div>
 <script>
@@ -1734,6 +1734,7 @@ $("#confirmModal").addEventListener("click",e=>{ if(e.target.id==="confirmModal"
 
 /* ---------- render ---------- */
 function render(){
+  if(fillDrag){cancelFillDrag();flash('Copy cancelled because the view changed');}
   clearRoleCache();
   const w=week(), d=data();
   document.body.classList.toggle("template", state.templateMode);
@@ -2192,7 +2193,7 @@ function setEditing(on){
 
 // ---- spreadsheet-style selection & fill handle (edit mode, working cells) ----
 const WSEL='.dc[data-cell],.pline[data-cell]';
-let selKeys=new Set(), selAnchor=null, rangeDrag=null, fillDrag=null, multiFill=false;
+var selKeys=new Set(), selAnchor=null, rangeDrag=null, fillDrag=null, multiFill=false;
 function workCells(){ return [...grid.querySelectorAll(WSEL)].filter(c=>!c.classList.contains("bhcell") && c.offsetParent!==null); }   // includes the Away list; skips cells inside a collapsed card
 function keyOf(c){ return c.getAttribute("data-cell"); }
 function spanOf(c){ return c.querySelector('[data-edit]'); }
@@ -2253,7 +2254,7 @@ function positionFillHandle(){
   const typingElsewhere = ae && ae.getAttribute && ae.getAttribute("contenteditable")==="true" && !isSelSpan(ae);
   if(!state.editing || !selKeys.size || fillDrag || rangeDrag || typingElsewhere){ h.classList.remove("on"); return; }
   const r=selRect(); if(!r){ h.classList.remove("on"); return; }
-  h.style.left=(r.R-5)+"px"; h.style.top=(r.B-5)+"px";
+  h.style.left=(r.R-9)+"px"; h.style.top=(r.B-9)+"px";
   h.classList.add("on");
 }
 window.addEventListener("scroll",()=>{ if(selKeys.size) positionFillHandle(); }, true);
@@ -2264,7 +2265,7 @@ function selectRect(x1,y1,x2,y2,addTo){
   const L=Math.min(x1,x2),R=Math.max(x1,x2),T=Math.min(y1,y2),B=Math.max(y1,y2);
   if(!addTo) selKeys=new Set();
   workCells().forEach(c=>{ const r=c.getBoundingClientRect();
-    if(r.right>L && r.left<R && r.bottom>T && r.top<B) selKeys.add(keyOf(c)); });   // strict overlap: touching an edge doesn't count
+    if((r.left+r.right)/2>=L && (r.left+r.right)/2<=R && (r.top+r.bottom)/2>=T && (r.top+r.bottom)/2<=B) selKeys.add(keyOf(c)); });   // select cell centres; tiny border overlaps must not select neighbouring rows
   applyCellSel();
 }
 grid.addEventListener("mousedown",e=>{
@@ -2283,7 +2284,6 @@ grid.addEventListener("mousedown",e=>{
   rangeDrag={x:e.clientX,y:e.clientY,key,cell,moved:false};
 });
 document.addEventListener("mousemove",e=>{
-  if(fillDrag){ sweepFill(e); return; }
   if(!rangeDrag) return;
   if(!rangeDrag.moved && Math.abs(e.clientX-rangeDrag.x)+Math.abs(e.clientY-rangeDrag.y)<=4) return;
   if(!rangeDrag.moved){
@@ -2296,42 +2296,103 @@ document.addEventListener("mousemove",e=>{
   selectRect(Math.min(ar.left,e.clientX), Math.min(ar.top,e.clientY), Math.max(ar.right,e.clientX), Math.max(ar.bottom,e.clientY), false);
 });
 
-// --- dragging the handle copies the selected value(s) across the cells you sweep ---
-function sweepFill(e){
-  const el=document.elementFromPoint(e.clientX,e.clientY);
-  const cell=el && el.closest && el.closest(WSEL);
-  if(cell && !cell.classList.contains("bhcell")){
-    const r=cell.getBoundingClientRect(), s=fillDrag.src;
-    selectRect(Math.min(s.L,r.left), Math.min(s.T,r.top), Math.max(s.R,r.right), Math.max(s.B,r.bottom), false);
-    fillDrag.target=[...selKeys].filter(k=>!fillDrag.keys.includes(k));
-  }
-  const t=new Set(fillDrag.target||[]);
-  workCells().forEach(c=>c.classList.toggle("fillsweep", t.has(keyOf(c))));
+// --- Direction-locked copy. Targets use logical row/column keys, not rectangle overlap. ---
+function fillGroup(key,axis){
+  const p=key.split('|');return axis==='x'?p.slice(0,-1).join('|'):p[p.length-1];
 }
-$("#fillHandle").addEventListener("mousedown",e=>{
-  if(!state.editing || !selKeys.size) return;
-  e.preventDefault(); e.stopPropagation();
-  const ae=document.activeElement;                      // half-typed cell? commit it first,
-  if(ae && ae.getAttribute && ae.getAttribute("contenteditable")==="true") ae.blur();   // so the sweep copies what you just typed
-  const d=data(), keys=workCells().filter(c=>selKeys.has(keyOf(c))).map(keyOf);
-  fillDrag={ keys, vals:keys.map(k=>getByKey(d,k)), src:selRect(), target:[] };
-  document.body.classList.add("filling");
-  hideFillHandle();
-});
-document.addEventListener("mouseup",e=>{
-  if(fillDrag){
-    const targets=fillDrag.target||[], vals=fillDrag.vals;
-    workCells().forEach(c=>c.classList.remove("fillsweep"));
-    document.body.classList.remove("filling");
-    const fd=fillDrag; fillDrag=null; rangeDrag=null;
-    if(targets.length && vals.length){
-      const d=edit();
-      targets.forEach((k,i)=>setByKey(d,k,vals[i%vals.length]));
-      commit(); render();
-      flash("Filled "+targets.length+" cell"+(targets.length>1?"s":""));
-    } else { applyCellSel(); }
-    return;
+function fillAxis(dx,dy){
+  const x=Math.abs(dx),y=Math.abs(dy);
+  if(Math.max(x,y)<8)return null;
+  if(Math.max(x,y)<16 && Math.max(x,y)<Math.min(x,y)*1.3)return null;
+  return x>=y?'x':'y';
+}
+function fillCopyPlan(model,keys,values,axis,x,y){
+  if(!axis)return [];
+  const source=new Set(keys),valueByKey=new Map(keys.map((k,i)=>[k,values[i]])),groups=new Map();
+  model.forEach(item=>{const group=fillGroup(item.k,axis);if(!groups.has(group))groups.set(group,[]);groups.get(group).push(item);});
+  const result=[];
+  groups.forEach(items=>{
+    const centre=item=>axis==='x'?(item.r.left+item.r.right)/2:(item.r.top+item.r.bottom)/2;
+    items.sort((a,b)=>centre(a)-centre(b));
+    const src=items.filter(item=>source.has(item.k));if(!src.length)return;
+    const indices=src.map(item=>items.indexOf(item)),lo=Math.min(...indices),hi=Math.max(...indices);
+    const point=axis==='x'?x:y;
+    let end=lo,distance=Infinity;
+    items.forEach((item,i)=>{const d=Math.abs(centre(item)-point);if(d<distance){distance=d;end=i;}});
+    for(let i=Math.min(lo,end);i<=Math.max(hi,end);i++){
+      const item=items[i];if(source.has(item.k))continue;
+      const offset=((i-lo)%src.length+src.length)%src.length;
+      result.push({key:item.k,value:valueByKey.get(src[offset].k)});
+    }
+  });
+  return result;
+}
+function fillModel(card){return workCells().filter(c=>c.closest('.card')===card).map(c=>({k:keyOf(c),r:c.getBoundingClientRect()}));}
+function cancelFillDrag(restore=true){
+  const fd=fillDrag;if(!fd)return;
+  fillDrag=null;rangeDrag=null;
+  if(fd.frame)cancelAnimationFrame(fd.frame);
+  try{if(grid.hasPointerCapture(fd.pointerId))grid.releasePointerCapture(fd.pointerId);}catch(_){}
+  document.body.classList.remove('filling');
+  workCells().forEach(c=>c.classList.remove('fillsweep'));
+  if(restore){selKeys=new Set(fd.keys);applyCellSel();}
+}
+function sweepFill(e){
+  const fd=fillDrag;if(!fd)return;
+  fd.x=e.clientX;fd.y=e.clientY;
+  if(!fd.axis)fd.axis=fillAxis(fd.x-fd.startX,fd.y-fd.startY);
+  fd.plan=fillCopyPlan(fillModel(fd.card),fd.keys,fd.vals,fd.axis,fd.x,fd.y);
+  selKeys=new Set([...fd.keys,...fd.plan.map(v=>v.key)]);
+  const target=new Set(fd.plan.map(v=>v.key));
+  workCells().forEach(c=>{c.classList.toggle('cellsel',selKeys.has(keyOf(c)));c.classList.toggle('fillsweep',target.has(keyOf(c)));});
+}
+function scrollFillDrag(){
+  const fd=fillDrag;if(!fd)return;
+  const r=grid.getBoundingClientRect(),edge=28,oldX=grid.scrollLeft,oldY=window.scrollY;
+  if(fd.axis==='x'){
+    const left=Math.max(0,r.left),right=Math.min(innerWidth,r.right);
+    if(fd.x>right-edge)grid.scrollLeft+=12;else if(fd.x<left+edge)grid.scrollLeft-=12;
+  }else if(fd.axis==='y'){
+    if(fd.y>innerHeight-edge)window.scrollBy(0,12);else if(fd.y<edge)window.scrollBy(0,-12);
   }
+  if(grid.scrollLeft!==oldX||window.scrollY!==oldY)sweepFill({clientX:fd.x,clientY:fd.y});
+  if(fillDrag===fd)fd.frame=requestAnimationFrame(scrollFillDrag);
+}
+function startFillDrag(e){
+  if(!state.editing || (SYNC.on&&!SYNC.canEdit) || !selKeys.size || e.button!==0 || e.isPrimary===false)return;
+  e.preventDefault();e.stopPropagation();
+  const selected=[...selKeys],ae=document.activeElement;
+  if(ae?.getAttribute?.('contenteditable')==='true')ae.blur();
+  const cells=workCells().filter(c=>selected.includes(keyOf(c))),card=cells[0]?.closest('.card');
+  if(!card || cells.some(c=>c.closest('.card')!==card)){flash('Select cells within one rota section to copy');return;}
+  const keys=cells.map(keyOf),d=data();selKeys=new Set(keys);rangeDrag=null;
+  fillDrag={keys,vals:keys.map(k=>getByKey(d,k)),card,version:autofillVersion(),pointerId:e.pointerId,
+    startX:e.clientX,startY:e.clientY,x:e.clientX,y:e.clientY,axis:null,plan:[],frame:null};
+  document.body.classList.add('filling');hideFillHandle();
+  try{grid.setPointerCapture(e.pointerId);}catch(_){}
+  fillDrag.frame=requestAnimationFrame(scrollFillDrag);
+}
+function finishFillDrag(e){
+  const fd=fillDrag;if(!fd||e.pointerId!==fd.pointerId)return;
+  if(!state.editing||(SYNC.on&&!SYNC.canEdit)||fd.version!==autofillVersion()){
+    cancelFillDrag();flash('Copy cancelled because the rota changed. Select the cells again.');return;
+  }
+  const hit=document.elementFromPoint(e.clientX,e.clientY);
+  if(!hit||!fd.card.contains(hit)){cancelFillDrag();flash('Copy cancelled — release within the same rota section');return;}
+  sweepFill(e);const plan=fd.plan.filter(v=>getByKey(data(),v.key)!==v.value);
+  cancelFillDrag(false);
+  if(plan.length){const d=edit();plan.forEach(v=>setByKey(d,v.key,v.value));commit();render();flash('Copied into '+plan.length+' cell'+(plan.length===1?'':'s'));}
+  else{selKeys=new Set(fd.keys);applyCellSel();}
+}
+$('#fillHandle').addEventListener('pointerdown',startFillDrag);
+document.addEventListener('pointermove',e=>{if(fillDrag&&e.pointerId===fillDrag.pointerId){e.preventDefault();sweepFill(e);}},{passive:false});
+document.addEventListener('pointerup',finishFillDrag);
+document.addEventListener('pointercancel',e=>{if(fillDrag&&e.pointerId===fillDrag.pointerId)cancelFillDrag();});
+grid.addEventListener('lostpointercapture',e=>{if(fillDrag&&e.pointerId===fillDrag.pointerId)cancelFillDrag();});
+window.addEventListener('blur',()=>cancelFillDrag());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelFillDrag();});
+document.addEventListener('keydown',e=>{if(fillDrag&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();cancelFillDrag();flash('Copy cancelled');}},true);
+document.addEventListener("mouseup",e=>{
   if(rangeDrag){
     const {cell,key,moved}=rangeDrag; rangeDrag=null;
     document.body.classList.remove("selecting");
@@ -3544,6 +3605,7 @@ function scrollToToday(sel){
   requestAnimationFrame(()=>{ const t=document.querySelector(sel); if(t&&t.scrollIntoView) try{ t.scrollIntoView({block:"center"}); }catch(_){} });
 }
 function setView(v){
+  cancelFillDrag();
   if(state.templateMode){ state.templateMode=false; document.body.classList.remove("template"); }
   state.view=v;
   document.body.classList.toggle("view-heat",v==="heat");
@@ -3623,7 +3685,7 @@ function openHeatPop(key,x,y){
   const body=info.count
     ? `<div class="hpl">`+info.names.map(n=>`<div class="nm2">${esc(n)}</div>`).join("")+`</div>`
     : `<div class="none">No one is in the Holiday list this day.</div>`;
-  heatPop.innerHTML=`<div class="hph"><div class="d">${esc(dl)}</div><div class="c">${cl}</div></div>`+body+(info.privateCount?`<p>${info.privateCount} included in unpublished weeks. Names are available after publication.</p>`:"");
+  heatPop.innerHTML=`<div class="hph"><div class="d">${esc(dl)}</div><div class="c">${cl}</div></div>`+body+(info.privateCount?`<p>${info.privateCount} additional people counted. Names are temporarily unavailable. Ask Operations to check the updated totals SQL.</p>`:"");
   heatPop.classList.add("open");
   const w=heatPop.offsetWidth||250, h=heatPop.offsetHeight||200;
   heatPop.style.left=Math.max(8,Math.min(x+12,innerWidth-w-8))+"px";
@@ -4461,7 +4523,7 @@ $("#officeBody").addEventListener("click",e=>{
   const info=OFFICEHEAT[cell.dataset.ok]; if(!info){ pop.classList.remove("open"); return; }
   const [y,m,d]=cell.dataset.ok.split("-").map(Number);
   pop.innerHTML=`<h4>${DAYLBL[new Date(y,m,d).getDay()]} ${d} ${CALMN[m]} — ${esc(state.officeSel)}</h4>`+
-    `<div class="opnames">${info.names.map(n=>`<span>${esc(n)}</span>`).join("")}</div>`+(info.privateCount?`<p>${info.privateCount} included in unpublished weeks. Names are available after publication.</p>`:"");
+    `<div class="opnames">${info.names.map(n=>`<span>${esc(n)}</span>`).join("")}</div>`+(info.privateCount?`<p>${info.privateCount} additional people counted. Names are temporarily unavailable. Ask Operations to check the updated totals SQL.</p>`:"");
   const r=cell.getBoundingClientRect();
   pop.style.left=Math.min(r.left, window.innerWidth-260)+"px";
   pop.style.top=(r.bottom+6)+"px";
@@ -4512,7 +4574,7 @@ function renderAdmin(){
       `</div>`+
       `<label class="yrsel">Year <select id="adminYear">${yopts}</select></label></div>`+
     (ed?`<details class="viswrap" open><summary>Rota visibility — <b>${nPub}</b> of ${RAW.weeks.length} pages public</summary>`+
-      `<div class="visnote">Holiday and office totals include all weeks for everyone; unpublished names remain hidden. Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
+      `<div class="visnote">Holiday and office names and totals include all weeks for everyone, including hidden weeks. Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
       `<div class="callegend"><span class="lgd"><i class="sw pub"></i>Public</span><span class="lgd"><i class="sw hid"></i>Hidden</span></div>`+
       `<div class="viscal">${weekCalHTML("vis")}</div></details>`:"")+
     `<div class="adminsub">Every Away day counts between 1 January and 31 December ${year}, including weekends, bank holidays and special rotas. Each person/date counts once. `+
@@ -5176,7 +5238,7 @@ function initSync(){
 }
 
 
-// Counts-only RPC includes hidden weeks. Restricted names never come from this endpoint.
+// Public daily summaries include holiday/office names from hidden weeks; full rota details remain filtered.
 var PUBLIC_SUMMARY={data:null,rev:-1,epoch:-1,loading:false,error:'',updated:null};
 function publicTotals(kind,visible,office){
   if(!SYNC||!SYNC.on)return visible;
@@ -5184,7 +5246,8 @@ function publicTotals(kind,visible,office){
   if(!summary)return {};
   const totals=kind==='holidays'?summary.holidays:(summary.offices[office]||{}),out={};
   Object.entries(totals||{}).forEach(([key,count])=>{
-    const names=(visible[key]?.names||[]).filter((n,i,a)=>a.findIndex(x=>nrm(canonName(x))===nrm(canonName(n)))===i);
+    const supplied=summary.namesIncluded?(kind==='holidays'?summary.holidayNames?.[key]:summary.officeNames?.[office]?.[key]):visible[key]?.names;
+    const names=(supplied||[]).filter((n,i,a)=>a.findIndex(x=>nrm(canonName(x))===nrm(canonName(n)))===i);
     out[key]={count:Number(count),names,privateCount:Math.max(0,Number(count)-names.length)};
   });
   return out;
@@ -5192,7 +5255,8 @@ function publicTotals(kind,visible,office){
 function summaryNotice(){
   if(!SYNC.on)return '<p class="summary-note">Local preview totals.</p>';
   if(!PUBLIC_SUMMARY.data)return '<p class="summary-note" role="status">'+(PUBLIC_SUMMARY.error?'Full totals are unavailable. Retrying automatically; ask Operations to check the totals upgrade.':'Loading totals from all weeks…')+'</p>';
-  return '<p class="summary-note" role="status">Totals include all saved weeks, including unpublished weeks. Only names you have access to are shown.'+
+  return '<p class="summary-note" role="status">Holiday and office names and totals include all saved weeks, including unpublished weeks.'+
+    (!PUBLIC_SUMMARY.data.namesIncluded?' Names from unpublished weeks are unavailable until Operations installs the updated totals SQL.':'')+
     (PUBLIC_SUMMARY.error?' Connection interrupted — showing the last successfully loaded totals.':'')+
     (SYNC.canEdit&&SYNC.dirty?' Your pending edits will be included after they save.':'')+'</p>';
 }
@@ -5200,7 +5264,7 @@ function refreshPublicSummary(){
   if(!SYNC.on||PUBLIC_SUMMARY.loading)return;
   PUBLIC_SUMMARY.loading=true;
   const generation=SYNC.generation;
-  gasCall('getPublicSummary',[PUBLIC_SUMMARY.rev,PUBLIC_SUMMARY.epoch],res=>{
+  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
     PUBLIC_SUMMARY.loading=false;
     if(generation!==SYNC.generation)return;
     if(!res||!res.ok){PUBLIC_SUMMARY.error='unavailable';refreshSummaryView();return;}
@@ -5597,6 +5661,7 @@ document.addEventListener("keydown",e=>{
 
 // Keep sensitive overlays consistent with the current access and data.
 function closeRestrictedViews(){
+  cancelFillDrag();
   document.querySelectorAll('.modal.open,.searchpop.open,.opop.open,#syncPop.open,#cellMenu.open,#heatPop.open').forEach(el=>el.classList.remove('open'));
   ['personMeta','personBody','personSub','personName','autoBody','noteText','searchPop','officePop','boothPop','heatPop'].forEach(id=>{const e=document.getElementById(id);if(e){if('value' in e)e.value='';else e.textContent='';}});
   AUTOPLAN=null;state.templateMode=false;document.body.classList.remove('template');
