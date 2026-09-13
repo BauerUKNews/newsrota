@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v17.1 — password-gated Editor/Operations access; packaging correction from v17. -->
+<!-- News Rota v18 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1044,6 +1044,73 @@ body.filling #grid *{user-select:none}
   .adminsum,.sumcard{break-inside:avoid}
   .adminsum{box-shadow:none}
 }
+
+
+/* Responsive navigation, readable schedules and accessible dialogs. */
+:root{--muted-2:#655b73}
+.bar{height:auto;min-height:60px;flex-wrap:wrap;gap:10px;padding:12px 18px}
+.bar .tabs{order:20;flex:1 1 100%;width:100%;max-width:100%;min-width:0;margin:0;overflow-x:auto;overscroll-behavior-x:contain;border-radius:12px;scrollbar-width:thin}
+.tabs .tab{flex:none;min-height:42px;color:#eeeaf6}
+.tabs .tab.active{color:var(--ink)}
+.bar .search{min-width:0}.bar .search input,.bar .search input:focus{width:180px;max-width:100%}
+.bar .spacer{min-width:0}.bar .savenote{max-width:220px;min-height:40px}.bar .savewhen{display:none}
+.bar .iconbtn,.rolechip,#editBtn,#setupBtn{min-height:42px;flex:none}
+#setupBtn{display:none;border:1px solid var(--chrome-line);background:var(--ink-3);color:white;border-radius:20px;padding:8px 14px;font:600 13px inherit}
+body.role-ops #setupBtn{display:inline-flex;align-items:center}
+body.editing::before{top:auto;bottom:0;border-radius:8px 8px 0 0}
+.datewrap h1{white-space:normal;cursor:default}.datewrap:hover h1{color:inherit}
+.choose-week{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:white;color:var(--ink);border-radius:9px;padding:8px 12px;min-height:42px;margin-top:6px;font:600 13px inherit}
+.wkarrow{width:42px;height:42px}.datewrap{max-width:calc(100% - 90px)}
+.rota-scroll-hint{display:none;font-size:13px;color:var(--muted-2);padding:8px 0}
+#grid .card{max-width:100%}
+#grid .name,#grid .nm{overflow-wrap:anywhere}
+.modal{padding:16px;max-height:100dvh}
+.modalcard{display:flex;flex-direction:column;max-height:calc(100dvh - 32px);min-height:0}
+.modalhead,.modalfoot{flex:none;gap:8px}.modalfoot{flex-wrap:wrap}
+.dialogbody{overflow:auto;min-height:0;overscroll-behavior:contain}
+.dialogbody .rulelist,.dialogbody .keylist,.dialogbody .personbody,.dialogbody .calbody,.dialogbody .autobody,.dialogbody .tpllist{max-height:none;overflow:visible}
+.modalhead .x{min-width:42px;min-height:42px;flex:none}
+.modalhead h3{font-size:16px}.modalhead .sub{font-size:13px;line-height:1.4}
+.rulehint,.ruleempty,.rotempty,.rothead span,.visnote,.anote,.ahowto{font-size:14px;line-height:1.5;color:var(--muted-2)}
+.rotname,.rulelink{min-width:0;width:155px;max-width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;background:white;color:var(--text)}
+.rotrow .lkmv,.rotrow .lkdel,.rlk .lkdel{min-width:36px;min-height:40px;border:1px solid var(--line);border-radius:8px;background:white;color:var(--text)}
+.rulecard>.lkadd,.rulechain .lkadd{font:600 13px inherit;border:1px dashed var(--line);background:white;border-radius:8px;padding:10px;min-height:42px;color:var(--text)}
+.rotrow{gap:5px}.rotrole{min-width:0}.rlk{max-width:100%}.rulecard.rot{min-width:0}
+.rulecard .ruledel{min-height:40px;color:#a52d35}
+.rolegate{overflow:auto}.rolecard{max-height:calc(100dvh - 32px);overflow:auto}
+button.hd{font:inherit;border:0;min-width:0;width:100%;padding:0;position:relative}
+button.hd:focus-visible{z-index:5;outline-offset:-3px}
+.mcal button.hd{min-height:36px}
+.setup-steps{display:grid;gap:10px;padding:18px;list-style:none;margin:0;counter-reset:steps}
+.setup-steps button{display:block;text-align:left;width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit;line-height:1.5}
+.setup-steps b,.setup-steps span{display:block}.setup-steps span{color:var(--muted-2);font-size:13px}
+.setup-intro,.summary-note,.preview-stale{font-size:14px;line-height:1.5;padding:12px 18px;color:var(--text)}
+.preview-stale{background:#fff0c2}.preview-stale[hidden]{display:none}
+.summary-note{background:var(--mag-wash);border-radius:10px;margin:12px 0}
+.foot button{border:0;background:none;text-decoration:underline;color:var(--ink);font:inherit;cursor:pointer;min-height:40px}
+@media(max-width:900px){
+ .bar{gap:8px;padding:10px 12px}.bar .search input,.bar .search input:focus{width:150px}
+ .wrap{padding-left:12px;padding-right:12px}.rota-scroll-hint{display:block}
+ #grid{overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:8px;scrollbar-width:thin}
+ #grid .card{overflow:visible;max-width:none;min-width:calc(var(--rolew) + var(--ncols,5)*170px)}
+ #grid .chead,#grid .row,#grid .legend{grid-template-columns:var(--rolew) repeat(var(--ncols,5),minmax(170px,1fr))}
+ #grid .row>.rc{position:sticky;left:0;z-index:3;background:#f7f5fa}
+ #grid .chead>.ct{position:sticky;left:0;z-index:4;background:var(--ink)}
+ #grid .holhead{max-width:calc(100vw - 28px)}
+ #grid .dc .name,#grid .pline .nm{white-space:normal;min-height:32px}
+ #grid .roleRow>.dc{min-height:44px}
+ :root{--rolew:170px}
+}
+@media(max-width:480px){
+ .bar .brand{flex:1}.bar .spacer{display:none}.bar .search{flex:1 1 145px;max-width:100%}
+ .bar .search input,.bar .search input:focus{width:100%}.savenote{font-size:11px}
+ .modal{padding:8px}.modalcard{max-height:calc(100dvh - 16px)}.modalhead{padding:10px 12px}.modalhead .sub{display:none}
+ .heatmonths{grid-template-columns:1fr}.rulelist{padding:8px 12px}.rulecard{padding:8px}
+ .rulechain{gap:5px}.rotrole{padding:10px 6px;font-size:12px}.rotpri{flex:none}
+ .rolecard{padding:22px 18px}.rolecard h2{margin-top:12px}
+}
+@media print{.choose-week,.rota-scroll-hint,#setupBtn,.summary-note{display:none!important}#grid{overflow:visible}#grid .card{min-width:0}.dialogbody{overflow:visible}}
+
 </style>
 </head>
 <body>
@@ -1112,7 +1179,8 @@ body.filling #grid *{user-select:none}
     </div>
   </div>
 
-  <button class="rolechip" id="roleChip" title="Switch view"><span class="rdot"></span><span id="roleChipLbl">Choose view</span></button>
+  <button id="setupBtn" type="button" aria-haspopup="dialog">Setup</button>
+  <button class="rolechip" id="roleChip" title="Change access level"><span class="rdot"></span><span id="roleChipLbl">Choose view</span></button>
 </header>
 
 <div class="rolegate" id="roleGate">
@@ -1120,7 +1188,7 @@ body.filling #grid *{user-select:none}
     <div class="rgey">Bauer Media Audio</div>
     <div class="rgwm"><span class="tab2"></span>News Rota</div>
     <h2>Welcome &mdash; how do you use the rota?</h2>
-    <p class="rgsub">Staff access is open to everyone. The other views use passwords checked securely by Supabase.</p>
+    <p class="rgsub">Staff can view published rotas and daily totals. Enter your team password for Editor or Operations access.</p>
     <div class="roleopts" id="roleOpts">
       <button data-role="staff"><b>Staff</b><br><span>Published rota and everyday viewing tools</span></button>
       <button data-role="lead"><b>Editor / senior leadership</b><br><span>Password required</span></button>
@@ -1128,7 +1196,7 @@ body.filling #grid *{user-select:none}
     </div>
     <div class="rolepass" id="rolePass">
       <h3 id="rolePassTitle">Enter password</h3>
-      <p id="rolePassSub">This password is checked securely by the Supabase backend.</p>
+      <p id="rolePassSub">Enter the password for your access level.</p>
       <input id="rolePassInput" type="password" autocomplete="current-password" aria-label="Access password">
       <div class="rperr" id="rolePassErr"></div>
       <div class="rpbuttons">
@@ -1156,6 +1224,7 @@ body.filling #grid *{user-select:none}
       <button class="wkarrow" id="prev" title="Previous week" aria-label="Previous week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div class="datewrap">
         <h1 id="weekTitle"></h1>
+        <button class="choose-week" id="chooseWeek" type="button" aria-haspopup="dialog">Choose week <span id="rotaYear">2027</span> ▾</button>
         <select id="weekSel" aria-label="Jump to a week"></select>
       </div>
       <button class="wkarrow" id="next" title="Next week" aria-label="Next week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
@@ -1192,8 +1261,8 @@ body.filling #grid *{user-select:none}
 <div class="heatpop" id="heatPop"></div>
 
 <footer class="foot">
-  <span class="pill">Supabase build</span>
-  <span>Shared data is stored in Supabase. Editor and Operations access require the database connection.</span>
+  <span class="pill">News Rota v18</span>
+  <span>Choose a week or search for a person. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -1284,8 +1353,10 @@ body.filling #grid *{user-select:none}
   <div class="modalcard wide">
     <div class="modalhead"><h3>Autofill this week</h3><span class="sub" id="autoSub"></span>
       <button class="x" data-act="autoclose" aria-label="Close">&times;</button></div>
+    <div id="autoStale" class="preview-stale" role="status" hidden>The rota has changed. Rebuild this preview before filling the week.</div>
     <div class="autobody" id="autoBody"></div>
     <div class="modalfoot"><button class="ghostbtn" data-act="autoclose">Cancel</button>
+      <button class="ghostbtn" id="autoRefresh" type="button">Rebuild preview</button>
       <button class="primary" data-act="autoapply" id="autoApply">Fill the week</button></div>
   </div>
 </div>
@@ -1329,6 +1400,24 @@ body.filling #grid *{user-select:none}
   </div>
 </div>
 
+
+<div class="modal" id="setupModal"><div class="modalcard wide">
+ <div class="modalhead"><h3>Set up the rota</h3><button class="x" data-close-overlay="setupModal" aria-label="Close setup">×</button></div>
+ <p class="setup-intro">Work through these steps in order. Changes save automatically while you work. Check the save status before leaving.</p>
+ <ol class="setup-steps">
+ <li><button data-setup="people"><b>1. Personnel</b><span>Add staff, offices and holiday allowances.</span></button></li>
+ <li><button data-setup="templates"><b>2. Default templates</b><span>Set the normal roles and people; add dated templates for later changes.</span></button></li>
+ <li><button data-setup="rotations"><b>3. Rotations</b><span>Choose roles in priority order and the people who take turns.</span></button></li>
+ <li><button data-setup="rules"><b>4. Cover rules</b><span>Set who covers each absence.</span></button></li>
+ <li><button data-setup="key"><b>5. Colour key</b><span>Define the labels and colours used in the rota.</span></button></li>
+ <li><button data-setup="visibility"><b>6. Publish and allowances</b><span>Choose which weeks are visible and check holiday totals.</span></button></li>
+ </ol><div class="modalfoot"><button class="ghostbtn" data-close-overlay="setupModal">Close</button></div>
+</div></div>
+<div class="modal" id="helpModal"><div class="modalcard wide">
+ <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
+ <div class="setup-intro"><p><b>Find your rota:</b> use Choose week or search for a person. On a phone, swipe the table sideways to see each day.</p><p><b>Daily totals:</b> holiday and office counts include unpublished weeks. Names and assignments remain private until their week is published.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
+ <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
+</div></div>
 <script>
 /* ==========================================================================
    SUPABASE CONNECTION — EDIT ONLY THESE TWO VALUES
@@ -1363,17 +1452,18 @@ function persist(){
   persistLocal();                 // always keep a local copy, so the app still works offline
   if(!SYNC) return;
   if(SYNC.on){ SYNC.dirty=true; scheduleFlush(); }
+  invalidateAutofillPreview();
   updateSaveUI();
 }
 const store = load();
 const SCHEMA = 10;
 // Every default the store needs. Run at boot AND after a full-store import, so an
 // export from an older build always comes back up with a complete, current shape.
-function ensureStoreDefaults(){
+function ensureStoreDefaults(target=store){
+  const store=target;
   store.overrides = store.overrides || {};
-  // one-time: earlier saved week copies froze the old patch names ("/" + Title Case).
-  // Clear those stale copies so the corrected labels show, keeping roster/allowances/rules/colours/notes.
-  if((store.schema||0) < SCHEMA){ store.overrides = {}; store.extraWeeks = []; store.schema = SCHEMA; }
+  // Migrate metadata without discarding saved assignments or additional weeks.
+  if((store.schema||0) < SCHEMA) store.schema = SCHEMA;
   store.key = store.key || [];              // [{id,label,color}]
   store.cellColors = store.cellColors || {}; // { cellKey: keyId }
   store.cellNotes = store.cellNotes || {};   // { cellKey: text }
@@ -1527,7 +1617,7 @@ function edit(){
   if(!store.overrides[w.id]) store.overrides[w.id] = clone(data());
   return store.overrides[w.id];
 }
-function commit(){ persist(); recordHistory(); flash("Saved"); }
+function commit(){ persist(); recordHistory(); flash(SYNC&&SYNC.on?"Change queued for saving":"Saved to this browser"); }
 function renderCurrentView(){
   if(state.view==="heat") renderHeat();
   else if(state.view==="admin") renderAdmin();
@@ -1535,38 +1625,64 @@ function renderCurrentView(){
   else if(state.view==="booth") renderBoothModal();
   else if(state.view==="pers") renderStaffList();
   else render();
+  refreshOpenViews();
 }
 
 // ---- undo / redo (edit-mode data changes) ----
-let HIST=[], HI=-1, restoring=false; const MAXH=60;
-function initHistory(){ HIST=[JSON.stringify(store)]; HI=0; updateUndoUI(); }
+let HIST=[], HI=-1, restoring=false, historyAnchor={}; const MAXH=60;
+function historySnapshot(){
+  return Object.fromEntries(Object.entries(syncSnapshot()).map(([k,v])=>[k,JSON.stringify(v)]));
+}
+function initHistory(){ HIST=[]; HI=-1; historyAnchor=historySnapshot(); updateUndoUI(); }
 function recordHistory(){
   if(restoring) return;
-  HIST=HIST.slice(0,HI+1);
-  HIST.push(JSON.stringify(store));
+  const now=historySnapshot(), changes=[];
+  new Set([...Object.keys(historyAnchor),...Object.keys(now)]).forEach(key=>{
+    const before=historyAnchor[key]??null, after=now[key]??null;
+    if(before!==after) changes.push({key,before,after});
+  });
+  historyAnchor=now;
+  if(!changes.length) return;
+  HIST=HIST.slice(0,HI+1); HIST.push({changes});
   if(HIST.length>MAXH) HIST.shift();
-  HI=HIST.length-1;
-  updateUndoUI();
+  HI=HIST.length-1; updateUndoUI();
 }
-function restoreHistory(){
+function rebaseHistory(keys){
+  const now=historySnapshot();
+  keys.forEach(k=>{ if(k in now) historyAnchor[k]=now[k]; else delete historyAnchor[k]; });
+}
+function writeStoreKey(key,json){
+  const target=key.startsWith('week:')?store.overrides:store;
+  const field=key.slice(key.startsWith('week:')?5:9);
+  if(['__proto__','constructor','prototype','resetEpoch'].includes(field)) throw new Error('Invalid data key');
+  if(json===null) delete target[field]; else target[field]=JSON.parse(json);
+}
+function restoreHistory(action,backward){
+  const now=historySnapshot();
+  if(action.changes.some(c=>(now[c.key]??null)!==(backward?c.after:c.before))){
+    alert('This item has changed since your edit. Undo/Redo has been stopped to preserve the newer changes.');
+    return false;
+  }
   restoring=true;
-  const snap=JSON.parse(HIST[HI]);
-  Object.keys(store).forEach(k=>delete store[k]);
-  Object.assign(store, snap);
-  try{ localStorage.setItem(LSKEY, JSON.stringify(store)); }catch(_){}
-  selKeys=new Set();
-  rebuildWeeks();                 // added/deleted week pages are part of the undo step too
-  buildWeekSel();
-  renderCurrentView();
-  restoring=false;
-  updateUndoUI();
+  try{
+    action.changes.forEach(c=>writeStoreKey(c.key,backward?c.before:c.after));
+    historyAnchor=historySnapshot(); selKeys=new Set();
+    persist(); rebuildWeeks(); buildWeekSel(); renderCurrentView();
+  }finally{restoring=false;}
+  return true;
 }
-function undo(){ if(HI>0){ HI--; restoreHistory(); flash("Undo"); } }
-function redo(){ if(HI<HIST.length-1){ HI++; restoreHistory(); flash("Redo"); } }
+function undo(){
+  if(!state.editing || HI<0) return;
+  if(restoreHistory(HIST[HI],true)){HI--;updateUndoUI();flash('Undo — change queued for saving');}
+}
+function redo(){
+  if(!state.editing || HI>=HIST.length-1) return;
+  if(restoreHistory(HIST[HI+1],false)){HI++;updateUndoUI();flash('Redo — change queued for saving');}
+}
 function updateUndoUI(){
   const u=$("#undoBtn"), r=$("#redoBtn");
-  if(u) u.disabled = HI<=0;
-  if(r) r.disabled = HI>=HIST.length-1;
+  if(u) u.disabled=HI<0;
+  if(r) r.disabled=HI>=HIST.length-1;
 }
 $("#undoBtn").addEventListener("click",undo);
 $("#redoBtn").addEventListener("click",redo);
@@ -1647,6 +1763,7 @@ function render(){
   renderKeyLegend();
   if(state.editing) setEditable(true);
   applySearch();
+  enhanceRotaUI();
 }
 
 // A week that's still marked Hidden in Admin: the team can reach it and see it
@@ -2015,7 +2132,7 @@ function renderExtras(d,w){
   if(notes.length){
     html+=notes.map((n,i)=>`<div class="note"><span class="txt" data-edit="note" data-idx="${i}">${esc(n)}</span><button class="del" data-act="notedel" data-idx="${i}" title="Delete note">&times;</button></div>`).join("");
   } else {
-    html+=`<div class="empty-note">No notes for this week. Turn on Edit to add one.</div>`;
+    html+=`<div class="empty-note">No notes for this week. ${state.editing?"Use Add a note below.":"Operations can add notes in Edit mode."}</div>`;
   }
   html+=`</div><div class="addnote"><button data-act="noteadd">+ Add a note</button></div></div></div>`;
   extras.innerHTML=html;
@@ -2063,10 +2180,13 @@ function setEditing(on){
   document.body.classList.toggle("editing",on);
   const eb=$("#editBtn");
   if(eb){ eb.classList.toggle("on",on); const l=$("#editBtnLbl"); if(l) l.textContent=on?"Editing":"Edit"; }
-  if(!on){ selKeys=new Set(); selAnchor=null; hideFillHandle(); }   // drop the selection when leaving edit mode
+  if(!on){ selKeys=new Set(); selAnchor=null; hideFillHandle();
+    if(SYNC&&SYNC.on&&SYNC.canEdit){ clearTimeout(SYNC.flushT); flushNow(); }
+  }   // drop the selection when leaving edit mode
   if(SYNC && SYNC.on){ clearTimeout(SYNC.pollT); SYNC.pollT=setTimeout(pollChanges, on?SYNC_POLL_EDIT:SYNC_POLL_VIEW); }
   buildWeekSel();
   renderCurrentView();
+  updateSaveUI();
   flash(on?"Edit mode on — all weeks & tools unlocked":"Edit mode off");
 }
 
@@ -2873,21 +2993,63 @@ function doExport(){
   a.download="news-rota-edits.json"; a.click(); URL.revokeObjectURL(a.href);
   flash("Exported"); closeMenu();
 }
+function prepareImport(value){
+  const object=v=>!!v && typeof v==='object' && !Array.isArray(v);
+  if(!object(value)||!object(value.overrides)) throw new Error('Not a rota backup: missing week data.');
+  const inspect=(v)=>{if(v&&typeof v==='object') Object.keys(v).forEach(k=>{
+    if(['__proto__','constructor','prototype'].includes(k)) throw new Error('Unsupported data key in backup.');inspect(v[k]);
+  });}; inspect(value);
+  if(value.schema!==undefined && (!Number.isInteger(value.schema)||value.schema<0||value.schema>SCHEMA)) throw new Error('This backup version is not supported.');
+  const out=clone(value), arrays=['key','rules','rotations','extraWeeks','deletedWeeks','templates','roster'];
+  arrays.forEach(k=>{if(out[k]!==undefined&&!Array.isArray(out[k])) throw new Error('Invalid '+k+' in backup.');});
+  ['public','cellColors','cellNotes','cellVoid','cellCover','allowances','offices','freelance'].forEach(k=>{
+    if(out[k]!==undefined&&!object(out[k])) throw new Error('Invalid '+k+' in backup.');
+  });
+  const strings=a=>Array.isArray(a)&&a.every(x=>typeof x==='string');
+  const checkWeek=d=>{
+    if(!object(d)) throw new Error('Invalid week or template.');
+    if(d.notes!==undefined&&!strings(d.notes)) throw new Error('Invalid week notes.');
+    if(d.cols!==undefined&&(!Array.isArray(d.cols)||!d.cols.every(object))) throw new Error('Invalid date columns.');
+    (d.cols||[]).forEach(c=>{['key','sub','lbl'].forEach(k=>{if(c[k]!==undefined&&typeof c[k]!=='string')throw new Error('Invalid date label.');});[['y',1900,2199],['m',0,11],['d',1,31]].forEach(([k,lo,hi])=>{if(c[k]!==undefined&&(!Number.isInteger(c[k])||c[k]<lo||c[k]>hi))throw new Error('Invalid date.');});});
+    if(d.sections!==undefined){
+      if(!Array.isArray(d.sections)) throw new Error('Invalid sections.');
+      d.sections.forEach(sec=>{if(!object(sec)||typeof sec.title!=='string'||!Array.isArray(sec.rows)) throw new Error('Invalid section.');
+        sec.rows.forEach(r=>{if(!object(r)||!['role','subhead'].includes(r.type)||(r.type==='role'&&!strings(r.assign))) throw new Error('Invalid role assignments.');['area','slot','label'].forEach(k=>{if(r[k]!==undefined&&typeof r[k]!=='string')throw new Error('Invalid role label.');});});});
+    }else if(!Array.isArray(d.rows)) throw new Error('Week has no valid rows.');
+    ['rows','awayRows'].forEach(k=>{if(d[k]!==undefined&&(!Array.isArray(d[k])||!d[k].every(object)))throw new Error('Invalid weekend rows.');});
+    (d.rows||[]).concat(d.awayRows||[]).forEach(r=>{
+      ['role','fri','sat','sun','mon'].forEach(k=>{if(r[k]!==undefined&&typeof r[k]!=='string') throw new Error('Invalid weekend value.');});
+      if(r.vals!==undefined&&(!object(r.vals)||!Object.values(r.vals).every(x=>typeof x==='string'))) throw new Error('Invalid special rota value.');
+    });
+  };
+  Object.values(out.overrides).forEach(checkWeek);
+  ['public','cellVoid','cellCover','freelance'].forEach(k=>{if(out[k]&&!Object.values(out[k]).every(v=>typeof v==='boolean'))throw new Error('Invalid '+k+' values.');});
+  ['cellNotes','cellColors','offices'].forEach(k=>{if(out[k]&&!Object.values(out[k]).every(v=>typeof v==='string'))throw new Error('Invalid '+k+' values.');});
+  if(out.allowances&&!Object.values(out.allowances).every(v=>(v===null||v===''||((typeof v==='number'||typeof v==='string')&&Number.isFinite(Number(v))&&Number(v)>=0))))throw new Error('Invalid allowances.');
+  if(out.roster&&!strings(out.roster)) throw new Error('Invalid personnel names.');
+  if(out.deletedWeeks&&!strings(out.deletedWeeks)) throw new Error('Invalid removed weeks.');
+  (out.extraWeeks||[]).forEach(w=>{if(!object(w)||typeof w.id!=='string'||typeof w.name!=='string'||!['weekday','weekend'].includes(w.kind))throw new Error('Invalid extra week.');});
+  (out.key||[]).forEach(k=>{if(!object(k)||typeof k.id!=='string'||typeof k.label!=='string'||typeof k.color!=='string')throw new Error('Invalid colour key.');});
+  (out.rules||[]).forEach(r=>{if(!strings(r)) throw new Error('Invalid cover rule.');});
+  (out.rotations||[]).forEach(r=>{if(!object(r)||!strings(r.names)|| (r.roles!==undefined&&!strings(r.roles)) || (r.role!==undefined&&typeof r.role!=='string')) throw new Error('Invalid rotation.');});
+  (out.templates||[]).forEach(t=>{if(!object(t)||typeof t.id!=='string')throw new Error('Invalid template.');['label','from'].forEach(k=>{if(t[k]!=null&&typeof t[k]!=='string')throw new Error('Invalid template label or date.');});checkWeek(t.data);});
+  if(out.template) checkWeek(out.template);
+  ensureStoreDefaults(out);
+  out.resetEpoch=Number(SYNC&&SYNC.on?SYNC.epoch:store.resetEpoch)||0;
+  return out;
+}
 $("#importFile").addEventListener("change",e=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader();
-  r.onload=()=>{ try{ const o=JSON.parse(r.result);
-    if(!o || typeof o!=="object" || !o.overrides){ flash("Not a rota file"); return; }
-    // a full restore — roster, allowances, rules, colours, notes, extra weeks, the lot
-    Object.keys(store).forEach(k=>delete store[k]);
-    Object.assign(store, o);
-    ensureStoreDefaults();                 // older exports may be missing newer fields
-    persist(); recordHistory();
-    rebuildWeeks(); buildWeekSel();
-    renderCurrentView();
-    flash("Imported");
-  }catch(err){ flash("Could not read file"); } };
-  r.readAsText(f); e.target.value=""; closeMenu();
+  r.onload=()=>{
+    if(!state.editing || (SYNC.on&&!SYNC.canEdit)){flash('Enter Operations Edit mode to restore a backup');return;}
+    let candidate;
+    try{candidate=prepareImport(JSON.parse(r.result));}catch(err){alert('Backup not imported. Your rota is unchanged.\n\n'+err.message);return;}
+    Object.keys(store).forEach(k=>delete store[k]); Object.assign(store,candidate);
+    persist();recordHistory();rebuildWeeks();buildWeekSel();renderCurrentView();flash('Backup restored — saving changes');
+  };
+  r.onerror=()=>alert('Could not read the backup. Your rota is unchanged.');
+  r.readAsText(f);e.target.value="";closeMenu();
 });
 
 /* ---------- menu + nav ---------- */
@@ -2898,6 +3060,7 @@ $("#prev").addEventListener("click",()=>{ if(state.idx>0){ state.idx--; render()
 $("#next").addEventListener("click",()=>{ if(state.idx<RAW.weeks.length-1){ state.idx++; render(); } });
 document.addEventListener("keydown",e=>{
   if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
+  if(e.defaultPrevented || e.target.closest?.("#grid [data-cell]")) return;
   if(state.editing && selKeys.size) return;              // the cell selection owns the arrows
   if(state.templateMode) return;
   const t=e.target, tag=(t&&t.tagName)||"";
@@ -3139,7 +3302,7 @@ function renderRotList(){
     const roles=(rot.roles||[]);
     const roleRows=roles.map((rk,i)=>
       `<div class="rotrow"><span class="rotpri" title="Priority \u2014 the top role is filled first">${i+1}</span>`+
-      `<input class="rotrole" list="roleOptions" data-rot="${ri}" data-i="${i}" autocomplete="off" spellcheck="false"`+
+      `<input class="rotrole" aria-label="Rotation ${ri+1}, priority ${i+1} role" list="roleOptions" data-rot="${ri}" data-i="${i}" autocomplete="off" spellcheck="false"`+
       ` placeholder="Type to search roles\u2026" value="${esc(roleLabelFor(rk)).replace(/"/g,"&quot;")}">`+
       `<button class="lkmv" data-rotup="${ri}" data-i="${i}" title="Higher priority"${i===0?" disabled":""}>\u25b2</button>`+
       `<button class="lkmv" data-rotdn="${ri}" data-i="${i}" title="Lower priority"${i===roles.length-1?" disabled":""}>\u25bc</button>`+
@@ -3147,7 +3310,7 @@ function renderRotList(){
       || `<div class="rotempty">No roles yet</div>`;
     const names=(rot.names||[]).map((nm,i)=>{
       const dv=esc(nm).replace(/"/g,"&quot;");
-      return `<span class="rlk"><input class="rotname" list="staffOptions" data-rot="${ri}" data-i="${i}" placeholder="Name" value="${dv}">`+
+      return `<span class="rlk"><input class="rotname" aria-label="Rotation ${ri+1}, person ${i+1}" list="staffOptions" data-rot="${ri}" data-i="${i}" placeholder="Name" value="${dv}">`+
         `<button class="lkdel" data-rotdelstep="${ri}" data-i="${i}" title="Remove">\u00d7</button></span>`;
     }).join('<span class="rarw">\u21c4</span>');
     // show exactly who has what this week
@@ -3161,7 +3324,7 @@ function renderRotList(){
           return `${esc(lbl)} \u2192 <b>${esc(a.map[rk]||"\u2014")}</b>`;
         }).join(" \u00b7 ")+`</div>`;
       if(roles.filter(Boolean).length>(rot.names||[]).filter(Boolean).length)
-        now+=`<div class="rotwarn">More roles than people \u2014 someone would end up in two places at once.</div>`;
+        now+=`<div class="rotwarn">More roles than people \u2014 lower-priority roles will remain blank until cover is available.</div>`;
     }
     return `<div class="rulecard rot"><div class="rotlbl">Roles that swap <em>most important first</em></div>${roleRows}`+
       `<button class="lkadd" data-rotaddrole="${ri}">+ another role</button>`+
@@ -3402,48 +3565,12 @@ $("#tabs").addEventListener("click",e=>{ const b=e.target.closest(".tab"); if(b)
 let HEAT={};
 function heatData(){
   const map={};
-  RAW.weeks.forEach(w=>{
-    if(!canViewWeek(w)) return;
-    if(w.kind==="weekday"){
-      const wd=store.overrides[w.id]||baseWeekday(w);
-      const sec=(wd.sections||[]).find(s=>s.holiday); if(!sec) return;
-      const dts=colDates(wd,w); if(!dts.length) return;
-      dts.forEach((dt,di)=>{
-        // bank-holiday days count too — Away can be recorded on them now
-        const names=sec.rows.filter(r=>r.type==="role").map(r=>(r.assign[di]||"").trim()).filter(Boolean);
-        const dk=dt.getFullYear()+"-"+dt.getMonth()+"-"+dt.getDate();
-        const cur=map[dk]||{count:0,names:[]};
-        names.forEach(n=>{ if(!cur.names.includes(n)) cur.names.push(n); });
-        cur.count=cur.names.length;
-        map[dk]=cur;
-      });
-      return;
-    }
-    // weekend sheets carry their own Away list (weekend workers on holiday)
-    const wd=store.overrides[w.id]||(RAW.weeksData||{})[w.id];
-    if(!wd || !(wd.awayRows||[]).length) return;
-    const addDay=(key,dt)=>{
-      if(!dt) return;
-      const names=(wd.awayRows||[]).map(r=>String((wd.special?(r.vals&&r.vals[key]):r[key])||"").trim()).filter(Boolean);
-      if(!names.length) return;
-      const dk=dt.getFullYear()+"-"+dt.getMonth()+"-"+dt.getDate();
-      const cur=map[dk]||{count:0,names:[]};
-      names.forEach(n=>{ if(!cur.names.includes(n)) cur.names.push(n); });
-      cur.count=cur.names.length;
-      map[dk]=cur;
-    };
-    if(wd.special && wd.cols){ const sds=specialDates(w,wd); wd.cols.forEach((c,ci)=>addDay(c.key,sds[ci])); }
-    else{
-      const sat=parseWeDate(wd.satHeader), sun=parseWeDate(wd.sunHeader);
-      addDay("sat",sat); addDay("sun",sun);
-      if(sat){ const fri=new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1); if(isBankHol(fri)) addDay("fri",fri); }
-      if(sun){ const mon=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+1); if(isBankHol(mon)) addDay("mon",mon); }
-    }
-  });
-  return map;
+  holidayEntries().forEach(({date,name})=>{const k=date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate();const v=map[k]||(map[k]={count:0,names:[]});v.names.push(name);v.count=v.names.length;});
+  return publicTotals('holidays',map);
 }
 function renderHeat(){
   const map=heatData();
+  if(SYNC.on&&!PUBLIC_SUMMARY.data){$("#heatView").innerHTML="<h2>Holiday heat map</h2>"+summaryNotice();return;}
   let max=0; Object.values(map).forEach(v=>{ if(v.count>max) max=v.count; });
   const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
   const WL=["Mo","Tu","We","Th","Fr","Sa","Su"];
@@ -3465,11 +3592,11 @@ function renderHeat(){
     for(let i=0;i<off;i++) cells+=`<div class="hd blank"></div>`;
     for(let d=1;d<=dim;d++){
       const key=YEAR+"-"+m+"-"+d;
-      const info=map[key];
+      const info=map[key]||{count:0,names:[]};
       const tdot=(YEAR===TY&&m===TM&&d===TD)?'<span class="todot"></span>':"";
       if(info){
         const h=ramp(info.count);
-        HEAT[key]={count:info.count,names:info.names.slice(),date:new Date(YEAR,m,d)};
+        HEAT[key]={count:info.count,names:info.names.slice(),date:new Date(YEAR,m,d),privateCount:info.privateCount||0};
         cells+=`<div class="hd clk${info.count>15?" danger":""}${tdot?" today":""}" style="background:${h.bg};color:${h.fg}" data-hk="${key}"><span class="dnum">${d}</span><span class="cnt">${info.count}</span>${tdot}</div>`;
       } else {
         cells+=`<div class="hd${tdot?" today":""}"><span class="donly">${d}</span>${tdot}</div>`;
@@ -3478,7 +3605,7 @@ function renderHeat(){
     months+=`<div class="heatmonth"><h4>${MN[m]}</h4><div class="mcal">${cells}</div></div>`;
   }
   $("#heatView").innerHTML=
-    `<h2 class="heathead">Holiday heat map</h2>`+
+    `<h2 class="heathead">Holiday heat map</h2>`+summaryNotice()+
     `<div class="heatsub">How many people are in the Holiday list each day across ${YEAR}. Green means nobody off, red means 15+ off. Click a day to see who's off.</div>`+
     `<div class="heatlegend">0 off<span class="scale">`+
       [0,3.75,7.5,11.25,15].map(c=>`<i style="background:${ramp(c).bg}"></i>`).join("")+
@@ -3496,7 +3623,7 @@ function openHeatPop(key,x,y){
   const body=info.count
     ? `<div class="hpl">`+info.names.map(n=>`<div class="nm2">${esc(n)}</div>`).join("")+`</div>`
     : `<div class="none">No one is in the Holiday list this day.</div>`;
-  heatPop.innerHTML=`<div class="hph"><div class="d">${esc(dl)}</div><div class="c">${cl}</div></div>`+body;
+  heatPop.innerHTML=`<div class="hph"><div class="d">${esc(dl)}</div><div class="c">${cl}</div></div>`+body+(info.privateCount?`<p>${info.privateCount} included in unpublished weeks. Names are available after publication.</p>`:"");
   heatPop.classList.add("open");
   const w=heatPop.offsetWidth||250, h=heatPop.offsetHeight||200;
   heatPop.style.left=Math.max(8,Math.min(x+12,innerWidth-w-8))+"px";
@@ -3519,26 +3646,39 @@ function allowanceOf(n){ const v=store.allowances[n]; return (v==null||v==="")?D
 function yearsInData(){
   const ys=new Set();
   RAW.weeks.forEach(w=>{ if(w.kind!=="weekday") return; const d=weekDates(w.name); if(d) d.forEach(dt=>ys.add(dt.getFullYear())); });
+  holidayEntries().forEach(e=>ys.add(e.date.getFullYear()));
   return [...ys].sort((a,b)=>a-b);
 }
 const ALIAS = RAW.aliases || {};
 function canonName(n){ return ALIAS[nrm(n)] || n; }
-function takenByPerson(year){
-  const map={}, seen=new Set();
+function holidayEntries(){
+  const entries=[], seen=new Set();
+  const add=(date,name)=>{
+    name=String(name||'').trim();if(!date||!Number.isFinite(date.getTime())||!name)return;
+    const key=date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()+'|'+nrm(canonName(name));
+    if(seen.has(key))return;seen.add(key);entries.push({date,name:canonName(name)});
+  };
   RAW.weeks.forEach(w=>{
-    if(!canViewWeek(w)) return;
-    if(w.kind!=="weekday") return;
-    const wd=store.overrides[w.id]||baseWeekday(w);
-    const sec=(wd.sections||[]).find(s=>s.holiday); if(!sec) return;
-    const dts=colDates(wd,w); if(!dts.length) return;
-    dts.forEach((dt,di)=>{
-      if(dt.getFullYear()!==year || isBankHol(dt)) return;
-      const dk=dt.getFullYear()+"-"+dt.getMonth()+"-"+dt.getDate();
-      sec.rows.forEach(r=>{ if(r.type!=="role") return; const nm=(r.assign[di]||"").trim(); if(!nm) return;
-        const ck=nrm(canonName(nm)), key=ck+"|"+dk; if(seen.has(key)) return; seen.add(key);
-        map[ck]=(map[ck]||0)+1; });
-    });
+    if(!canViewWeek(w))return;
+    const d=store.overrides[w.id]||template(w);
+    if(d.special){const dates=specialDates(w,d);(d.cols||[]).forEach((c,i)=>(d.awayRows||[]).forEach(r=>add(dates[i],r.vals&&r.vals[c.key])));}
+    else if(w.kind==='weekend'){
+      const year=Number(((w.name||'').match(/(?:19|20)\d{2}/)||[])[0])||YEAR;
+      const sat=parseWeDate(d.satHeader,year),sun=parseWeDate(d.sunHeader,year);
+      const days=[['sat',sat],['sun',sun]];
+      const fri=d.friHeader?parseWeDate(d.friHeader,year):(sat?new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1):null);
+      const mon=d.monHeader?parseWeDate(d.monHeader,year):(sun?new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+1):null);
+      if(d.friHeader||isBankHol(fri))days.push(['fri',fri]);if(d.monHeader||isBankHol(mon))days.push(['mon',mon]);
+      days.forEach(([key,date])=>(d.awayRows||[]).forEach(r=>add(date,r[key])));
+    }else{
+      const dates=colDates(d,w);(d.sections||[]).filter(sec=>sec.holiday).forEach(sec=>(sec.rows||[]).filter(r=>r.type==='role').forEach(r=>dates.forEach((date,i)=>add(date,r.assign[i]))));
+    }
   });
+  return entries;
+}
+function takenByPerson(year){
+  const map={};
+  holidayEntries().forEach(({date,name})=>{if(date.getFullYear()===year){const k=nrm(canonName(name));map[k]=(map[k]||0)+1;}});
   return map;
 }
 function countWeekdays(from,to){
@@ -3570,7 +3710,7 @@ const CALMN=["January","February","March","April","May","June","July","August","
 const CALWL=["Mo","Tu","We","Th","Fr","Sa","Su"];
 function specialDates(w,d){        // real dates for a special multi-day sheet, from its column labels
   const ym=/(?:19|20)\d{2}/.exec((w&&(w.name||w.id))||"");
-  let y=ym?+ym[0]:YEAR, prev=-1;
+  let y=Number(d.y)||(ym?+ym[0]:YEAR), prev=-1;
   return (d.cols||[]).map(c=>{
     const m=/(\d{1,2})\s*([A-Za-z]{3,})/.exec(c.sub||c.lbl||"");
     if(!m) return null;
@@ -3633,10 +3773,10 @@ function weekCalHTML(mode){
       if(wi===undefined){ cells+=`<div class="hd off${tdot?" today":""}">${tdot}${d}</div>`; continue; }
       const w=RAW.weeks[wi], attr=esc(w.name);
       if(mode==="vis"){ const pub=isPublic(w.id);
-        cells+=`<div class="hd pick ${pub?"pub":"hid"}${tdot?" today":""}" data-viscal="${wi}" title="${attr} — ${pub?"Public":"Hidden"}">${tdot}${d}</div>`;
+        cells+=`<button type="button" class="hd pick ${pub?"pub":"hid"}${tdot?" today":""}" data-viscal="${wi}" aria-pressed="${pub}" aria-label="${d} ${CALMN[m]} ${y}: ${attr}, ${pub?"public":"hidden"}. Toggle week visibility.">${tdot}${d}</button>`;
       } else {
         const now=(!state.templateMode && wi===state.idx)?" now":"";
-        cells+=`<div class="hd pick${now}${tdot?" today":""}" data-jump="${wi}" title="${attr}">${tdot}${d}</div>`;
+        cells+=`<button type="button" class="hd pick${now}${tdot?" today":""}" data-jump="${wi}" aria-pressed="${!!now}" aria-label="${d} ${CALMN[m]} ${y}: choose ${attr}">${tdot}${d}</button>`;
       }
     }
     months+=`<div class="heatmonth"><h4>${CALMN[m]} ${y}</h4><div class="mcal">${cells}</div></div>`;
@@ -3684,10 +3824,11 @@ function officeData(office){
   const wbd=workingByDay(), out={}, offMap={};
   Object.keys(store.offices||{}).forEach(n=>{ offMap[nrm(n)]=store.offices[n]; });
   Object.keys(wbd).forEach(k=>{ const names=[]; wbd[k].forEach(disp=>{ if(officeOfName(disp,offMap)===office) names.push(disp); }); if(names.length) out[k]={count:names.length,names:names.sort((a,b)=>a.localeCompare(b))}; });
-  return out;
+  return publicTotals("offices",out,office);
 }
 function officeCalHTML(office){
   const data=officeData(office); OFFICEHEAT=data;
+  if(SYNC.on&&!PUBLIC_SUMMARY.data) return summaryNotice();
   let maxC=1; Object.values(data).forEach(v=>{ if(v.count>maxC) maxC=v.count; });
   const _t=new Date(),TY=_t.getFullYear(),TM=_t.getMonth(),TD=_t.getDate();
   const ramp=(c)=>{ if(!c) return {bg:"var(--bg)",fg:"var(--muted-2)"}; const t=Math.min(c/maxC,1);
@@ -3702,11 +3843,11 @@ function officeCalHTML(office){
     for(let d=1;d<=dim;d++){
       const key=YEAR+"-"+m+"-"+d, info=data[key], c=info?info.count:0, h=ramp(c);
       const tdot=(YEAR===TY&&m===TM&&d===TD)?'<span class="todot"></span>':"";
-      cells+=`<div class="hd${info?" clk":""}${tdot?" today":""}" style="background:${h.bg};color:${h.fg}"${info?` data-ok="${key}"`:""}><span class="dnum">${d}</span>${info?`<span class="cnt">${c}</span>`:""}${tdot}</div>`;
+      cells+=`<div class="hd${info?" clk":""}${tdot?" today":""}" style="background:${h.bg};color:${h.fg}"${info?` data-ok="${key}"`:""}><span class="dnum">${d}</span><span class="cnt">${c}</span>${tdot}</div>`;
     }
     months+=`<div class="heatmonth"><h4>${CALMN[m]}</h4><div class="mcal">${cells}</div></div>`;
   }
-  return `<div class="heatmonths">${months}</div>`;
+  return summaryNotice()+`<div class="heatmonths">${months}</div>`;
 }
 // ---- booth usage -------------------------------------------------------
 // A booth is needed by anyone on a reading shift: the AM/PM patch roles in the
@@ -3896,8 +4037,9 @@ function rotationIndex(w){                    // which turn of the cycle this we
 // whole cycle shifts together; if that lands someone on a week they're away for,
 // we shift it one more step and try again.
 function rotationAssign(rot, w, offBy, busy){
-  const names=(rot.names||[]).map(x=>(x||"").trim()).filter(Boolean);
-  const roles=(rot.roles||[]).filter(Boolean);
+  const seenNames=new Set();
+  const names=(rot.names||[]).map(x=>(x||"").trim()).filter(x=>{const k=nrm(x);if(!k||seenNames.has(k))return false;seenNames.add(k);return true;});
+  const roles=[...new Set((rot.roles||[]).filter(Boolean))];
   if(!names.length || !roles.length) return null;
   const n=names.length;
   const base=((rotationIndex(w)%n)+n)%n;
@@ -3905,7 +4047,7 @@ function rotationAssign(rot, w, offBy, busy){
   const freeAllWeek=(nm)=>!offBy.some(s=>s.has(nrm(nm))) && !busySet.has(nrm(nm));
   const build=(shift)=>{
     const map={}, used=[];
-    roles.forEach((rk,i)=>{ const p=names[(base+shift+i)%n]; map[rk]=p; used.push(p); });
+    roles.forEach((rk,i)=>{ if(i>=n) return; const p=names[(base+shift+i)%n]; map[rk]=p; used.push(p); });
     return {map, used};
   };
   for(let shift=0; shift<n; shift++){
@@ -4203,11 +4345,18 @@ function planDayName(plan,di){
   const dt=plan.days[di];
   return dt?(DAYLBL[dt.getDay()]+" "+fmtDate(dt)):("Day "+(di+1));
 }
-let AUTOPLAN=null;
+var AUTOPLAN=null;
+function autofillVersion(){ return JSON.stringify({weekId:week().id,data:syncSnapshot()}); }
+function invalidateAutofillPreview(){
+  if(!AUTOPLAN || AUTOPLAN.version===autofillVersion()) return;
+  const el=$("#autoStale"); if(el) el.hidden=false;
+  const button=$("#autoApply"); if(button) button.disabled=true;
+}
 function openAutofill(){
   const plan=autofillPlan();
   if(!plan){ flash("Autofill only works on a normal weekday page"); return; }
-  AUTOPLAN=plan;
+  plan.version=autofillVersion(); AUTOPLAN=plan;
+  $("#autoStale").hidden=true;
   const nAway=plan.awayCount||0;   // only people actually on the Away list — not people moved to cover
   $("#autoSub").textContent=`${plan.weekName} \u00b7 ${plan.fills.length+plan.covers.length} slots filled, ${plan.gaps.length} left blank`;
   // ---- plain-English, grouped explanations ----
@@ -4284,7 +4433,8 @@ function openAutofill(){
 }
 function closeAutofill(){ $("#autoModal").classList.remove("open"); AUTOPLAN=null; }
 function applyAutofill(){
-  const plan=AUTOPLAN; if(!plan) return;
+  const plan=AUTOPLAN; if(!plan || !state.editing || (SYNC.on&&!SYNC.canEdit)) return;
+  if(plan.version!==autofillVersion()){invalidateAutofillPreview();alert("The rota changed while this preview was open. Rebuild the preview before applying it.");return;}
   const w=week(), oldD=data(), d=clone(plan.base);
   store.overrides[w.id]=d;
   remapAutofillMarkers(oldD,d,w.id);
@@ -4302,7 +4452,7 @@ function renderOfficeModal(){
   $("#officeBody").innerHTML=officeCalHTML(state.officeSel);
   const total=Object.values(officeData(state.officeSel)).reduce((a,v)=>a+v.count,0);
   const nppl=Object.values(store.offices||{}).filter(o=>o===state.officeSel).length;
-  $("#officeSub").textContent=`${nppl} based here · ${total} shifts this year`;
+  $("#officeSub").textContent=SYNC.on&&!PUBLIC_SUMMARY.data?`${nppl} based here · total unavailable`:`${nppl} based here · ${total} person-days this year`;
 }
 $("#officeTabs").addEventListener("click",e=>{ const b=e.target.closest("[data-office]"); if(!b) return; state.officeSel=b.dataset.office; renderOfficeModal(); $("#officePop").classList.remove("open"); });
 $("#officeBody").addEventListener("click",e=>{
@@ -4311,7 +4461,7 @@ $("#officeBody").addEventListener("click",e=>{
   const info=OFFICEHEAT[cell.dataset.ok]; if(!info){ pop.classList.remove("open"); return; }
   const [y,m,d]=cell.dataset.ok.split("-").map(Number);
   pop.innerHTML=`<h4>${DAYLBL[new Date(y,m,d).getDay()]} ${d} ${CALMN[m]} — ${esc(state.officeSel)}</h4>`+
-    `<div class="opnames">${info.names.map(n=>`<span>${esc(n)}</span>`).join("")}</div>`;
+    `<div class="opnames">${info.names.map(n=>`<span>${esc(n)}</span>`).join("")}</div>`+(info.privateCount?`<p>${info.privateCount} included in unpublished weeks. Names are available after publication.</p>`:"");
   const r=cell.getBoundingClientRect();
   pop.style.left=Math.min(r.left, window.innerWidth-260)+"px";
   pop.style.top=(r.bottom+6)+"px";
@@ -4323,7 +4473,7 @@ $("#jumpBody").addEventListener("click",e=>{
   const b=e.target.closest("[data-jump]"); if(!b) return;
   state.templateMode=false; state.idx=+b.dataset.jump; closeJump(); render();
 });
-$("#weekTitle").addEventListener("click",()=>openJump("jump"));   // don't pass the click event as the mode
+$("#chooseWeek").addEventListener("click",()=>openJump("jump"));   // don't pass the click event as the mode
 function renderAdmin(){
   const years=yearsInData();
   const ny=new Date().getFullYear();
@@ -4362,10 +4512,10 @@ function renderAdmin(){
       `</div>`+
       `<label class="yrsel">Year <select id="adminYear">${yopts}</select></label></div>`+
     (ed?`<details class="viswrap" open><summary>Rota visibility — <b>${nPub}</b> of ${RAW.weeks.length} pages public</summary>`+
-      `<div class="visnote">Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
+      `<div class="visnote">Holiday and office totals include all weeks for everyone; unpublished names remain hidden. Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
       `<div class="callegend"><span class="lgd"><i class="sw pub"></i>Public</span><span class="lgd"><i class="sw hid"></i>Hidden</span></div>`+
       `<div class="viscal">${weekCalHTML("vis")}</div></details>`:"")+
-    `<div class="adminsub">Holiday taken is counted from the rota between 1 January and 31 December ${year} (inclusive). `+
+    `<div class="adminsub">Every Away day counts between 1 January and 31 December ${year}, including weekends, bank holidays and special rotas. Each person/date counts once. `+
       (ed?`Allowance defaults to ${DEFAULT_ALLOWANCE} days — edit any value to override.`
         : ops?`Turn on <b>Edit mode</b> to change allowances, manage staff, the default template, colour key and which weeks are public.`
         : `Figures are read-only in this view — the operations team keeps allowances and staffing up to date.`)+
@@ -4556,6 +4706,7 @@ SYNC = {
   keyRev:{}, shadow:null,          // shadow = last state known to match the server
   saving:false, pending:false, dirty:false, refreshing:false,
   lastSaved:null, lastError:"", lease:null, conflict:false,
+  generation:0, polling:false, bootstrapped:false,
   flushT:null, pollT:null, beatT:null
 };
 const SYNC_DEBOUNCE = 1200, SYNC_POLL_VIEW = 20000, SYNC_POLL_EDIT = 12000, SYNC_BEAT = 60000;
@@ -4608,7 +4759,7 @@ function resetStoreForServer(epoch){
   store.overrides={}; store.schema=SCHEMA; store.resetEpoch=Number(epoch)||0;
 }
 function applyServerData(map, replaceAll){
-  map=map||{};
+  map=map||{}; const appliedKeys=[];
   if(replaceAll){
     const epoch=Number(SYNC.epoch)||0;
     SYNC.keyRev={}; SYNC.shadow={};
@@ -4616,6 +4767,8 @@ function applyServerData(map, replaceAll){
   }
   Object.keys(map).forEach(k=>{
     const entry=map[k]||{};
+    if(!replaceAll && Number(entry.rev||0)<=Number(SYNC.keyRev[k]??-1)) return;
+    if(!/^(week:|settings:)/.test(k) || ["__proto__","constructor","prototype"].includes(k.slice(k.startsWith("week:")?5:9))) return;
     let val=null;
     try{ val = entry.json===null||entry.json===undefined||entry.json==="" ? null : JSON.parse(entry.json); }
     catch(_){ return; }
@@ -4627,16 +4780,20 @@ function applyServerData(map, replaceAll){
       if(f==="resetEpoch") return;          // legacy key: the _Meta epoch is authoritative
       if(val===null || entry.deleted) delete store[f]; else store[f]=val;
     }
-    SYNC.keyRev[k]=entry.rev||0;
+    appliedKeys.push(k);
+    SYNC.keyRev[k]=Number(entry.rev)||0;
     if(val===null||entry.deleted) delete SYNC.shadow[k];
     else SYNC.shadow[k]=JSON.stringify(val);
   });
   if(replaceAll) ensureStoreDefaults();
   store.resetEpoch=Number(SYNC.epoch)||0;
   purgeRestrictedLocalData();
+  if(!replaceAll) rebaseHistory(appliedKeys);
+  invalidateAutofillPreview();
 }
 function applyServerStatus(res){
   const oldRole=SYNC.serverRole, oldCan=SYNC.canEdit;
+  if((oldRole==="ops"&&res.role&&res.role!=="ops") || (oldRole==="lead"&&res.role==="staff")) closeRestrictedViews();
   if(res.email!==undefined) SYNC.email=res.email||"";
   if(res.authReason!==undefined) SYNC.authReason=res.authReason||"";
   const nr=["staff","lead","ops"].includes(res.role)?res.role:null;
@@ -4666,6 +4823,7 @@ function handleEpochMismatch(epoch){
 }
 function stopEditingAfterAccessChange(){
   clearTimeout(SYNC.flushT); clearInterval(SYNC.beatT);
+  SYNC.generation++; SYNC.polling=false; closeRestrictedViews();
   SYNC.saving=false; SYNC.pending=false; SYNC.dirty=false; SYNC.conflict=false;
   if(state.editing) setEditing(false);
   clearTimeout(SYNC.pollT);
@@ -4684,7 +4842,9 @@ function flushNow(){
   const changes=syncDiff();
   if(!changes.length){ SYNC.dirty=false; updateSaveUI(); return; }
   SYNC.saving=true; updateSaveUI();
+  const generation=SYNC.generation, token=SYNC.authToken;
   gasCall("saveChanges", [changes, SYNC.rev, SYNC.epoch, SYNC.authToken||""], res=>{
+    if(generation!==SYNC.generation || token!==SYNC.authToken) return;
     SYNC.saving=false;
     if(!res || !res.ok){
       if(res && res.error==="epoch-mismatch"){ handleEpochMismatch(res.epoch); return; }
@@ -4709,8 +4869,10 @@ function flushNow(){
     if(res.conflicts && res.conflicts.length){ handleConflicts(res.conflicts); }
     else { SYNC.lastSaved=new Date(); SYNC.dirty=syncDiff().length>0; }
     updateSaveUI();
-    if(SYNC.pending){ SYNC.pending=false; scheduleFlush(); }
+    if(SYNC.pending || SYNC.dirty){ SYNC.pending=false; scheduleFlush(); }
+    refreshPublicSummary();
   }, ()=>{
+    if(generation!==SYNC.generation || token!==SYNC.authToken) return;
     SYNC.saving=false; SYNC.lastError="offline"; updateSaveUI();
     setTimeout(flushNow, 8000);
   });
@@ -4732,8 +4894,13 @@ function handleConflicts(list){
 
 // --- pulling other people's changes in ---
 function pollChanges(){
-  if(!SYNC.on || SYNC.refreshing) return;
+  if(!SYNC.on || SYNC.refreshing || SYNC.polling) return;
+  if(!SYNC.bootstrapped){ refreshBootstrap(null,false); return; }
+  SYNC.polling=true; clearTimeout(SYNC.pollT);
+  const generation=SYNC.generation, token=SYNC.authToken;
   gasCall("getChanges", [SYNC.rev, SYNC.epoch, SYNC.authToken||""], res=>{
+    if(generation!==SYNC.generation || token!==SYNC.authToken) return;
+    SYNC.polling=false;
     if(!res){ SYNC.lastError="unknown"; }
     else if(!res.ok){
       if(res.error==="epoch-mismatch"){ handleEpochMismatch(res.epoch); return; }
@@ -4751,7 +4918,7 @@ function pollChanges(){
         refreshBootstrap(status.downgraded?"Your rota access has changed. The permitted live data has been reloaded.":null,true);
         return;
       }
-      const mine=SYNC.canEdit && state.editing;
+      const mine=SYNC.canEdit;
       const ae=document.activeElement;
       const typing = !!ae && (ae.tagName==="INPUT"||ae.tagName==="TEXTAREA"||
                      (ae.getAttribute && ae.getAttribute("contenteditable")==="true"));
@@ -4764,6 +4931,7 @@ function pollChanges(){
           const dirtyKeys = mine ? new Set(syncDiff().map(ch=>ch.key)) : new Set();
           const map={}; let skipped=0, applied=0;
           res.changes.forEach(c=>{
+            if(Number(c.rev||0)<=Number(SYNC.keyRev[c.key]??-1)) return;
             if(dirtyKeys.has(c.key)){ skipped++; return; }
             map[c.key]={json:c.json, rev:c.rev, deleted:c.deleted}; applied++;
           });
@@ -4772,17 +4940,20 @@ function pollChanges(){
             persistLocal(); rebuildWeeks(); buildWeekSel(); renderCurrentView();
             if(!mine) flash("Rota updated");
           }
-          if(!skipped) SYNC.rev=res.rev;
+          if(!skipped) SYNC.rev=Math.max(SYNC.rev,Number(res.rev)||0);
         }
         // If actively typing, don't rerender underneath the cursor. The old rev is
         // retained and all changes will be offered again shortly.
-      } else SYNC.rev=res.rev;
+      } else SYNC.rev=Math.max(SYNC.rev,Number(res.rev)||0);
       SYNC.lastError="";
+      refreshPublicSummary();
     }
     updateSaveUI();
     SYNC.pollT=setTimeout(pollChanges, state.editing?SYNC_POLL_EDIT:SYNC_POLL_VIEW);
   }, ()=>{
-    SYNC.lastError="offline"; updateSaveUI();
+    if(generation!==SYNC.generation || token!==SYNC.authToken) return;
+    SYNC.polling=false; SYNC.lastError="offline"; updateSaveUI();
+    PUBLIC_SUMMARY.error="offline"; refreshSummaryView();
     SYNC.pollT=setTimeout(pollChanges, 15000);
   });
 }
@@ -4820,6 +4991,7 @@ function hideBackendBanner(){
   if(el) el.style.display="none";
 }
 const RPC_MAP={
+  getPublicSummary:{name:"rota_public_summary",params:a=>({p_since_rev:Number(a[0]??-1),p_client_epoch:Number(a[1]??-1)})},
   getBootstrap:{name:"rota_get_bootstrap",params:a=>({p_token:a[0]||""})},
   getChanges:{name:"rota_get_changes",params:a=>({p_since_rev:Number(a[0]||0),p_client_epoch:Number(a[1]||0),p_token:a[2]||""})},
   verifyAccessPassword:{name:"rota_verify_access_password",params:a=>({p_role:a[0]||"",p_password:a[1]||"",p_client_id:a[2]||""})},
@@ -4878,18 +5050,19 @@ function updateSaveUI(){
   if(!el||!lab) return;
   el.className="savenote";
   let label="Saved", sub="";
-  if(!SYNC.on){
+  if(saveBroken){ label="Browser backup failed"; el.classList.add("s-error");
+  } else if(!SYNC.on){
     label = state.editing ? "Saved to this browser" : "This browser only";
     sub   = SYNC.lastSaved?agoText(SYNC.lastSaved):"";
     el.classList.add(state.editing?"s-ok":"s-view");
-  } else if(SYNC.refreshing){
-    label="Refreshing access…"; el.classList.add("s-saving");
+  } else if(SYNC.refreshing || !SYNC.bootstrapped){
+    label="Loading live rota…"; el.classList.add("s-saving");
   } else if(SYNC.conflict){
     label="Not saved — reload"; el.classList.add("s-error");
   } else if(SYNC.lastError==="offline"){
     label="Offline — will retry"; el.classList.add("s-error");
-  } else if(SYNC.lastError==="locked"){
-    label=shortName((SYNC.lease||{}).email)+" is editing"; el.classList.add("s-locked");
+  } else if(SYNC.lastError){
+    label="Connection or save error"; el.classList.add("s-error");
   } else if(!SYNC.canEdit){
     label=SYNC.serverRole==="lead"?"Editor view":"Up to date";
     if(SYNC.lease) sub=shortName(SYNC.lease.email)+" editing";
@@ -4953,10 +5126,10 @@ function processBootstrap(res, refresh, message){
   if(!res || !res.ok){
     if(res&&res.error==="epoch-mismatch"){ handleEpochMismatch(res.epoch); return; }
     SYNC.refreshing=false; SYNC.lastError=(res&&res.error)||"offline"; updateSaveUI();
-    showBackendBanner("SUPABASE CONNECTION ERROR — this page is not sharing changes. Check the Project URL, publishable key and setup.sql.");
-    SYNC.pollT=setTimeout(pollChanges,15000); return;
+    showBackendBanner("Unable to load the live rota. We will retry automatically. Open connection details for support information.");
+    SYNC.pollT=setTimeout(()=>refreshBootstrap(message,refresh),15000); return;
   }
-  hideBackendBanner();
+  hideBackendBanner(); SYNC.bootstrapped=true;
   const serverEpoch=Number(res.epoch)||0;
   if(serverEpoch!==Number(store.resetEpoch||0)){ handleEpochMismatch(serverEpoch); return; }
   applyServerStatus(res);
@@ -4975,6 +5148,7 @@ function processBootstrap(res, refresh, message){
   if(!SYNC.canEdit && state.editing) setEditing(false);
   SYNC.refreshing=false; SYNC.lastError="";
   if(SYNC.serverRole && typeof applyRole==="function") applyRole(); else renderCurrentView();
+  refreshPublicSummary();
   if(publishEmpty) scheduleFlush();
   if(message) alert(message);
   updateSaveUI();
@@ -4982,11 +5156,13 @@ function processBootstrap(res, refresh, message){
 }
 function refreshBootstrap(message, refresh){
   if(!SYNC.on || SYNC.refreshing) return;
-  SYNC.refreshing=true; clearTimeout(SYNC.pollT); updateSaveUI();
-  gasCall("getBootstrap", [SYNC.authToken||""], res=>processBootstrap(res,!!refresh,message), ()=>{
-    SYNC.refreshing=false; SYNC.lastError="offline"; updateSaveUI();
-    showBackendBanner("SUPABASE CONNECTION ERROR — this page is not sharing changes. Check the Project URL, publishable key and setup.sql.");
-    SYNC.pollT=setTimeout(pollChanges,15000);
+  SYNC.refreshing=true; SYNC.polling=false; SYNC.generation++;
+  const generation=SYNC.generation, token=SYNC.authToken;
+  clearTimeout(SYNC.pollT); updateSaveUI();
+  gasCall("getBootstrap", [token||""], res=>{
+    if(generation===SYNC.generation && token===SYNC.authToken) processBootstrap(res,!!refresh,message);
+  },()=>{
+    if(generation===SYNC.generation && token===SYNC.authToken) processBootstrap(null,!!refresh,message);
   });
 }
 function initSync(){
@@ -4997,6 +5173,47 @@ function initSync(){
   }
   SYNC.on=true; SYNC.shadow={}; updateSaveUI();
   refreshBootstrap(null,false);
+}
+
+
+// Counts-only RPC includes hidden weeks. Restricted names never come from this endpoint.
+var PUBLIC_SUMMARY={data:null,rev:-1,epoch:-1,loading:false,error:'',updated:null};
+function publicTotals(kind,visible,office){
+  if(!SYNC||!SYNC.on)return visible;
+  const summary=PUBLIC_SUMMARY.data;
+  if(!summary)return {};
+  const totals=kind==='holidays'?summary.holidays:(summary.offices[office]||{}),out={};
+  Object.entries(totals||{}).forEach(([key,count])=>{
+    const names=(visible[key]?.names||[]).filter((n,i,a)=>a.findIndex(x=>nrm(canonName(x))===nrm(canonName(n)))===i);
+    out[key]={count:Number(count),names,privateCount:Math.max(0,Number(count)-names.length)};
+  });
+  return out;
+}
+function summaryNotice(){
+  if(!SYNC.on)return '<p class="summary-note">Local preview totals.</p>';
+  if(!PUBLIC_SUMMARY.data)return '<p class="summary-note" role="status">'+(PUBLIC_SUMMARY.error?'Full totals are unavailable. Retrying automatically; ask Operations to check the totals upgrade.':'Loading totals from all weeks…')+'</p>';
+  return '<p class="summary-note" role="status">Totals include all saved weeks, including unpublished weeks. Only names you have access to are shown.'+
+    (PUBLIC_SUMMARY.error?' Connection interrupted — showing the last successfully loaded totals.':'')+
+    (SYNC.canEdit&&SYNC.dirty?' Your pending edits will be included after they save.':'')+'</p>';
+}
+function refreshPublicSummary(){
+  if(!SYNC.on||PUBLIC_SUMMARY.loading)return;
+  PUBLIC_SUMMARY.loading=true;
+  const generation=SYNC.generation;
+  gasCall('getPublicSummary',[PUBLIC_SUMMARY.rev,PUBLIC_SUMMARY.epoch],res=>{
+    PUBLIC_SUMMARY.loading=false;
+    if(generation!==SYNC.generation)return;
+    if(!res||!res.ok){PUBLIC_SUMMARY.error='unavailable';refreshSummaryView();return;}
+    if(Number(res.epoch)!==Number(SYNC.epoch)){PUBLIC_SUMMARY.data=null;PUBLIC_SUMMARY.rev=-1;PUBLIC_SUMMARY.epoch=-1;PUBLIC_SUMMARY.error='reset';refreshSummaryView();return;}
+    if(Number(res.rev)<PUBLIC_SUMMARY.rev)return;
+    if(!res.unchanged){PUBLIC_SUMMARY.data=res.data;PUBLIC_SUMMARY.rev=Number(res.rev);PUBLIC_SUMMARY.epoch=Number(res.epoch);}
+    PUBLIC_SUMMARY.error='';PUBLIC_SUMMARY.updated=new Date();refreshSummaryView();
+  },()=>{PUBLIC_SUMMARY.loading=false;PUBLIC_SUMMARY.error='unavailable';refreshSummaryView();});
+}
+function refreshSummaryView(){
+  if(state.view==='heat')renderHeat();
+  if(state.view==='office')renderOfficeModal();
+  ['#heatPop','#officePop'].forEach(s=>$(s).classList.remove('open'));
 }
 
 state.idx = initialWeekIdx();
@@ -5054,11 +5271,11 @@ function showRolePassword(role){
   $("#rolePass").classList.add("on");
   $("#rolePassTitle").textContent=role==="ops"?"Operations password":"Editor / senior leadership password";
   $("#rolePassSub").textContent=role==="ops"
-    ?"Enter the Operations password configured in the Supabase database."
-    :"Enter the Editor / senior leadership password configured in the Supabase database.";
+    ?"Enter your Operations password to manage and edit the rota."
+    :"Enter your Editor / senior leadership password.";
   $("#rolePassInput").value="";
   if(!(SYNC&&SYNC.on)){
-    $("#rolePassErr").textContent="The shared Supabase database is not connected, so elevated access is locked.";
+    $("#rolePassErr").textContent="The shared rota is unavailable. Try again when the connection returns.";
     $("#rolePassSubmit").disabled=true;
     return;
   }
@@ -5068,11 +5285,12 @@ function showRolePassword(role){
 }
 
 function switchToStaff(){
-  if(state.editing && (SYNC.dirty||SYNC.saving)){
+  if(SYNC.canEdit && (SYNC.dirty||SYNC.saving||syncDiff().length)){
     flash("Wait for your Operations changes to finish saving before switching access");
     return;
   }
   if(state.editing){ setEditing(false); releaseLease(); }
+  closeRestrictedViews();
   SYNC.authToken=""; saveAccessToken("");
   if(SYNC.on){
     SYNC.serverRole="staff"; SYNC.canEdit=false;
@@ -5104,7 +5322,7 @@ function submitRolePassword(){
     }
     // If leaving an active Operations editing session, release its lease using
     // the OLD token before replacing it with the newly authorised role.
-    if(state.editing && (SYNC.dirty||SYNC.saving)){
+    if(SYNC.canEdit && (SYNC.dirty||SYNC.saving||syncDiff().length)){
       err.textContent="Wait for the current changes to finish saving first.";
       return;
     }
@@ -5376,6 +5594,136 @@ document.addEventListener("keydown",e=>{
     e.preventDefault(); exportPDF();
   }
 });
+
+// Keep sensitive overlays consistent with the current access and data.
+function closeRestrictedViews(){
+  document.querySelectorAll('.modal.open,.searchpop.open,.opop.open,#syncPop.open,#cellMenu.open,#heatPop.open').forEach(el=>el.classList.remove('open'));
+  ['personMeta','personBody','personSub','personName','autoBody','noteText','searchPop','officePop','boothPop','heatPop'].forEach(id=>{const e=document.getElementById(id);if(e){if('value' in e)e.value='';else e.textContent='';}});
+  AUTOPLAN=null;state.templateMode=false;document.body.classList.remove('template');
+}
+function refreshOpenViews(){
+  const person=$('#personModal');
+  if(person&&person.classList.contains('open')) openPersonModal($('#personName').textContent);
+  ['#searchPop','#officePop','#boothPop','#heatPop'].forEach(s=>{const e=$(s);if(e)e.classList.remove('open');});
+  if($('#jumpModal').classList.contains('open')) $('#jumpBody').innerHTML=weekCalHTML('jump');
+  if($('#ruleModal').classList.contains('open')&&!$('#ruleModal').contains(document.activeElement)){renderRuleList();renderRotList();}
+  invalidateAutofillPreview();
+}
+function enhanceRotaUI(){
+  const grid=$('#grid');if(!grid)return;
+  let hint=$('#rotaScrollHint');
+  if(!hint){hint=document.createElement('p');hint.id='rotaScrollHint';hint.className='rota-scroll-hint';hint.textContent='Swipe the table sideways to see every day. The role column stays in view.';grid.before(hint);}
+  hint.hidden=!grid.querySelector('[data-cell]');
+  grid.setAttribute('aria-describedby','rotaScrollHint');
+  const wy=weekRepDate(week());const ye=$('#rotaYear');if(ye)ye.textContent=wy?wy.getFullYear():YEAR;
+  grid.querySelectorAll('.card').forEach(card=>{
+    if(!card.querySelector('.row'))return;
+    card.setAttribute('role','table');card.setAttribute('aria-label',(card.querySelector('.ct .name,.htitle')?.textContent||'Away')+' — '+week().name);
+    card.querySelectorAll('.chead').forEach(e=>e.setAttribute('role','row'));
+    card.querySelectorAll('.chead>.ct,.chead>.chday').forEach(e=>e.setAttribute('role','columnheader'));
+    card.querySelectorAll('.cbody').forEach(e=>e.setAttribute('role','rowgroup'));
+    card.querySelectorAll('.row').forEach(row=>{
+      row.setAttribute('role','row');row.querySelector(':scope>.rc')?.setAttribute('role','rowheader');
+      row.querySelectorAll(':scope>.dc').forEach(e=>e.setAttribute('role','cell'));
+    });
+    const cells=[...card.querySelectorAll('[data-cell]')];
+    cells.forEach((cell,i)=>{
+      const span=cell.querySelector('[data-edit]');
+      const rc=cell.closest('.row')?.querySelector('.rc');
+      const role=rc?.querySelector('.area')?.textContent.trim()||rc?.querySelector('.idx')?.textContent||'Away';
+      const shift=cell.classList.contains('am')?'AM':cell.classList.contains('pm')?'PM':'';
+      const dayIndex=span?.dataset.day;
+      const day=dayIndex!==undefined?card.querySelectorAll('.chday')[+dayIndex]?.textContent:span?.dataset.col||span?.dataset.edit?.replace(/^we/,'');
+      const label=[role,shift,day,span?.textContent?.trim()||'Unassigned'].filter(Boolean).join(', ');
+      cell.setAttribute('aria-label',label);cell.setAttribute('tabindex',i===0?'0':'-1');
+      if(span){span.title=span.textContent.trim();span.setAttribute('aria-label',label);}
+    });
+  });
+}
+function initAccessibleUI(){
+  const overlayRoots=[...document.querySelectorAll('.modal,.rolegate')];
+  overlayRoots.forEach((root,i)=>{
+    const card=root.querySelector('.modalcard'),head=card?.querySelector(':scope>.modalhead'),foot=card?.querySelector(':scope>.modalfoot');
+    if(card&&!card.querySelector(':scope>.dialogbody')){
+      const body=document.createElement('div');body.className='dialogbody';
+      [...card.children].filter(c=>c!==head&&c!==foot).forEach(c=>body.appendChild(c));
+      card.insertBefore(body,foot||null);
+    }
+    root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');
+    const heading=root.querySelector('h2,h3');if(heading){if(!heading.id)heading.id='dialog-title-'+i;heading.tabIndex=-1;root.setAttribute('aria-labelledby',heading.id);}
+  });
+  const opened=new Map(), inertBefore=new Map();let top=null,seq=0;
+  const tabbable=root=>[...root.querySelectorAll('button,input,select,textarea,a[href],[tabindex]')].filter(e=>!e.disabled&&e.tabIndex>=0&&e.getClientRects().length);
+  const focusFirst=root=>{const el=root.querySelector('h2,h3')||tabbable(root)[0]||root;el.focus({preventScroll:true});};
+  const annotate=()=>{
+    document.querySelectorAll('button[title]:not([aria-label])').forEach(e=>{if(/^[+×▲▼⋮−−\s]*$/.test(e.textContent))e.setAttribute('aria-label',e.title);});
+    document.querySelectorAll('.hd[data-hk],.hd[data-ok],.hd[data-bk],.sortable,.panel>.head').forEach(e=>{e.setAttribute('role','button');e.tabIndex=0;if(e.classList.contains('sortable'))e.setAttribute('aria-label','Sort by '+e.textContent.trim());});
+    document.querySelectorAll('input:not([aria-label]):not([id])').forEach(e=>{if(e.placeholder)e.setAttribute('aria-label',e.placeholder);});
+    document.querySelectorAll('.hd[data-hk],.hd[data-ok],.hd[data-bk]').forEach(e=>{const key=e.dataset.hk||e.dataset.ok||e.dataset.bk;const parts=key.split('-').map(Number);if(parts.length===3&&parts.every(Number.isFinite)){const date=new Date(parts[0],parts[1],parts[2]);e.setAttribute('aria-label',date.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+', '+(e.querySelector('.cnt')?.textContent||'0')+(e.dataset.hk?' people away':e.dataset.ok?' people working':' booths'));}});
+    document.querySelectorAll('#tabs button').forEach(e=>e.setAttribute('aria-pressed',e.classList.contains('active')));
+  };
+  const sync=()=>{
+    let returnFocus=null;
+    overlayRoots.forEach(root=>{
+      if(root.classList.contains('open')){if(!opened.has(root))opened.set(root,{before:document.activeElement,seq:++seq});}
+      else if(opened.has(root)){if(root===top)returnFocus=opened.get(root).before;opened.delete(root);}
+    });
+    const next=[...opened.keys()].sort((a,b)=>(Number(getComputedStyle(a).zIndex)-Number(getComputedStyle(b).zIndex))||(opened.get(a).seq-opened.get(b).seq)).pop()||null;
+    [...document.body.children].forEach(el=>{
+      if(next&&el!==next){if(!inertBefore.has(el))inertBefore.set(el,{inert:el.hasAttribute('inert'),hidden:el.getAttribute('aria-hidden')});el.setAttribute('inert','');el.setAttribute('aria-hidden','true');}
+      else if(inertBefore.has(el)){const previous=inertBefore.get(el);if(!previous.inert)el.removeAttribute('inert');if(previous.hidden===null)el.removeAttribute('aria-hidden');else el.setAttribute('aria-hidden',previous.hidden);inertBefore.delete(el);}
+    });
+    if(next!==top){top=next;if(top){if(returnFocus&&top.contains(returnFocus)&&returnFocus.isConnected)returnFocus.focus();else focusFirst(top);}else if(returnFocus?.isConnected&&!returnFocus.closest('.modal,.rolegate'))returnFocus.focus({preventScroll:true});}
+    annotate();
+  };
+  new MutationObserver(sync).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  document.addEventListener('keydown',e=>{
+    if(top&&e.key==='Tab'){
+      const list=tabbable(top),first=list[0],last=list[list.length-1],at=document.activeElement;
+      if(!first){e.preventDefault();return;}
+      if(e.shiftKey&&(at===first||!list.includes(at))){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&(at===last||!top.contains(at))){e.preventDefault();first.focus();}
+    }
+    if(top&&e.key==='Escape'){
+      const id=top.id;
+      if(id==='setupModal'||id==='helpModal')top.classList.remove('open');
+      if(id==='roleGate')closeRoleGate();
+    }
+    const target=e.target.closest('.hd[role="button"],.sortable,.panel>.head');
+    if(target&&(e.key==='Enter'||e.key===' ')){e.preventDefault();target.click();}
+    const cell=e.target.closest('#grid [data-cell]');
+    if(cell&&!state.editing){
+      if(e.key==='Enter'){const name=cell.querySelector('[data-edit]')?.textContent.trim();if(name){e.preventDefault();openPersonModal(name);}}
+      if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
+        const cells=[...cell.closest('.card').querySelectorAll('[data-cell]')].filter(x=>x.getClientRects().length),r=cell.getBoundingClientRect();
+        const axis=e.key==='ArrowLeft'||e.key==='ArrowRight'?'x':'y',sign=e.key==='ArrowLeft'||e.key==='ArrowUp'?-1:1;
+        const choices=cells.filter(x=>x!==cell).map(x=>{const b=x.getBoundingClientRect(),dx=b.x-r.x,dy=b.y-r.y;return {x,dx,dy};}).filter(v=>(axis==='x'?v.dx:v.dy)*sign>1).sort((a,b)=>{
+          const score=v=>Math.abs(axis==='x'?v.dy:v.dx)*10000+Math.abs(axis==='x'?v.dx:v.dy);return score(a)-score(b);
+        });
+        if(choices[0]){e.preventDefault();cell.tabIndex=-1;choices[0].x.tabIndex=0;choices[0].x.focus();}
+      }
+    }
+  },true);
+  document.addEventListener('focusin',e=>{if(top&&!top.contains(e.target))focusFirst(top);});
+  document.addEventListener('click',e=>{
+    const close=e.target.closest('[data-close-overlay]');if(close)document.getElementById(close.dataset.closeOverlay).classList.remove('open');
+    const choice=e.target.closest('[data-setup]');if(!choice)return;
+    if(state.role!=='ops'||(SYNC.on&&!SYNC.canEdit))return;
+    $('#setupModal').classList.remove('open');
+    if(!state.editing)setEditing(true);
+    const action=choice.dataset.setup;
+    if(action==='people')setView('pers');else if(action==='visibility')setView('admin');
+    else if(action==='templates')openTplModal();else if(action==='key')openKeyModal();
+    else{openRuleModal();if(action==='rotations')requestAnimationFrame(()=>$('#rotList').scrollIntoView({block:'start'}));}
+  });
+  $('#setupBtn').addEventListener('click',()=>{if(state.role==='ops')$('#setupModal').classList.add('open');});
+  $('#helpBtn').addEventListener('click',()=>$('#helpModal').classList.add('open'));
+  $('#autoRefresh').addEventListener('click',openAutofill);
+  $('#saveLabel').setAttribute('role','status');$('#saveLabel').setAttribute('aria-live','polite');
+  $('#toast').setAttribute('role','status');
+  sync();enhanceRotaUI();
+}
+initAccessibleUI();
 </script>
 </body>
 </html>
