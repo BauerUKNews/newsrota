@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v19 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v20 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1113,6 +1113,11 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
 }
 @media print{.choose-week,.rota-scroll-hint,#setupBtn,.summary-note{display:none!important}#grid{overflow:visible}#grid .card{min-width:0}.dialogbody{overflow:visible}}
 
+#generationInfoBtn{color:white;background:var(--ink-3);border:1px solid var(--chrome-line);min-height:42px;border-radius:20px;padding:8px 14px;font:600 13px inherit}
+#fixedList .rulecard{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+#fixedForm{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}#fixedForm>label{display:grid;gap:6px}#fixedForm select{min-width:0;width:100%;padding:10px;font:inherit}#fixedDays{min-width:0}#fixedAdd{justify-self:start;min-height:42px}
+#fixedRole{max-width:100%;width:100%}#fixedDays{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}#fixedDays label{white-space:nowrap}
+.fixed-badge{font-size:10px;color:#174d78;display:block;pointer-events:none}
 </style>
 </head>
 <body>
@@ -1166,7 +1171,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
       <div class="sep"></div>
       <div class="lbl">Staff</div>
       <button data-act="managestaff" role="menuitem"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Personnel list</button>
-      <button data-act="managerules" role="menuitem">&#8623;&nbsp; Cover rules</button>
+      <button data-act="managerules" role="menuitem">&#8623;&nbsp; Fixed, cover &amp; rotation rules</button>
       <div class="sep"></div>
       <div class="lbl editonly">This week</div>
       <button class="editonly" data-act="autofill" role="menuitem"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Autofill from default template&hellip;</button>
@@ -1181,6 +1186,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
     </div>
   </div>
 
+  <button class="ghostbtn" id="generationInfoBtn" type="button" hidden>Generation info</button>
   <button id="setupBtn" type="button" aria-haspopup="dialog">Setup</button>
   <button class="rolechip" id="roleChip" title="Change access level"><span class="rdot"></span><span id="roleChipLbl">Choose view</span></button>
 </header>
@@ -1263,7 +1269,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
 <div class="heatpop" id="heatPop"></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v19</span>
+  <span class="pill">News Rota v20</span>
   <span>Choose a week or search for a person. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1319,8 +1325,16 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
 <datalist id="roleOptions"></datalist>
 <div class="modal" id="ruleModal">
   <div class="modalcard wide">
-    <div class="modalhead"><h3>Cover &amp; rotation rules</h3><span class="sub">who covers who, and who rotates</span>
+    <div class="modalhead"><h3>Fixed, cover &amp; rotation rules</h3><span class="sub">fixed positions, cover and weekly turns</span>
       <button class="x" data-act="ruleclose" aria-label="Close">&times;</button></div>
+    <div class="rothead"><h4>Fixed rules</h4><span>reserved positions on selected weekdays</span></div>
+    <div class="rulehint">Autofill reserves these positions first, across all default templates. Only holiday absence releases the person for replacement. Cover and rotations work around them. Rules apply when you fill a weekday page; saved weeks are not changed automatically.</div>
+    <div id="fixedList" class="rulelist"></div>
+    <div class="rulecard" id="fixedForm"><label>Person <select id="fixedPerson" aria-label="Fixed person"></select></label>
+      <label>Role <select id="fixedRole" aria-label="Fixed role"></select></label>
+      <fieldset id="fixedDays"><legend>Weekdays</legend><label><input type="checkbox" value="1" checked> Monday</label> <label><input type="checkbox" value="2" checked> Tuesday</label> <label><input type="checkbox" value="3" checked> Wednesday</label> <label><input type="checkbox" value="4" checked> Thursday</label> <label><input type="checkbox" value="5" checked> Friday</label> </fieldset>
+      <button type="button" id="fixedAdd" class="lkadd">Add fixed rule</button></div>
+    <div class="rothead"><h4>Cover rules</h4></div>
     <div class="rulehint">Set a chain: the first person is who's off, each name after covers the gap left by the one before. The last person's slot is left blank. Trigger a rule by right-clicking that person's cell in the rota (Edit mode on).</div>
     <div class="rulelist" id="ruleList"></div>
     <button class="addkey" data-act="ruleadd">+ Add a cover rule</button>
@@ -1351,6 +1365,11 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
   </div>
 </div>
 
+<div class="modal" id="generationModal"><div class="modalcard wide">
+  <div class="modalhead"><h3>Week generation info</h3><button class="x" data-close-overlay="generationModal" aria-label="Close generation info">×</button></div>
+  <div id="generationBody" class="autobody"></div>
+  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="generationModal">Close</button></div>
+</div></div>
 <div class="modal" id="autoModal">
   <div class="modalcard wide">
     <div class="modalhead"><h3>Autofill this week</h3><span class="sub" id="autoSub"></span>
@@ -1409,7 +1428,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
  <ol class="setup-steps">
  <li><button data-setup="people"><b>1. Personnel</b><span>Add staff, offices and holiday allowances.</span></button></li>
  <li><button data-setup="templates"><b>2. Default templates</b><span>Set the normal roles and people; add dated templates for later changes.</span></button></li>
- <li><button data-setup="rotations"><b>3. Rotations</b><span>Choose roles in priority order and the people who take turns.</span></button></li>
+ <li><button data-setup="rotations"><b>3. Fixed rules and rotations</b><span>Reserve weekday positions first, then choose who takes turns in other roles.</span></button></li>
  <li><button data-setup="rules"><b>4. Cover rules</b><span>Set who covers each absence.</span></button></li>
  <li><button data-setup="key"><b>5. Colour key</b><span>Define the labels and colours used in the rota.</span></button></li>
  <li><button data-setup="visibility"><b>6. Publish and allowances</b><span>Choose which weeks are visible and check holiday totals.</span></button></li>
@@ -1472,6 +1491,7 @@ function ensureStoreDefaults(target=store){
   store.cellVoid = store.cellVoid || {};     // { cellKey: true } — role not needed that day (grey diagonal)
   store.allowances = store.allowances || {};  // 2027 name values; __years holds independent annual overrides
   store.rules = store.rules || [];
+  store.fixedRules = store.fixedRules || []; // [{role,day:1..5,person}], global recurring weekday reservations
   store.rotations = store.rotations || [];   // [{roles:[roleKey,...], names:[...]}]
   store.rotations = store.rotations.map(r=> r && r.roles ? r : {roles:(r&&r.role)?[r.role]:[], names:(r&&r.names)||[]});            // cover chains: [ [head, cover1, cover2, ...], ... ]
   store.extraWeeks = store.extraWeeks || [];  // user-added week/weekend pages
@@ -1741,6 +1761,7 @@ function render(){
   if(fillDrag){cancelFillDrag();flash('Copy cancelled because the view changed');}
   clearRoleCache();
   const w=week(), d=data();
+  $("#generationInfoBtn").hidden=state.templateMode||!canViewWeek(w)||!d.generationReport;
   document.body.classList.toggle("template", state.templateMode);
   $("#weekSel").value=state.idx;
   const k=$("#weekRel");
@@ -2983,6 +3004,7 @@ function applyLeaver(name,lastDay,dropFromRoster){
     if(r.type==="role") r.assign=r.assign.map(v=> nrm(v)===target ? "" : v);
   })));
   store.rules=(store.rules||[]).map(ch=>ch.filter(n=>nrm(n)!==target)).filter(ch=>ch.length>1);
+  store.fixedRules=(store.fixedRules||[]).filter(r=>nrm(r.person)!==target);
   store.rotations=(store.rotations||[]).map(r=>({roles:r.roles,names:(r.names||[]).filter(n=>nrm(n)!==target)}))
                                        .filter(r=>(r.names||[]).length);
   if(dropFromRoster){
@@ -3030,7 +3052,7 @@ function leaverConfirm(){
   askConfirm("Remove "+name+" from the rota?",
     `<b>${esc(name)}</b>&rsquo;s last day is <b>${esc(fmtFull(dt))}</b>.<br><br>This clears `+
     `<b>${s.cells}</b> assignment${s.cells===1?"":"s"} across <b>${s.perWeek.length}</b> week page${s.perWeek.length===1?"":"s"} after that day, `+
-    `removes them <b>${s.tpl}</b> time${s.tpl===1?"":"s"} from the default templates, and takes them out of any cover rules and rotations.`+
+    `removes them <b>${s.tpl}</b> time${s.tpl===1?"":"s"} from the default templates, and takes them out of any fixed rules, cover rules and rotations.`+
     (drop?` They&rsquo;ll also be removed from the personnel list.`:``)+
     `<br><br>You can undo this with Ctrl+Z while Edit mode is on.`,
     "Remove "+name,
@@ -3065,7 +3087,7 @@ function prepareImport(value){
     if(['__proto__','constructor','prototype'].includes(k)) throw new Error('Unsupported data key in backup.');inspect(v[k]);
   });}; inspect(value);
   if(value.schema!==undefined && (!Number.isInteger(value.schema)||value.schema<0||value.schema>SCHEMA)) throw new Error('This backup version is not supported.');
-  const out=clone(value), arrays=['key','rules','rotations','extraWeeks','deletedWeeks','templates','roster'];
+  const out=clone(value), arrays=['fixedRules','key','rules','rotations','extraWeeks','deletedWeeks','templates','roster'];
   arrays.forEach(k=>{if(out[k]!==undefined&&!Array.isArray(out[k])) throw new Error('Invalid '+k+' in backup.');});
   ['public','cellColors','cellNotes','cellVoid','cellCover','allowances','offices','freelance'].forEach(k=>{
     if(out[k]!==undefined&&!object(out[k])) throw new Error('Invalid '+k+' in backup.');
@@ -3073,6 +3095,10 @@ function prepareImport(value){
   const strings=a=>Array.isArray(a)&&a.every(x=>typeof x==='string');
   const checkWeek=d=>{
     if(!object(d)) throw new Error('Invalid week or template.');
+    if(d.generationReport!==undefined){
+      const r=d.generationReport, text=x=>typeof x==='string', list=a=>Array.isArray(a)&&a.every(x=>object(x)&&['day','role','from','to','why'].every(k=>text(x[k])));
+      if(!object(r)||r.version!==1||!['weekId','weekName','generatedAt','signature'].every(k=>text(r[k]))||!Number.isFinite(Date.parse(r.generatedAt))||!list(r.moves)||!list(r.gaps)||!object(r.groups)||!['holiday','staff','freelance'].every(k=>Array.isArray(r.groups[k])&&r.groups[k].every(x=>object(x)&&text(x.name)&&strings(x.days))))throw new Error('Invalid generation report.');
+    }
     if(d.notes!==undefined&&!strings(d.notes)) throw new Error('Invalid week notes.');
     if(d.cols!==undefined&&(!Array.isArray(d.cols)||!d.cols.every(object))) throw new Error('Invalid date columns.');
     (d.cols||[]).forEach(c=>{['key','sub','lbl'].forEach(k=>{if(c[k]!==undefined&&typeof c[k]!=='string')throw new Error('Invalid date label.');});[['y',1900,2199],['m',0,11],['d',1,31]].forEach(([k,lo,hi])=>{if(c[k]!==undefined&&(!Number.isInteger(c[k])||c[k]<lo||c[k]>hi))throw new Error('Invalid date.');});});
@@ -3096,6 +3122,7 @@ function prepareImport(value){
   if(out.deletedWeeks&&!strings(out.deletedWeeks)) throw new Error('Invalid removed weeks.');
   (out.extraWeeks||[]).forEach(w=>{if(!object(w)||typeof w.id!=='string'||typeof w.name!=='string'||!['weekday','weekend'].includes(w.kind))throw new Error('Invalid extra week.');});
   (out.key||[]).forEach(k=>{if(!object(k)||typeof k.id!=='string'||typeof k.label!=='string'||typeof k.color!=='string')throw new Error('Invalid colour key.');});
+  (out.fixedRules||[]).forEach(r=>{if(!object(r)||typeof r.role!=='string'||!r.role||typeof r.person!=='string'||!r.person.trim()||!Number.isInteger(r.day)||r.day<1||r.day>5)throw new Error('Invalid fixed rule.');});
   (out.rules||[]).forEach(r=>{if(!strings(r)) throw new Error('Invalid cover rule.');});
   (out.rotations||[]).forEach(r=>{if(!object(r)||!strings(r.names)|| (r.roles!==undefined&&!strings(r.roles)) || (r.role!==undefined&&typeof r.role!=='string')) throw new Error('Invalid rotation.');});
   (out.templates||[]).forEach(t=>{if(!object(t)||typeof t.id!=='string')throw new Error('Invalid template.');['label','from'].forEach(k=>{if(t[k]!=null&&typeof t[k]!=='string')throw new Error('Invalid template label or date.');});checkWeek(t.data);});
@@ -3343,6 +3370,51 @@ $("#staffAddInput").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preve
   const v=$("#staffAddInput").value.trim(); $("#staffAddInput").value="";
   if(v) openPersonEditor(v,{}); } });   // same path as the Add button
 
+// ---------- fixed weekday reservations ----------
+function fixedRuleError(candidate, rules=store.fixedRules||[]){
+  if(!candidate.role || !findPerson(candidate.person) || !Number.isInteger(candidate.day) || candidate.day<1 || candidate.day>5) return "Choose a person, role and weekday.";
+  if(rules.some(r=>r.day===candidate.day && r.role===candidate.role)) return "That role already has a fixed rule on "+DAYFULL[candidate.day-1]+". Remove it first to replace it.";
+  if(rules.some(r=>r.day===candidate.day && nrm(r.person)===nrm(candidate.person))) return candidate.person+" already has a fixed position on "+DAYFULL[candidate.day-1]+".";
+  return "";
+}
+function addFixedRules(role,person,days){
+  if(!requireEdit())return false;
+  const pending=(store.fixedRules||[]).slice();
+  if(!days.length){flash("Select at least one weekday");return false;}
+  for(const day of days){const rule={role,person:findPerson(person)||person,day},error=fixedRuleError(rule,pending);if(error){alert(error);return false;}pending.push(rule);}
+  store.fixedRules=pending;persist();recordHistory();renderFixedList();render();flash("Fixed rule saved");return true;
+}
+function renderFixedList(){
+  const opts=roleOptions();
+  $("#fixedPerson").innerHTML='<option value="">Choose person</option>'+allStaff().map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  $("#fixedRole").innerHTML='<option value="">Choose role</option>'+opts.map(o=>`<option value="${esc(o.key)}">${esc(o.label)}</option>`).join('');
+  $("#fixedList").innerHTML=(store.fixedRules||[]).map((r,i)=>`<div class="rulecard"><span><b>${esc(r.person)}</b> — ${esc(DAYFULL[r.day-1])}<br>${esc(roleLabelFor(r.role))}${opts.some(o=>o.key===r.role)?'':' — role missing: update this rule'}</span><button type="button" class="ruledel" data-fixed-remove="${i}" aria-label="Remove fixed rule for ${esc(r.person)} on ${esc(DAYFULL[r.day-1])}">Remove</button></div>`).join('')||'<div class="ruleempty">No fixed rules yet. Add one below, or right-click a named cell in a default template.</div>';
+}
+function fixedCellRule(k){
+  const p=markerParts(k);if(!p||!state.templateMode)return null;
+  const d=data(),rk=roleCoordMaps(d).byCoord[p.sec+'|'+p.row],dt=colDates(d)[+p.day];
+  if(!rk||!dt||dt.getDay()<1||dt.getDay()>5)return null;
+  return {role:rk,day:dt.getDay(),person:d.sections[p.sec].rows[p.row].assign[+p.day]||''};
+}
+function fixedReservations(d,dts,offBy){
+  const slots=new Map(), people=dts.map(()=>new Map()), errors=[], keys={};
+  walkRoles(d,({sec,si,ri,area,slot})=>{const rk=roleKey(sec.title,area,slot);(keys[rk]||(keys[rk]=[])).push([si,ri]);});
+  const validated=[];
+  (store.fixedRules||[]).forEach(rule=>{
+    const error=fixedRuleError(rule,validated);validated.push(rule);
+    if(error){errors.push(error);return;}
+    const coords=keys[rule.role]||[];
+    if(coords.length!==1){errors.push('Fixed rule for '+rule.person+': '+roleLabelFor(rule.role)+(coords.length?' matches more than one row. Give the roles distinct labels.':' is missing from this template. Update the rule or template.'));return;}
+    dts.forEach((dt,di)=>{if(!dt||dt.getDay()!==rule.day||isBankHol(dt))return;
+      const [si,ri]=coords[0],k=ckey(si,ri,di),person=findPerson(rule.person)||rule.person;
+      slots.set(k,{person,si,ri,di});if(!offBy[di].has(nrm(person)))people[di].set(nrm(person),k);
+    });
+  });
+  return {slots,people,errors};
+}
+$("#fixedAdd").addEventListener("click",()=>addFixedRules($("#fixedRole").value,$("#fixedPerson").value,[...document.querySelectorAll('#fixedDays input:checked')].map(e=>+e.value)));
+$("#fixedList").addEventListener("click",e=>{const b=e.target.closest('[data-fixed-remove]');if(!b||!requireEdit())return;store.fixedRules.splice(+b.dataset.fixedRemove,1);persist();recordHistory();renderFixedList();render();});
+
 // ---------- cover rules ----------
 function ruleStaffOptions(){ return allStaff(); }   // the personnel list is the only source
 function renderRuleList(){
@@ -3450,7 +3522,8 @@ function saveRotations(){
 function openRuleModal(){
   const opts=ruleStaffOptions();
   $("#staffOptions").innerHTML=opts.map(n=>`<option value="${esc(n).replace(/"/g,"&quot;")}"></option>`).join("");
-  renderRuleList(); renderRotList(); $("#ruleModal").classList.add("open");
+  renderRuleList(); renderRotList(); renderFixedList(); $("#ruleModal").classList.add("open");
+  requestAnimationFrame(()=>{const body=$("#ruleModal .dialogbody");if(body)body.scrollTop=0;});
 }
 function closeRuleModal(){ saveRotations();
   store.rules=store.rules.map(ch=>ch.map(x=>(x||"").trim()).filter(Boolean)).filter(ch=>ch.length);
@@ -3524,10 +3597,16 @@ function openCellMenu(cell,x,y){
       if(rule){ menuCover={chain:rule,day}; h+=`<div class="sep"></div><button data-cover="1"><span class="ico">\u21AF</span>Apply cover \u2014 ${esc(person)} off ${colDayName(day)||""}</button>`; }
     }
   }
+  const fixed=fixedCellRule(cellK);
+  if(fixed){const existing=(store.fixedRules||[]).find(r=>r.role===fixed.role&&r.day===fixed.day);
+    h+=`<div class="sep"></div>`+(existing?`<button data-fixed="remove">Remove fixed rule — ${esc(existing.person)}</button>`:fixed.person?`<button data-fixed="add">Fix ${esc(fixed.person)} here every ${esc(DAYFULL[fixed.day-1])}</button>`:`<button data-fixed="manage">Set a fixed rule…</button>`);
+  }
   cellMenu.innerHTML=h;
   cellMenu.style.left=Math.max(8,Math.min(x,innerWidth-232))+"px";
   cellMenu.style.top=Math.max(8,Math.min(y,innerHeight-70-store.key.length*38))+"px";
   cellMenu.classList.add("open");
+  cellMenu.style.maxHeight="calc(100vh - 16px)";cellMenu.style.overflowY="auto";
+  cellMenu.style.top=Math.max(8,Math.min(y,innerHeight-cellMenu.getBoundingClientRect().height-8))+"px";
 }
 function closeCellMenu(){ cellMenu.classList.remove("open"); }
 function colDayName(day){ const dts=colDates(data()); const dt=dts[day]; return dt?DAYFULL2[dt.getDay()]:""; }
@@ -3582,6 +3661,11 @@ grid.addEventListener("contextmenu",e=>{
 });
 cellMenu.addEventListener("click",e=>{
   const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.fixed){if(!requireEdit())return;const rule=fixedCellRule(menuCellKey);closeCellMenu();if(!rule)return;
+    if(b.dataset.fixed==='remove'){store.fixedRules=(store.fixedRules||[]).filter(r=>r.role!==rule.role||r.day!==rule.day);persist();recordHistory();render();}
+    else if(b.dataset.fixed==='add')addFixedRules(rule.role,rule.person,[rule.day]);
+    else{openRuleModal();$("#fixedRole").value=rule.role;document.querySelectorAll('#fixedDays input').forEach(e=>e.checked=+e.value===rule.day);}
+    return;}
   if(b.dataset.create!==undefined){ closeCellMenu(); openKeyModal(); return; }
   if(b.dataset.cover==="1"){ const c=menuCover; closeCellMenu(); if(c) applyCover(c.chain,c.day); return; }
   if(b.dataset.note==="1"){ closeCellMenu(); openNote(menuCellKey); return; }
@@ -3674,7 +3758,7 @@ function renderHeat(){
   }
   $("#heatView").innerHTML=
     `<div class="adminhead"><h2 class="heathead">Holiday heat map</h2>${summaryYearControl()}</div>`+trialPeriodNote(YEAR)+summaryNotice()+
-    `<div class="heatsub">How many people are in the Holiday list each day ${YEAR===2026?"during the 2026 trial":"across "+YEAR}. Green means nobody off, red means 15+ off. Click a day to see who's off.</div>`+
+    `<div class="heatsub">How many people are in the Holiday list each day ${YEAR===2026?"during 1 November–24 December 2026":"across "+YEAR}. Green means nobody off, red means 15+ off. Click a day to see who's off.</div>`+
     `<div class="heatlegend">0 off<span class="scale">`+
       [0,3.75,7.5,11.25,15].map(c=>`<i style="background:${ramp(c).bg}"></i>`).join("")+
     `</span>15+ off${max?" &nbsp;\u00b7&nbsp; busiest day so far: "+max:""}</div>`+
@@ -3739,7 +3823,7 @@ function summaryYearControl(){const year=summaryYear();return '<label class="yrs
 function inSummaryPeriod(y,m,d){return y!==2026 || (m>=10 && (m<11||d<=24));}
 function summaryMonths(year){return year===2026?[10,11]:Array.from({length:12},(_,i)=>i);}
 function filterSummaryYear(map){const year=summaryYear(),prefix=year+'-';return Object.fromEntries(Object.entries(map).filter(([key])=>{const [y,m,d]=key.split('-').map(Number);return key.startsWith(prefix)&&inSummaryPeriod(y,m,d);}));}
-function trialPeriodNote(year){return year===2026?'<p class="summary-note">2026 trial: 1 November–24 December only. Earlier leave and the separate Christmas rota are not included. No full-year remaining balance is shown.</p>':'';}
+function trialPeriodNote(year){return "";}
 document.addEventListener('change',e=>{if(e.target.classList?.contains('summaryYear')){state.reportYear=Number(e.target.value);renderCurrentView();}});
 const ALIAS = RAW.aliases || {};
 function canonName(n){ return ALIAS[nrm(n)] || n; }
@@ -4305,6 +4389,8 @@ function autofillPlan(){
   const plan={ fills:[], covers:[], gaps:[], rotations:[], unknown:new Set(), days:dts, weekName:w.name,
                tplLabel:(tent&&tent.label)||"", awayCount:awaySet.size, base:d,
                structureChanged:autofillStructureSignature(current)!==autofillStructureSignature(d) };
+  plan.templateAssignments={};walkRoles(d,({si,ri,row})=>dts.forEach((dt,di)=>{plan.templateAssignments[ckey(si,ri,di)]=(row.assign[di]||" ").trim();}));
+  const fixed=fixedReservations(d,dts,offBy);plan.errors=fixed.errors;plan.fixed=[];
   // resolve each rotation's cycle once for the whole week
   const rotPlan=new Map(), roleLabels={};
   const busy=coverCommitted(offBy, dts);
@@ -4340,10 +4426,12 @@ function autofillPlan(){
       dts.forEach((dt,di)=>{
         if(!dt || isBankHol(dt)) return;
         const k=ckey(si,ri,di);
-        if(autofillVoid.has(k)) return;
+        const reservation=fixed.slots.get(k);
+        if(autofillVoid.has(k) && !reservation) return;
         let want=((r.assign&&r.assign[di])||"").trim();
         let forced=false;
-        if(rotName) want=rotName;                             // the cycle decides this role
+        if(reservation) want=reservation.person;
+        else if(rotName) want=rotName;                             // the cycle decides this role
         else if(rotShort){
           // The cycle is short-handed here. Put the person it wanted in, but flag the
           // slot as needing cover so the chain can fill it from outside the rotation.
@@ -4353,7 +4441,9 @@ function autofillPlan(){
         }
         if(!want) return;
         if(!isKnownPerson(want)){ plan.unknown.add(want); r.assign[di]=""; return; }
-        cells.push({si,ri,di,k,role:label,person:findPerson(want)||want,forced,rkey:(rot?rk:null),rot});
+        const reservedElsewhere=fixed.people[di].has(nrm(want)) && fixed.people[di].get(nrm(want))!==k;
+        cells.push({si,ri,di,k,role:label,person:findPerson(want)||want,forced:forced||reservedElsewhere,fixedMoved:reservedElsewhere,fixed:!!reservation,rkey:(rot?rk:null),rot});
+        if(reservation)plan.fixed.push({si,ri,di,k,role:label,day:di,name:reservation.person,away:offBy[di].has(nrm(reservation.person))});
       });
     });
   });
@@ -4375,7 +4465,7 @@ function autofillPlan(){
     cells.filter(c=>c.di===di && (off.has(nrm(c.person)) || c.forced))
          .forEach(c=>{ assign[c.k]="";
            // forced = the rotation wanted them but they're committed elsewhere — remember who they went to cover
-           queue.push({k:c.k, missing:c.person, because:c.forced?"rotation":"holiday",
+           queue.push({k:c.k, missing:c.person, because:c.fixedMoved?"fixed":c.forced?"rotation":"holiday",
                        movedFor:c.forced?(busy.get(nrm(c.person))||""):""}); });
     let guard=0;
     while(queue.length && guard++<300){
@@ -4386,7 +4476,7 @@ function autofillPlan(){
       let taken=null, step=0;
       for(let i=1;i<chain.length;i++){
         const cand=chain[i];
-        if(off.has(nrm(cand))) continue;                // that cover is on holiday too
+        if(off.has(nrm(cand)) || fixed.people[di].has(nrm(cand)) || !isKnownPerson(cand)) continue;                // that cover is on holiday too
         taken=cand; step=i; break;
       }
       if(!taken){ gapWhy[v.k]={off:v.missing, because:v.because, why:"allaway", chain, movedFor:v.movedFor||""}; continue; }
@@ -4408,7 +4498,7 @@ function autofillPlan(){
     (store.rotations||[]).forEach(rot=>{
       const roles=(rot.roles||[]).filter(Boolean);
       if(roles.length<2) return;
-      const slots=roles.map(rk=>cells.find(c=>c.di===di && c.rkey===rk)).filter(Boolean);
+      const slots=roles.map(rk=>cells.find(c=>c.di===di && c.rkey===rk && !c.fixed)).filter(Boolean);
       if(slots.length<2) return;
       const people=slots.map(c=>assign[c.k]).filter(Boolean);
       if(!people.length || people.length===slots.length) return;   // nothing to pull up
@@ -4428,7 +4518,7 @@ function autofillPlan(){
     else if(got){
       const cv=cover[c.k]||{};
       plan.covers.push({si:c.si,ri:c.ri,di:c.di,k:c.k,role:c.role,day:c.di,name:got,
-        off:cv.off||c.person, because:cv.because||"holiday", chain:cv.chain||[], movedFor:cv.movedFor||""});
+        off:cv.off||c.person, because:cv.because||(c.rot?"rotation":"holiday"), chain:cv.chain||[], movedFor:cv.movedFor||""});
     } else {
       const g=gapWhy[c.k]||{off:c.person, because:"holiday", why:"norule", movedFor:""};
       plan.gaps.push({si:c.si,ri:c.ri,di:c.di,k:c.k,role:c.role,day:c.di,
@@ -4438,6 +4528,47 @@ function autofillPlan(){
   plan.roleLabels=roleLabels;
   return plan;
 }
+// A saved, structured snapshot travels with the same revision-protected week.
+function generationSignature(d){return JSON.stringify({cols:d.cols,sections:d.sections,blocked:!!d.blocked});}
+function buildGenerationReport(d,plan){
+  const groups={holiday:[],staff:[],freelance:[]}, grouped={holiday:new Map(),staff:new Map(),freelance:new Map()};
+  const moves=[], gaps=[], roster=allStaff(), seenRoster=new Set();
+  const people=roster.filter(n=>{const key=nrm(n);if(seenRoster.has(key))return false;seenRoster.add(key);return true;});
+  plan.days.forEach((dt,di)=>{
+    if(!dt||isBankHol(dt))return;
+    const day=planDayName(plan,di), assigned=new Set(),off=new Map();
+    (d.sections||[]).forEach((sec,si)=>(sec.rows||[]).forEach((row,ri)=>{if(row.type!=='role'||(store.cellVoid[ckey(si,ri,di)]&&!(plan.fixed||[]).some(f=>f.k===ckey(si,ri,di))))return;const name=(row.assign[di]||'').trim();if(!name)return;if(sec.holiday)off.set(nrm(name),name);else assigned.add(nrm(name));}));
+    const add=(group,name)=>{const key=nrm(name);if(!grouped[group].has(key))grouped[group].set(key,{name,days:[]});grouped[group].get(key).days.push(day);};
+    off.forEach(name=>add('holiday',findPerson(name)||name));
+    people.forEach(name=>{if(off.has(nrm(name))||assigned.has(nrm(name)))return;const freelance=Object.entries(store.freelance||{}).some(([n,on])=>on&&nrm(n)===nrm(name));add(freelance?'freelance':'staff',name);});
+  });
+  for(const group of Object.keys(groups))groups[group]=[...grouped[group].values()].sort((a,b)=>a.name.localeCompare(b.name));
+  const reason=(x)=>x.because==='fixed'?'Their usual person is reserved in a fixed position.':x.because==='moved'?'Their usual person moved to cover '+(x.movedFor||'another role')+'.':x.because==='rotation'?'The rotation could not place its intended person here.':'Their usual person is on holiday.';
+  (plan.fills||[]).forEach(f=>{
+    const fixed=(plan.fixed||[]).some(x=>x.k===f.k),before=(plan.templateAssignments||{})[f.k]||'';
+    if(!fixed&&nrm(before)===nrm(f.name))return;
+    moves.push({day:planDayName(plan,f.di),role:f.role,from:before,to:f.name,why:fixed?'Fixed rule reserves this position.':'Weekly rotation assigns this position.'});
+  });
+  (plan.covers||[]).forEach(c=>moves.push({day:planDayName(plan,c.di),role:c.role,from:c.off||'',to:c.name,why:reason(c)+' Cover rule selected '+c.name+'.'}));
+  (plan.gaps||[]).forEach(g=>gaps.push({day:planDayName(plan,g.di),role:g.role,from:g.off||'',to:'',why:reason(g)+' No available cover filled the gap.'}));
+  return {version:1,weekId:week().id,weekName:plan.weekName,generatedAt:new Date().toISOString(),signature:generationSignature(d),groups,moves,gaps};
+}
+function openGenerationInfo(){
+  const d=data(),r=d.generationReport;
+  if(state.templateMode||!canViewWeek(week())||!r){flash('Generate this week with Autofill to create its info page');return;}
+  const rows=(list)=>list.length?list.map(x=>`<div class="arow"><span class="arole">${esc(x.role)}<br><small>${esc(x.day)}</small></span><span class="awhy">${x.from?esc(x.from)+' → ':''}<b>${esc(x.to||'Unfilled')}</b><br>${esc(x.why)}</span></div>`).join(''):'<p>No changes in this category.</p>';
+  const group=(title,list)=>`<h4 class="ahead">${title} (${list.length})</h4>`+(list.length?list.map(x=>`<div class="arow"><b>${esc(x.name)}</b><span class="awhy">${x.days.map(esc).join(', ')}</span></div>`).join(''):'<p>None.</p>');
+  const stale=r.weekId!==week().id||r.signature!==generationSignature(d);
+  $("#generationBody").innerHTML=`<h4>${esc(r.weekName)}</h4><p>Generated ${esc(new Date(r.generatedAt).toLocaleString('en-GB'))}. This records the last Autofill; the next generation replaces it.</p>`+
+    (stale?'<p class="preview-stale">This rota has changed since generation. These explanations describe the saved generation, before later edits.</p>':'')+
+    '<h4 class="ahead">Changes from template and fixed positions</h4>'+rows(r.moves)+
+    '<h4 class="ahead">Unfilled positions</h4>'+rows(r.gaps)+
+    group('On holiday',r.groups.holiday)+group('No assignment — staff',r.groups.staff)+group('No assignment — freelance',r.groups.freelance)+
+    '<p class="anote">Names are counted once in each list, with the affected days shown. People on holiday are excluded from the unassigned lists for that day. Unassigned means no role was allocated; review whether it is a normal non-working day or a missed assignment. Bank holidays are outside weekday Autofill. Personnel and freelance status are recorded as they were at generation.</p>';
+  $("#generationModal").classList.add('open');
+}
+$("#generationInfoBtn").addEventListener('click',openGenerationInfo);
+
 function planDayName(plan,di){
   const dt=plan.days[di];
   return dt?(DAYLBL[dt.getDay()]+" "+fmtDate(dt)):("Day "+(di+1));
@@ -4475,7 +4606,8 @@ function openAutofill(){
     const chain=(c.chain||[]).map(x=>String(x).trim()).filter(Boolean);
     const skipped=chain.slice(1,-1);          // people passed over because they're away too
     let why;
-    if(c.because==="moved") why=`<b>${esc(c.off)}</b> was due here but has moved to cover ${c.movedFor?`<b>${esc(c.movedFor)}</b>`:"another role"}, so <b>${esc(c.name)}</b> fills the space`;
+    if(c.because==="fixed") why=`<b>${esc(c.off)}</b> is reserved in a fixed position, so <b>${esc(c.name)}</b> covers this role`;
+    else if(c.because==="moved") why=`<b>${esc(c.off)}</b> was due here but has moved to cover ${c.movedFor?`<b>${esc(c.movedFor)}</b>`:"another role"}, so <b>${esc(c.name)}</b> fills the space`;
     else if(c.because==="rotation") why=`<b>${esc(c.off)}</b> ${c.movedFor?`has moved to cover <b>${esc(c.movedFor)}</b>`:"couldn’t take their turn here"}, so their own cover <b>${esc(c.name)}</b> steps in`;
     else if(skipped.length) why=`<b>${esc(c.off)}</b> is away — ${skipped.map(n=>"<b>"+esc(n)+"</b>").join(" and ")} ${skipped.length>1?"are":"is"} away too, so it falls to <b>${esc(c.name)}</b>`;
     else why=`<b>${esc(c.off)}</b> is away, so their named cover <b>${esc(c.name)}</b> steps in`;
@@ -4483,7 +4615,8 @@ function openAutofill(){
   };
   const gapLine=({sample:g,days})=>{
     let why;
-    if(g.because==="rotation"){
+    if(g.because==="fixed"){why=`<b>${esc(g.off)}</b> is reserved by a fixed rule, and no available cover could fill this role`;}
+    else if(g.because==="rotation"){
       if(g.movedFor) why=`<b>${esc(g.off)}</b> would normally take this, but they’ve moved to cover <b>${esc(g.movedFor)}</b>${g.hadRule?", and everyone on their own cover list is away too":", and nobody is set up to backfill them"}`;
       else why=`the rotation is stretched too thin this week — there’s nobody left to take it`;
     } else {
@@ -4496,14 +4629,16 @@ function openAutofill(){
     return `<div class="arow gap"><span class="arole">${esc(g.role)}</span><span class="awhy">Left empty: ${why}. <span class="adays">${esc(daysLabel(days))}</span></span></div>`;
   };
   let html=`<div class="acards">`+
-    `<div class="acard"><b>${plan.fills.length}</b><span>straight from the template</span></div>`+
+    `<div class="acard"><b>${plan.fills.length}</b><span>template, rotation or fixed rule</span></div>`+
     `<div class="acard cov"><b>${plan.covers.length}</b><span>covered by a rule</span></div>`+
     `<div class="acard gap"><b>${plan.gaps.length}</b><span>left blank</span></div>`+
     `<div class="acard"><b>${nAway}</b><span>${nAway===1?"person":"people"} away</span></div></div>`;
-  html+=`<div class="ahowto">How autofill works: everyone is copied across from the default template. `+
+  html+=`<div class="ahowto">How autofill works: fixed rules reserve positions first. Templates, rotations and cover work around those people. `+
     `Anyone on this week’s Away list is swapped for their named cover, and if nobody on the cover list is free `+
     `the slot is deliberately left empty so the gap is easy to spot.</div>`;
-  if(plan.rotations.length) html+=`<h4 class="ahead">Roles that take turns</h4>`+
+  if(plan.errors.length)html+=`<h4 class="ahead">Resolve fixed rules before filling</h4>`+plan.errors.map(e=>`<div class="arow gap">${esc(e)}</div>`).join('');
+  if(plan.fixed.length)html+=`<h4 class="ahead">Fixed positions</h4>`+groupBy(plan.fixed,f=>[f.role,f.name,f.away].join('|')).map(({sample:f,days})=>`<div class="arow"><span class="arole">${esc(f.role)}</span><span class="awhy"><b>${esc(f.name)}</b> — ${f.away?'on holiday; cover sought':'reserved'} <span class="adays">${esc(daysLabel(days))}</span></span></div>`).join('');
+  if(plan.rotations.length) html+=`<h4 class="ahead">Roles that take turns (fixed positions take priority)</h4>`+
     plan.rotations.map(r=>{
       const lines=r.roles.map(rk=>{ const who=r.assign.map[rk];
         return `<div class="arow rot"><span class="arole">${esc(plan.roleLabels[rk]||rk)}</span>`+
@@ -4522,23 +4657,26 @@ function openAutofill(){
     `<div class="arow gap"><span class="awhy">${[...plan.unknown].map(esc).join(", ")}</span></div>`;
   if(!plan.fills.length && !plan.covers.length && !plan.gaps.length)
     html+=`<div class="anone">The default template is empty, so there's nothing to fill. Set one up via the \u22EE menu \u2192 Default templates.</div>`;
-  html+=`<div class="anote">The week’s role and section layout will be updated to match the selected default template, and existing assignments will be overwritten. The Away list, week dates, notes and any cells marked “not needed” are retained where the same role still exists.`+
+  html+=`<div class="anote">The week’s role and section layout will be updated to match the selected default template, and existing assignments will be overwritten. The Away list, week dates, notes and any cells marked “not needed” are retained where the same role still exists, unless a fixed rule reserves that position.`+
     (plan.tplLabel?` Using template: <b>${esc(plan.tplLabel)}</b>.`:"")+`</div>`;
   $("#autoBody").innerHTML=html;
-  $("#autoApply").disabled = !(plan.fills.length||plan.covers.length||plan.gaps.length||plan.structureChanged);
+  $("#autoApply").disabled = !!plan.errors.length || !(plan.fills.length||plan.covers.length||plan.gaps.length||plan.structureChanged);
   $("#autoModal").classList.add("open");
 }
 function closeAutofill(){ $("#autoModal").classList.remove("open"); AUTOPLAN=null; }
 function applyAutofill(){
-  const plan=AUTOPLAN; if(!plan || !state.editing || (SYNC.on&&!SYNC.canEdit)) return;
+  const plan=AUTOPLAN; if(!plan || (plan.errors||[]).length || !state.editing || (SYNC.on&&!SYNC.canEdit)) return;
   if(plan.version!==autofillVersion()){invalidateAutofillPreview();alert("The rota changed while this preview was open. Rebuild the preview before applying it.");return;}
   const w=week(), oldD=data(), d=clone(plan.base);
   store.overrides[w.id]=d;
   remapAutofillMarkers(oldD,d,w.id);
+  (plan.fixed||[]).forEach(f=>delete store.cellVoid[f.k]);
   plan.fills.forEach(f=>{ d.sections[f.si].rows[f.ri].assign[f.di]=f.name; delete store.cellCover[f.k]; });
   plan.covers.forEach(c=>{ d.sections[c.si].rows[c.ri].assign[c.di]=c.name; store.cellCover[c.k]=true; });
   plan.gaps.forEach(g=>{ d.sections[g.si].rows[g.ri].assign[g.di]=""; delete store.cellCover[g.k]; });
+  d.generationReport=buildGenerationReport(d,plan);
   commit(); render();
+  openGenerationInfo();
   flash(`Updated roles and filled ${plan.fills.length+plan.covers.length} slots \u00b7 ${plan.gaps.length} left blank`);
   closeAutofill();
 }
@@ -4615,14 +4753,14 @@ function renderAdmin(){
       `<div class="callegend"><span class="lgd"><i class="sw pub"></i>Public</span><span class="lgd"><i class="sw hid"></i>Hidden</span></div>`+
       `<div class="viscal">${weekCalHTML("vis")}</div></details>`:"")+
     trialPeriodNote(year)+`<div class="adminsub">Every Away day recorded ${trial?"during 1 November–24 December 2026":"between 1 January and 31 December "+year} counts, including weekends, bank holidays and special rotas. Each person/date counts once. `+
-      (trial?`2026 annual allowances were initially copied from 2027 and can be adjusted independently. `:"")+(ed?`Allowance defaults to ${DEFAULT_ALLOWANCE} days — edit any value to override.`
+      (ed?`Allowance defaults to ${DEFAULT_ALLOWANCE} days — edit any value to override.`
         : ops?`Turn on <b>Edit mode</b> to change allowances, manage staff, the default template, colour key and which weeks are public.`
         : `Figures are read-only in this view — the operations team keeps allowances and staffing up to date.`)+
       ` Click a column heading to sort.</div>`+
     `<div class="adminsum">`+
       (trial?"":card("sumLeft","Days still to take","across everyone below")+
       card("sumAvg","Avg people off / weekday",`if spread across the <b id="sumRemWk">0</b> weekdays left this year`))+
-      card("sumTaken",trial?"Recorded in trial":"Recorded Away days","company total, "+year)+
+      card("sumTaken","Recorded Away days","company total, "+year)+
       card("sumAllow","Total allowance","company total, "+year)+
     `</div>`+
     (ed?`<div class="rosteradd">`+
@@ -4631,7 +4769,7 @@ function renderAdmin(){
       `<button class="primary" data-act="rosteradd">Add</button>`+
     `</div>`:"")+
     `<div class="admintblwrap"><table class="stafftbl"><thead><tr>`+
-      th("name","Staff")+th("allow","Allowance","num")+th("taken",trial?"Trial usage":"Recorded","num")+(trial?"":th("left","Left","num"))+(ed?`<th class="rmh"></th>`:"")+
+      th("name","Staff")+th("allow","Allowance","num")+th("taken","Recorded","num")+(trial?"":th("left","Left","num"))+(ed?`<th class="rmh"></th>`:"")+
       `</tr></thead>`+
       `<tbody>${rows}</tbody></table></div>`;
   updateAdminSummary();
@@ -4730,6 +4868,7 @@ function renamePerson(oldName,newName){        // keeps every rota/template/rule
   (store.templates||[]).forEach(x=>replacePersonInData(x.data,from,newName));
   const swap=v=>nrm(v)===nrm(from)?newName:v;
   store.rules=(store.rules||[]).map(ch=>ch.map(swap));
+  store.fixedRules=(store.fixedRules||[]).map(r=>({...r,person:swap(r.person)}));
   store.rotations=(store.rotations||[]).map(x=>({roles:x.roles,names:(x.names||[]).map(swap)}));
   clearRoleCache();
   return newName;
@@ -5700,17 +5839,19 @@ document.addEventListener("keydown",e=>{
 
 // Keep sensitive overlays consistent with the current access and data.
 function closeRestrictedViews(){
+  $("#generationModal").classList.remove("open");$("#generationBody").innerHTML="";
   cancelFillDrag();
   document.querySelectorAll('.modal.open,.searchpop.open,.opop.open,#syncPop.open,#cellMenu.open,#heatPop.open').forEach(el=>el.classList.remove('open'));
   ['personMeta','personBody','personSub','personName','autoBody','noteText','searchPop','officePop','boothPop','heatPop'].forEach(id=>{const e=document.getElementById(id);if(e){if('value' in e)e.value='';else e.textContent='';}});
   AUTOPLAN=null;state.templateMode=false;document.body.classList.remove('template');
 }
 function refreshOpenViews(){
+  if($("#generationModal").classList.contains("open")){if(canViewWeek(week())&&data().generationReport)openGenerationInfo();else{$("#generationModal").classList.remove("open");$("#generationBody").innerHTML="";}}
   const person=$('#personModal');
   if(person&&person.classList.contains('open')) openPersonModal($('#personName').textContent);
   ['#searchPop','#officePop','#boothPop','#heatPop'].forEach(s=>{const e=$(s);if(e)e.classList.remove('open');});
   if($('#jumpModal').classList.contains('open')) $('#jumpBody').innerHTML=weekCalHTML('jump');
-  if($('#ruleModal').classList.contains('open')&&!$('#ruleModal').contains(document.activeElement)){renderRuleList();renderRotList();}
+  if($('#ruleModal').classList.contains('open')&&!$('#ruleModal').contains(document.activeElement)){renderRuleList();renderRotList();renderFixedList();}
   invalidateAutofillPreview();
 }
 function enhanceRotaUI(){
@@ -5719,6 +5860,11 @@ function enhanceRotaUI(){
   if(!hint){hint=document.createElement('p');hint.id='rotaScrollHint';hint.className='rota-scroll-hint';hint.textContent='Swipe the table sideways to see every day. The role column stays in view.';grid.before(hint);}
   hint.hidden=!grid.querySelector('[data-cell]');
   grid.setAttribute('aria-describedby','rotaScrollHint');
+  if(state.templateMode)grid.querySelectorAll('[data-cell]').forEach(cell=>{
+    cell.querySelector('.fixed-badge')?.remove();const rule=fixedCellRule(cell.dataset.cell);
+    const fixed=rule&&(store.fixedRules||[]).find(r=>r.role===rule.role&&r.day===rule.day);
+    if(fixed){const badge=document.createElement('small');badge.className='fixed-badge';badge.textContent='Fixed: '+fixed.person;cell.append(badge);}
+  });
   const wy=weekRepDate(week());const ye=$('#rotaYear');if(ye)ye.textContent=wy?wy.getFullYear():YEAR;
   grid.querySelectorAll('.card').forEach(card=>{
     if(!card.querySelector('.row'))return;
@@ -5818,7 +5964,7 @@ function initAccessibleUI(){
     const action=choice.dataset.setup;
     if(action==='people')setView('pers');else if(action==='visibility')setView('admin');
     else if(action==='templates')openTplModal();else if(action==='key')openKeyModal();
-    else{openRuleModal();if(action==='rotations')requestAnimationFrame(()=>$('#rotList').scrollIntoView({block:'start'}));}
+    else{openRuleModal();if(action==='rules')requestAnimationFrame(()=>$('#ruleList').scrollIntoView({block:'start'}));}
   });
   $('#setupBtn').addEventListener('click',()=>{if(state.role==='ops')$('#setupModal').classList.add('open');});
   $('#helpBtn').addEventListener('click',()=>$('#helpModal').classList.add('open'));
