@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v18.1 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v19 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -774,6 +774,8 @@ body.template .tplbanner{display:flex}
   font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer}
 .halfbtn.on{background:var(--mag);color:#fff}
 .officetabs{align-items:center}
+.officetabs .yrsel{display:flex;gap:7px;align-items:center;font-size:13px;margin-right:8px}
+.officetabs .yrsel select{font:inherit;padding:9px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text);min-height:42px}
 .wkvis{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 11px;border:1px solid var(--line-2);border-radius:9px;background:var(--bg)}
 .wkvis .wkn{flex:1;min-width:0;font-size:12.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pubbtn{flex:none;font-size:10.5px;font-weight:700;letter-spacing:.04em;border-radius:14px;padding:4px 12px;cursor:pointer;border:1px solid transparent}
@@ -1261,7 +1263,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
 <div class="heatpop" id="heatPop"></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v18.1</span>
+  <span class="pill">News Rota v19</span>
   <span>Choose a week or search for a person. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1292,7 +1294,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
         <input id="pEditName" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. Alex Corns"></label>
       <label class="pfield"><span>Office</span>
         <select id="pEditOffice"></select></label>
-      <label class="pfield"><span>Holiday allowance (days)</span>
+      <label class="pfield"><span>2027 holiday allowance (days)</span>
         <input id="pEditAllow" type="number" min="0" max="99" step="0.5" placeholder="28"></label>
       <label class="pfield"><span>Type</span>
         <select id="pEditType"><option value="staff">Staff</option><option value="freelance">Freelance</option></select></label>
@@ -1415,7 +1417,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
 </div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
- <div class="setup-intro"><p><b>Find your rota:</b> use Choose week or search for a person. On a phone, swipe the table sideways to see each day.</p><p><b>Daily totals:</b> holiday and office names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
+ <div class="setup-intro"><p><b>Find your rota:</b> use Choose week or search for a person. On a phone, swipe the table sideways to see each day.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
 </div></div>
 <script>
@@ -1429,8 +1431,8 @@ window.NEWS_ROTA_CONFIG = {
 };
 </script>
 <script>
-const RAW = {"weekdayTemplate":{"type":"weekday","sections":[{"title":"HOLIDAY","holiday":true,"rows":[{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]}]},{"title":"FOCUS ONE","rows":[{"type":"role","area":"","slot":"NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"SOUTH COAST & KENT","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"SOUTH WALES & BRISTOL","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"GREATER MANCHESTER & MERSEYSIDE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"SOUTH COAST","assign":["","","","",""]},{"type":"role","area":"","slot":"KENT","assign":["","","","",""]},{"type":"role","area":"","slot":"SOUTH WALES","assign":["","","","",""]},{"type":"role","area":"","slot":"BRISTOL","assign":["","","","",""]},{"type":"role","area":"","slot":"GREATER MANCHESTER","assign":["","","","",""]},{"type":"role","area":"","slot":"MERSEYSIDE","assign":["","","","",""]}]},{"title":"FOCUS TWO","rows":[{"type":"role","area":"","slot":"NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"BIRMINGHAM & WEST MIDLANDS & EAST MIDLANDS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"WEST YORKSHIRE & SOUTH YORKSHIRE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"NORTH EAST & TEESSIDE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"BIRMINGHAM & WEST MIDLANDS","assign":["","","","",""]},{"type":"role","area":"","slot":"EAST MIDLANDS","assign":["","","","",""]},{"type":"role","area":"","slot":"WEST YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"SOUTH YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTH EAST","assign":["","","","",""]},{"type":"role","area":"","slot":"TEESSIDE","assign":["","","","",""]}]},{"title":"NATIONALS & LONDON","rows":[{"type":"role","area":"KISS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"ABSOLUTE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"UK 60","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"UK 120","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"LONDON","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"BEHIND THE HEADLINES","slot":"","assign":["","","","",""]}]},{"title":"HUB","rows":[{"type":"role","area":"NEWS EDITOR","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]}]},{"title":"HUB SOUTH & EAST","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"BUCKINGHAMSHIRE, BEDFORDSHIRE & HERTFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"CAMBRIDGESHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORFOLK","assign":["","","","",""]},{"type":"role","area":"","slot":"SUFFOLK","assign":["","","","",""]},{"type":"role","area":"","slot":"SUSSEX","assign":["","","","",""]},{"type":"role","area":"","slot":"SURREY","assign":["","","","",""]},{"type":"role","area":"","slot":"OXFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTHAMPTONSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"BERKSHIRE & NORTH HAMPSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"ESSEX","assign":["","","","",""]}]},{"title":"HUB SOUTH & WEST","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"SWINDON","assign":["","","","",""]},{"type":"role","area":"","slot":"GLOUCESTER","assign":["","","","",""]},{"type":"role","area":"","slot":"SOMERSET","assign":["","","","",""]},{"type":"role","area":"","slot":"DEVON","assign":["","","","",""]},{"type":"role","area":"","slot":"CORNWALL","assign":["","","","",""]},{"type":"role","area":"","slot":"DORSET","assign":["","","","",""]},{"type":"role","area":"","slot":"WILTSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"COVENTRY & WARWICKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"HEREFORD & WORCESTERSHIRE","assign":["","","","",""]}]},{"title":"HUB NORTH","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"CUMBRIA","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTH YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"LANCASHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"STAFFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"EAST YORKSHIRE & NORTHERN LINCOLNSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"LINCOLNSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"BLACK COUNTRY & SHROPSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"PETERBOROUGH, STAMFORD & RUTLAND","assign":["","","","",""]}]},{"title":"OTHER","rows":[{"type":"role","area":"","slot":"OPERATIONS MANAGER","assign":["","","","",""]},{"type":"role","area":"","slot":"DIGITAL NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"BREAKFAST CONTENT EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"DRIVE CONTENT EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"SENIOR CORRESPONDENT","assign":["","","","",""]},{"type":"role","area":"","slot":"POLITICAL EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"REGIONAL CORRESPONDENT","assign":["","","","",""]},{"type":"role","area":"","slot":"HEAD OF NEWS AND SPORT","assign":["","","","",""]},{"type":"role","area":"","slot":"DEPUTY HEAD OF NEWS AND SPORT","assign":["","","","",""]}]}],"notes":[]},"weekendTemplate":{"type":"weekend","rows":[{"role":"Weekend Ops Manager","sat":"","sun":""},{"role":"Weekend Duty Editor","sat":"","sun":""},{"role":"AbsSport B60 B120 London","sat":"","sun":""},{"role":"Liverpool Manchester","sat":"","sun":""},{"role":"W Midlands E Midlands","sat":"","sun":""},{"role":"Hub North","sat":"","sun":""},{"role":"Hub South & East","sat":"","sun":""},{"role":"Hub South & West","sat":"","sun":""},{"role":"Awareness","sat":"","sun":""},{"role":"Creation","sat":"","sun":""},{"role":"Reporter","sat":"","sun":""},{"role":"BAUER 120 PM","sat":"","sun":""}],"codes":["BCS","NYO","CUM","PSR","EYL","SYO","BBH","LAN","S&C","BER","LIN","TEE","CAM","NEA","WYO","ESX","KEN","NOH","NOR","B&B","H&W","OXF","COR","SOM","SOC","C&W","SWI","SUF","DEV","WAL","SUR","DOR","WST","SUS","GLO","WIL"],"notes":[],"satHeader":"SATURDAY 3 JANUARY","sunHeader":"SUNDAY 4 JANUARY"},"weeks":[{"id":"WE 1 2 3 Jan","name":"WE 1 2 3 Jan","kind":"weekend"},{"id":"4-8 January","name":"4-8 January","kind":"weekday"},{"id":"WE 9&10 Jan","name":"WE 9&10 Jan","kind":"weekend"},{"id":"11-15 January","name":"11-15 January","kind":"weekday"},{"id":"WE 16&17 Jan","name":"WE 16&17 Jan","kind":"weekend"},{"id":"18-22 January","name":"18-22 January","kind":"weekday"},{"id":"WE 23&24 Jan","name":"WE 23&24 Jan","kind":"weekend"},{"id":"25-29 January","name":"25-29 January","kind":"weekday"},{"id":"WE 30&31 Jan","name":"WE 30&31 Jan","kind":"weekend"},{"id":"1-5 February","name":"1-5 February","kind":"weekday"},{"id":"WE 6&7 Feb","name":"WE 6&7 Feb","kind":"weekend"},{"id":"8-12 February","name":"8-12 February","kind":"weekday"},{"id":"WE 13&14 Feb","name":"WE 13&14 Feb","kind":"weekend"},{"id":"15-19 February","name":"15-19 February","kind":"weekday"},{"id":"WE 20&21 Feb","name":"WE 20&21 Feb","kind":"weekend"},{"id":"22-26 February","name":"22-26 February","kind":"weekday"},{"id":"WE 27&28 Feb","name":"WE 27&28 Feb","kind":"weekend"},{"id":"1-5 March","name":"1-5 March","kind":"weekday"},{"id":"WE 6&7 Mar","name":"WE 6&7 Mar","kind":"weekend"},{"id":"8-12 March","name":"8-12 March","kind":"weekday"},{"id":"WE 13&14 Mar","name":"WE 13&14 Mar","kind":"weekend"},{"id":"15-19 March","name":"15-19 March","kind":"weekday"},{"id":"WE 20&21 Mar","name":"WE 20&21 Mar","kind":"weekend"},{"id":"22-26 March","name":"22-26 March","kind":"weekday"},{"id":"WE 27&28 Mar","name":"WE 27&28 Mar","kind":"weekend"},{"id":"29 March - 2 April","name":"29 March - 2 April","kind":"weekday"},{"id":"WE 3&4 Apr","name":"WE 3&4 Apr","kind":"weekend"},{"id":"5-9 April","name":"5-9 April","kind":"weekday"},{"id":"WE 10&11 Apr","name":"WE 10&11 Apr","kind":"weekend"},{"id":"12-16 April","name":"12-16 April","kind":"weekday"},{"id":"WE 17&18 Apr","name":"WE 17&18 Apr","kind":"weekend"},{"id":"19-23 April","name":"19-23 April","kind":"weekday"},{"id":"WE 24&25 Apr","name":"WE 24&25 Apr","kind":"weekend"},{"id":"26-30 April","name":"26-30 April","kind":"weekday"},{"id":"WE 1&2 May","name":"WE 1&2 May","kind":"weekend"},{"id":"3-7 May","name":"3-7 May","kind":"weekday"},{"id":"WE 8&9 May","name":"WE 8&9 May","kind":"weekend"},{"id":"10-14 May","name":"10-14 May","kind":"weekday"},{"id":"WE 15&16 May","name":"WE 15&16 May","kind":"weekend"},{"id":"17-21 May","name":"17-21 May","kind":"weekday"},{"id":"WE 22&23 May","name":"WE 22&23 May","kind":"weekend"},{"id":"24-28 May","name":"24-28 May","kind":"weekday"},{"id":"WE 29&30 May","name":"WE 29&30 May","kind":"weekend"},{"id":"31 May - 4 June","name":"31 May - 4 June","kind":"weekday"},{"id":"WE 5&6 Jun","name":"WE 5&6 Jun","kind":"weekend"},{"id":"7-11 June","name":"7-11 June","kind":"weekday"},{"id":"WE 12&13 Jun","name":"WE 12&13 Jun","kind":"weekend"},{"id":"14-18 June","name":"14-18 June","kind":"weekday"},{"id":"WE 19&20 Jun","name":"WE 19&20 Jun","kind":"weekend"},{"id":"21-25 June","name":"21-25 June","kind":"weekday"},{"id":"WE 26&27 Jun","name":"WE 26&27 Jun","kind":"weekend"},{"id":"28 June - 2 July","name":"28 June - 2 July","kind":"weekday"},{"id":"WE 3&4 Jul","name":"WE 3&4 Jul","kind":"weekend"},{"id":"5-9 July","name":"5-9 July","kind":"weekday"},{"id":"WE 10&11 Jul","name":"WE 10&11 Jul","kind":"weekend"},{"id":"12-16 July","name":"12-16 July","kind":"weekday"},{"id":"WE 17&18 Jul","name":"WE 17&18 Jul","kind":"weekend"},{"id":"19-23 July","name":"19-23 July","kind":"weekday"},{"id":"WE 24&25 Jul","name":"WE 24&25 Jul","kind":"weekend"},{"id":"26-30 July","name":"26-30 July","kind":"weekday"},{"id":"WE 31 Jul 1 Aug","name":"WE 31 Jul 1 Aug","kind":"weekend"},{"id":"2-6 August","name":"2-6 August","kind":"weekday"},{"id":"WE 7&8 Aug","name":"WE 7&8 Aug","kind":"weekend"},{"id":"9-13 August","name":"9-13 August","kind":"weekday"},{"id":"WE 14&15 Aug","name":"WE 14&15 Aug","kind":"weekend"},{"id":"16-20 August","name":"16-20 August","kind":"weekday"},{"id":"WE 21&22 Aug","name":"WE 21&22 Aug","kind":"weekend"},{"id":"23-27 August","name":"23-27 August","kind":"weekday"},{"id":"WE 28&29 Aug","name":"WE 28&29 Aug","kind":"weekend"},{"id":"30 August - 3 September","name":"30 August - 3 September","kind":"weekday"},{"id":"WE 4&5 Sep","name":"WE 4&5 Sep","kind":"weekend"},{"id":"6-10 September","name":"6-10 September","kind":"weekday"},{"id":"WE 11&12 Sep","name":"WE 11&12 Sep","kind":"weekend"},{"id":"13-17 September","name":"13-17 September","kind":"weekday"},{"id":"WE 18&19 Sep","name":"WE 18&19 Sep","kind":"weekend"},{"id":"20-24 September","name":"20-24 September","kind":"weekday"},{"id":"WE 25&26 Sep","name":"WE 25&26 Sep","kind":"weekend"},{"id":"27 September - 1 October","name":"27 September - 1 October","kind":"weekday"},{"id":"WE 2&3 Oct","name":"WE 2&3 Oct","kind":"weekend"},{"id":"4-8 October","name":"4-8 October","kind":"weekday"},{"id":"WE 9&10 Oct","name":"WE 9&10 Oct","kind":"weekend"},{"id":"11-15 October","name":"11-15 October","kind":"weekday"},{"id":"WE 16&17 Oct","name":"WE 16&17 Oct","kind":"weekend"},{"id":"18-22 October","name":"18-22 October","kind":"weekday"},{"id":"WE 23&24 Oct","name":"WE 23&24 Oct","kind":"weekend"},{"id":"25-29 October","name":"25-29 October","kind":"weekday"},{"id":"WE 30&31 Oct","name":"WE 30&31 Oct","kind":"weekend"},{"id":"1-5 November","name":"1-5 November","kind":"weekday"},{"id":"WE 6&7 Nov","name":"WE 6&7 Nov","kind":"weekend"},{"id":"8-12 November","name":"8-12 November","kind":"weekday"},{"id":"WE 13&14 Nov","name":"WE 13&14 Nov","kind":"weekend"},{"id":"15-19 November","name":"15-19 November","kind":"weekday"},{"id":"WE 20&21 Nov","name":"WE 20&21 Nov","kind":"weekend"},{"id":"22-26 November","name":"22-26 November","kind":"weekday"},{"id":"WE 27&28 Nov","name":"WE 27&28 Nov","kind":"weekend"},{"id":"29 November - 3 December","name":"29 November - 3 December","kind":"weekday"},{"id":"WE 4&5 Dec","name":"WE 4&5 Dec","kind":"weekend"},{"id":"6-10 December","name":"6-10 December","kind":"weekday"},{"id":"WE 11&12 Dec","name":"WE 11&12 Dec","kind":"weekend"},{"id":"13-17 December","name":"13-17 December","kind":"weekday"},{"id":"WE 18&19 Dec","name":"WE 18&19 Dec","kind":"weekend"},{"id":"20-24 December","name":"20-24 December","kind":"weekday"},{"id":"WE 25&26 Dec","name":"WE 25&26 Dec","kind":"weekend"},{"id":"27-31 December","name":"27-31 December","kind":"weekday"}],"weeksData":{"WE 1 2 3 Jan":{"type":"weekend","rows":[{"role":"Weekend Ops Manager","sat":"","sun":"","fri":""},{"role":"Weekend Duty Editor","sat":"","sun":"","fri":""},{"role":"AbsSport B60 B120 London","sat":"","sun":"","fri":""},{"role":"Liverpool Manchester","sat":"","sun":"","fri":""},{"role":"W Midlands E Midlands","sat":"","sun":"","fri":""},{"role":"Hub North","sat":"","sun":"","fri":""},{"role":"Hub South & East","sat":"","sun":"","fri":""},{"role":"Hub South & West","sat":"","sun":"","fri":""},{"role":"Awareness","sat":"","sun":"","fri":""},{"role":"Creation","sat":"","sun":"","fri":""},{"role":"Reporter","sat":"","sun":"","fri":""},{"role":"BAUER 120 PM","sat":"","sun":"","fri":""}],"codes":["BCS","NYO","CUM","PSR","EYL","SYO","BBH","LAN","S&C","BER","LIN","TEE","CAM","NEA","WYO","ESX","KEN","NOH","NOR","B&B","H&W","OXF","COR","SOM","SOC","C&W","SWI","SUF","DEV","WAL","SUR","DOR","WST","SUS","GLO","WIL"],"notes":[],"satHeader":"SATURDAY 2 JANUARY","sunHeader":"SUNDAY 3 JANUARY","y":2027,"blocked":"See Christmas rota","friHeader":"FRIDAY 1 JANUARY"}},"rosterDefaults":[],"aliases":{},"weekMeta":{"4-8 January":{"cols":[{"y":2027,"m":0,"d":4},{"y":2027,"m":0,"d":5},{"y":2027,"m":0,"d":6},{"y":2027,"m":0,"d":7},{"y":2027,"m":0,"d":8}]},"WE 9&10 Jan":{"satHeader":"SATURDAY 9 JANUARY","sunHeader":"SUNDAY 10 JANUARY","y":2027},"11-15 January":{"cols":[{"y":2027,"m":0,"d":11},{"y":2027,"m":0,"d":12},{"y":2027,"m":0,"d":13},{"y":2027,"m":0,"d":14},{"y":2027,"m":0,"d":15}]},"WE 16&17 Jan":{"satHeader":"SATURDAY 16 JANUARY","sunHeader":"SUNDAY 17 JANUARY","y":2027},"18-22 January":{"cols":[{"y":2027,"m":0,"d":18},{"y":2027,"m":0,"d":19},{"y":2027,"m":0,"d":20},{"y":2027,"m":0,"d":21},{"y":2027,"m":0,"d":22}]},"WE 23&24 Jan":{"satHeader":"SATURDAY 23 JANUARY","sunHeader":"SUNDAY 24 JANUARY","y":2027},"25-29 January":{"cols":[{"y":2027,"m":0,"d":25},{"y":2027,"m":0,"d":26},{"y":2027,"m":0,"d":27},{"y":2027,"m":0,"d":28},{"y":2027,"m":0,"d":29}]},"WE 30&31 Jan":{"satHeader":"SATURDAY 30 JANUARY","sunHeader":"SUNDAY 31 JANUARY","y":2027},"1-5 February":{"cols":[{"y":2027,"m":1,"d":1},{"y":2027,"m":1,"d":2},{"y":2027,"m":1,"d":3},{"y":2027,"m":1,"d":4},{"y":2027,"m":1,"d":5}]},"WE 6&7 Feb":{"satHeader":"SATURDAY 6 FEBRUARY","sunHeader":"SUNDAY 7 FEBRUARY","y":2027},"8-12 February":{"cols":[{"y":2027,"m":1,"d":8},{"y":2027,"m":1,"d":9},{"y":2027,"m":1,"d":10},{"y":2027,"m":1,"d":11},{"y":2027,"m":1,"d":12}]},"WE 13&14 Feb":{"satHeader":"SATURDAY 13 FEBRUARY","sunHeader":"SUNDAY 14 FEBRUARY","y":2027},"15-19 February":{"cols":[{"y":2027,"m":1,"d":15},{"y":2027,"m":1,"d":16},{"y":2027,"m":1,"d":17},{"y":2027,"m":1,"d":18},{"y":2027,"m":1,"d":19}]},"WE 20&21 Feb":{"satHeader":"SATURDAY 20 FEBRUARY","sunHeader":"SUNDAY 21 FEBRUARY","y":2027},"22-26 February":{"cols":[{"y":2027,"m":1,"d":22},{"y":2027,"m":1,"d":23},{"y":2027,"m":1,"d":24},{"y":2027,"m":1,"d":25},{"y":2027,"m":1,"d":26}]},"WE 27&28 Feb":{"satHeader":"SATURDAY 27 FEBRUARY","sunHeader":"SUNDAY 28 FEBRUARY","y":2027},"1-5 March":{"cols":[{"y":2027,"m":2,"d":1},{"y":2027,"m":2,"d":2},{"y":2027,"m":2,"d":3},{"y":2027,"m":2,"d":4},{"y":2027,"m":2,"d":5}]},"WE 6&7 Mar":{"satHeader":"SATURDAY 6 MARCH","sunHeader":"SUNDAY 7 MARCH","y":2027},"8-12 March":{"cols":[{"y":2027,"m":2,"d":8},{"y":2027,"m":2,"d":9},{"y":2027,"m":2,"d":10},{"y":2027,"m":2,"d":11},{"y":2027,"m":2,"d":12}]},"WE 13&14 Mar":{"satHeader":"SATURDAY 13 MARCH","sunHeader":"SUNDAY 14 MARCH","y":2027},"15-19 March":{"cols":[{"y":2027,"m":2,"d":15},{"y":2027,"m":2,"d":16},{"y":2027,"m":2,"d":17},{"y":2027,"m":2,"d":18},{"y":2027,"m":2,"d":19}]},"WE 20&21 Mar":{"satHeader":"SATURDAY 20 MARCH","sunHeader":"SUNDAY 21 MARCH","y":2027},"22-26 March":{"cols":[{"y":2027,"m":2,"d":22},{"y":2027,"m":2,"d":23},{"y":2027,"m":2,"d":24},{"y":2027,"m":2,"d":25},{"y":2027,"m":2,"d":26}]},"WE 27&28 Mar":{"satHeader":"SATURDAY 27 MARCH","sunHeader":"SUNDAY 28 MARCH","y":2027},"29 March - 2 April":{"cols":[{"y":2027,"m":2,"d":29},{"y":2027,"m":2,"d":30},{"y":2027,"m":2,"d":31},{"y":2027,"m":3,"d":1},{"y":2027,"m":3,"d":2}]},"WE 3&4 Apr":{"satHeader":"SATURDAY 3 APRIL","sunHeader":"SUNDAY 4 APRIL","y":2027},"5-9 April":{"cols":[{"y":2027,"m":3,"d":5},{"y":2027,"m":3,"d":6},{"y":2027,"m":3,"d":7},{"y":2027,"m":3,"d":8},{"y":2027,"m":3,"d":9}]},"WE 10&11 Apr":{"satHeader":"SATURDAY 10 APRIL","sunHeader":"SUNDAY 11 APRIL","y":2027},"12-16 April":{"cols":[{"y":2027,"m":3,"d":12},{"y":2027,"m":3,"d":13},{"y":2027,"m":3,"d":14},{"y":2027,"m":3,"d":15},{"y":2027,"m":3,"d":16}]},"WE 17&18 Apr":{"satHeader":"SATURDAY 17 APRIL","sunHeader":"SUNDAY 18 APRIL","y":2027},"19-23 April":{"cols":[{"y":2027,"m":3,"d":19},{"y":2027,"m":3,"d":20},{"y":2027,"m":3,"d":21},{"y":2027,"m":3,"d":22},{"y":2027,"m":3,"d":23}]},"WE 24&25 Apr":{"satHeader":"SATURDAY 24 APRIL","sunHeader":"SUNDAY 25 APRIL","y":2027},"26-30 April":{"cols":[{"y":2027,"m":3,"d":26},{"y":2027,"m":3,"d":27},{"y":2027,"m":3,"d":28},{"y":2027,"m":3,"d":29},{"y":2027,"m":3,"d":30}]},"WE 1&2 May":{"satHeader":"SATURDAY 1 MAY","sunHeader":"SUNDAY 2 MAY","y":2027},"3-7 May":{"cols":[{"y":2027,"m":4,"d":3},{"y":2027,"m":4,"d":4},{"y":2027,"m":4,"d":5},{"y":2027,"m":4,"d":6},{"y":2027,"m":4,"d":7}]},"WE 8&9 May":{"satHeader":"SATURDAY 8 MAY","sunHeader":"SUNDAY 9 MAY","y":2027},"10-14 May":{"cols":[{"y":2027,"m":4,"d":10},{"y":2027,"m":4,"d":11},{"y":2027,"m":4,"d":12},{"y":2027,"m":4,"d":13},{"y":2027,"m":4,"d":14}]},"WE 15&16 May":{"satHeader":"SATURDAY 15 MAY","sunHeader":"SUNDAY 16 MAY","y":2027},"17-21 May":{"cols":[{"y":2027,"m":4,"d":17},{"y":2027,"m":4,"d":18},{"y":2027,"m":4,"d":19},{"y":2027,"m":4,"d":20},{"y":2027,"m":4,"d":21}]},"WE 22&23 May":{"satHeader":"SATURDAY 22 MAY","sunHeader":"SUNDAY 23 MAY","y":2027},"24-28 May":{"cols":[{"y":2027,"m":4,"d":24},{"y":2027,"m":4,"d":25},{"y":2027,"m":4,"d":26},{"y":2027,"m":4,"d":27},{"y":2027,"m":4,"d":28}]},"WE 29&30 May":{"satHeader":"SATURDAY 29 MAY","sunHeader":"SUNDAY 30 MAY","y":2027},"31 May - 4 June":{"cols":[{"y":2027,"m":4,"d":31},{"y":2027,"m":5,"d":1},{"y":2027,"m":5,"d":2},{"y":2027,"m":5,"d":3},{"y":2027,"m":5,"d":4}]},"WE 5&6 Jun":{"satHeader":"SATURDAY 5 JUNE","sunHeader":"SUNDAY 6 JUNE","y":2027},"7-11 June":{"cols":[{"y":2027,"m":5,"d":7},{"y":2027,"m":5,"d":8},{"y":2027,"m":5,"d":9},{"y":2027,"m":5,"d":10},{"y":2027,"m":5,"d":11}]},"WE 12&13 Jun":{"satHeader":"SATURDAY 12 JUNE","sunHeader":"SUNDAY 13 JUNE","y":2027},"14-18 June":{"cols":[{"y":2027,"m":5,"d":14},{"y":2027,"m":5,"d":15},{"y":2027,"m":5,"d":16},{"y":2027,"m":5,"d":17},{"y":2027,"m":5,"d":18}]},"WE 19&20 Jun":{"satHeader":"SATURDAY 19 JUNE","sunHeader":"SUNDAY 20 JUNE","y":2027},"21-25 June":{"cols":[{"y":2027,"m":5,"d":21},{"y":2027,"m":5,"d":22},{"y":2027,"m":5,"d":23},{"y":2027,"m":5,"d":24},{"y":2027,"m":5,"d":25}]},"WE 26&27 Jun":{"satHeader":"SATURDAY 26 JUNE","sunHeader":"SUNDAY 27 JUNE","y":2027},"28 June - 2 July":{"cols":[{"y":2027,"m":5,"d":28},{"y":2027,"m":5,"d":29},{"y":2027,"m":5,"d":30},{"y":2027,"m":6,"d":1},{"y":2027,"m":6,"d":2}]},"WE 3&4 Jul":{"satHeader":"SATURDAY 3 JULY","sunHeader":"SUNDAY 4 JULY","y":2027},"5-9 July":{"cols":[{"y":2027,"m":6,"d":5},{"y":2027,"m":6,"d":6},{"y":2027,"m":6,"d":7},{"y":2027,"m":6,"d":8},{"y":2027,"m":6,"d":9}]},"WE 10&11 Jul":{"satHeader":"SATURDAY 10 JULY","sunHeader":"SUNDAY 11 JULY","y":2027},"12-16 July":{"cols":[{"y":2027,"m":6,"d":12},{"y":2027,"m":6,"d":13},{"y":2027,"m":6,"d":14},{"y":2027,"m":6,"d":15},{"y":2027,"m":6,"d":16}]},"WE 17&18 Jul":{"satHeader":"SATURDAY 17 JULY","sunHeader":"SUNDAY 18 JULY","y":2027},"19-23 July":{"cols":[{"y":2027,"m":6,"d":19},{"y":2027,"m":6,"d":20},{"y":2027,"m":6,"d":21},{"y":2027,"m":6,"d":22},{"y":2027,"m":6,"d":23}]},"WE 24&25 Jul":{"satHeader":"SATURDAY 24 JULY","sunHeader":"SUNDAY 25 JULY","y":2027},"26-30 July":{"cols":[{"y":2027,"m":6,"d":26},{"y":2027,"m":6,"d":27},{"y":2027,"m":6,"d":28},{"y":2027,"m":6,"d":29},{"y":2027,"m":6,"d":30}]},"WE 31 Jul 1 Aug":{"satHeader":"SATURDAY 31 JULY","sunHeader":"SUNDAY 1 AUGUST","y":2027},"2-6 August":{"cols":[{"y":2027,"m":7,"d":2},{"y":2027,"m":7,"d":3},{"y":2027,"m":7,"d":4},{"y":2027,"m":7,"d":5},{"y":2027,"m":7,"d":6}]},"WE 7&8 Aug":{"satHeader":"SATURDAY 7 AUGUST","sunHeader":"SUNDAY 8 AUGUST","y":2027},"9-13 August":{"cols":[{"y":2027,"m":7,"d":9},{"y":2027,"m":7,"d":10},{"y":2027,"m":7,"d":11},{"y":2027,"m":7,"d":12},{"y":2027,"m":7,"d":13}]},"WE 14&15 Aug":{"satHeader":"SATURDAY 14 AUGUST","sunHeader":"SUNDAY 15 AUGUST","y":2027},"16-20 August":{"cols":[{"y":2027,"m":7,"d":16},{"y":2027,"m":7,"d":17},{"y":2027,"m":7,"d":18},{"y":2027,"m":7,"d":19},{"y":2027,"m":7,"d":20}]},"WE 21&22 Aug":{"satHeader":"SATURDAY 21 AUGUST","sunHeader":"SUNDAY 22 AUGUST","y":2027},"23-27 August":{"cols":[{"y":2027,"m":7,"d":23},{"y":2027,"m":7,"d":24},{"y":2027,"m":7,"d":25},{"y":2027,"m":7,"d":26},{"y":2027,"m":7,"d":27}]},"WE 28&29 Aug":{"satHeader":"SATURDAY 28 AUGUST","sunHeader":"SUNDAY 29 AUGUST","y":2027},"30 August - 3 September":{"cols":[{"y":2027,"m":7,"d":30},{"y":2027,"m":7,"d":31},{"y":2027,"m":8,"d":1},{"y":2027,"m":8,"d":2},{"y":2027,"m":8,"d":3}]},"WE 4&5 Sep":{"satHeader":"SATURDAY 4 SEPTEMBER","sunHeader":"SUNDAY 5 SEPTEMBER","y":2027},"6-10 September":{"cols":[{"y":2027,"m":8,"d":6},{"y":2027,"m":8,"d":7},{"y":2027,"m":8,"d":8},{"y":2027,"m":8,"d":9},{"y":2027,"m":8,"d":10}]},"WE 11&12 Sep":{"satHeader":"SATURDAY 11 SEPTEMBER","sunHeader":"SUNDAY 12 SEPTEMBER","y":2027},"13-17 September":{"cols":[{"y":2027,"m":8,"d":13},{"y":2027,"m":8,"d":14},{"y":2027,"m":8,"d":15},{"y":2027,"m":8,"d":16},{"y":2027,"m":8,"d":17}]},"WE 18&19 Sep":{"satHeader":"SATURDAY 18 SEPTEMBER","sunHeader":"SUNDAY 19 SEPTEMBER","y":2027},"20-24 September":{"cols":[{"y":2027,"m":8,"d":20},{"y":2027,"m":8,"d":21},{"y":2027,"m":8,"d":22},{"y":2027,"m":8,"d":23},{"y":2027,"m":8,"d":24}]},"WE 25&26 Sep":{"satHeader":"SATURDAY 25 SEPTEMBER","sunHeader":"SUNDAY 26 SEPTEMBER","y":2027},"27 September - 1 October":{"cols":[{"y":2027,"m":8,"d":27},{"y":2027,"m":8,"d":28},{"y":2027,"m":8,"d":29},{"y":2027,"m":8,"d":30},{"y":2027,"m":9,"d":1}]},"WE 2&3 Oct":{"satHeader":"SATURDAY 2 OCTOBER","sunHeader":"SUNDAY 3 OCTOBER","y":2027},"4-8 October":{"cols":[{"y":2027,"m":9,"d":4},{"y":2027,"m":9,"d":5},{"y":2027,"m":9,"d":6},{"y":2027,"m":9,"d":7},{"y":2027,"m":9,"d":8}]},"WE 9&10 Oct":{"satHeader":"SATURDAY 9 OCTOBER","sunHeader":"SUNDAY 10 OCTOBER","y":2027},"11-15 October":{"cols":[{"y":2027,"m":9,"d":11},{"y":2027,"m":9,"d":12},{"y":2027,"m":9,"d":13},{"y":2027,"m":9,"d":14},{"y":2027,"m":9,"d":15}]},"WE 16&17 Oct":{"satHeader":"SATURDAY 16 OCTOBER","sunHeader":"SUNDAY 17 OCTOBER","y":2027},"18-22 October":{"cols":[{"y":2027,"m":9,"d":18},{"y":2027,"m":9,"d":19},{"y":2027,"m":9,"d":20},{"y":2027,"m":9,"d":21},{"y":2027,"m":9,"d":22}]},"WE 23&24 Oct":{"satHeader":"SATURDAY 23 OCTOBER","sunHeader":"SUNDAY 24 OCTOBER","y":2027},"25-29 October":{"cols":[{"y":2027,"m":9,"d":25},{"y":2027,"m":9,"d":26},{"y":2027,"m":9,"d":27},{"y":2027,"m":9,"d":28},{"y":2027,"m":9,"d":29}]},"WE 30&31 Oct":{"satHeader":"SATURDAY 30 OCTOBER","sunHeader":"SUNDAY 31 OCTOBER","y":2027},"1-5 November":{"cols":[{"y":2027,"m":10,"d":1},{"y":2027,"m":10,"d":2},{"y":2027,"m":10,"d":3},{"y":2027,"m":10,"d":4},{"y":2027,"m":10,"d":5}]},"WE 6&7 Nov":{"satHeader":"SATURDAY 6 NOVEMBER","sunHeader":"SUNDAY 7 NOVEMBER","y":2027},"8-12 November":{"cols":[{"y":2027,"m":10,"d":8},{"y":2027,"m":10,"d":9},{"y":2027,"m":10,"d":10},{"y":2027,"m":10,"d":11},{"y":2027,"m":10,"d":12}]},"WE 13&14 Nov":{"satHeader":"SATURDAY 13 NOVEMBER","sunHeader":"SUNDAY 14 NOVEMBER","y":2027},"15-19 November":{"cols":[{"y":2027,"m":10,"d":15},{"y":2027,"m":10,"d":16},{"y":2027,"m":10,"d":17},{"y":2027,"m":10,"d":18},{"y":2027,"m":10,"d":19}]},"WE 20&21 Nov":{"satHeader":"SATURDAY 20 NOVEMBER","sunHeader":"SUNDAY 21 NOVEMBER","y":2027},"22-26 November":{"cols":[{"y":2027,"m":10,"d":22},{"y":2027,"m":10,"d":23},{"y":2027,"m":10,"d":24},{"y":2027,"m":10,"d":25},{"y":2027,"m":10,"d":26}]},"WE 27&28 Nov":{"satHeader":"SATURDAY 27 NOVEMBER","sunHeader":"SUNDAY 28 NOVEMBER","y":2027},"29 November - 3 December":{"cols":[{"y":2027,"m":10,"d":29},{"y":2027,"m":10,"d":30},{"y":2027,"m":11,"d":1},{"y":2027,"m":11,"d":2},{"y":2027,"m":11,"d":3}]},"WE 4&5 Dec":{"satHeader":"SATURDAY 4 DECEMBER","sunHeader":"SUNDAY 5 DECEMBER","y":2027},"6-10 December":{"cols":[{"y":2027,"m":11,"d":6},{"y":2027,"m":11,"d":7},{"y":2027,"m":11,"d":8},{"y":2027,"m":11,"d":9},{"y":2027,"m":11,"d":10}]},"WE 11&12 Dec":{"satHeader":"SATURDAY 11 DECEMBER","sunHeader":"SUNDAY 12 DECEMBER","y":2027},"13-17 December":{"cols":[{"y":2027,"m":11,"d":13},{"y":2027,"m":11,"d":14},{"y":2027,"m":11,"d":15},{"y":2027,"m":11,"d":16},{"y":2027,"m":11,"d":17}]},"WE 18&19 Dec":{"satHeader":"SATURDAY 18 DECEMBER","sunHeader":"SUNDAY 19 DECEMBER","y":2027},"20-24 December":{"cols":[{"y":2027,"m":11,"d":20},{"y":2027,"m":11,"d":21},{"y":2027,"m":11,"d":22},{"y":2027,"m":11,"d":23},{"y":2027,"m":11,"d":24}]},"WE 25&26 Dec":{"blocked":"See Christmas rota","satHeader":"SATURDAY 25 DECEMBER","sunHeader":"SUNDAY 26 DECEMBER","y":2027},"27-31 December":{"cols":[{"y":2027,"m":11,"d":27},{"y":2027,"m":11,"d":28},{"y":2027,"m":11,"d":29},{"y":2027,"m":11,"d":30},{"y":2027,"m":11,"d":31}],"blocked":"See Christmas rota"}}};
-const YEAR = 2027;                     // the year this rota covers
+const RAW = {"weekdayTemplate":{"type":"weekday","sections":[{"title":"HOLIDAY","holiday":true,"rows":[{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]}]},{"title":"FOCUS ONE","rows":[{"type":"role","area":"","slot":"NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"SOUTH COAST & KENT","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"SOUTH WALES & BRISTOL","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"GREATER MANCHESTER & MERSEYSIDE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"SOUTH COAST","assign":["","","","",""]},{"type":"role","area":"","slot":"KENT","assign":["","","","",""]},{"type":"role","area":"","slot":"SOUTH WALES","assign":["","","","",""]},{"type":"role","area":"","slot":"BRISTOL","assign":["","","","",""]},{"type":"role","area":"","slot":"GREATER MANCHESTER","assign":["","","","",""]},{"type":"role","area":"","slot":"MERSEYSIDE","assign":["","","","",""]}]},{"title":"FOCUS TWO","rows":[{"type":"role","area":"","slot":"NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"BIRMINGHAM & WEST MIDLANDS & EAST MIDLANDS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"WEST YORKSHIRE & SOUTH YORKSHIRE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"NORTH EAST & TEESSIDE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"BIRMINGHAM & WEST MIDLANDS","assign":["","","","",""]},{"type":"role","area":"","slot":"EAST MIDLANDS","assign":["","","","",""]},{"type":"role","area":"","slot":"WEST YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"SOUTH YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTH EAST","assign":["","","","",""]},{"type":"role","area":"","slot":"TEESSIDE","assign":["","","","",""]}]},{"title":"NATIONALS & LONDON","rows":[{"type":"role","area":"KISS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"ABSOLUTE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"UK 60","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"UK 120","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"LONDON","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"BEHIND THE HEADLINES","slot":"","assign":["","","","",""]}]},{"title":"HUB","rows":[{"type":"role","area":"NEWS EDITOR","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]}]},{"title":"HUB SOUTH & EAST","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"BUCKINGHAMSHIRE, BEDFORDSHIRE & HERTFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"CAMBRIDGESHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORFOLK","assign":["","","","",""]},{"type":"role","area":"","slot":"SUFFOLK","assign":["","","","",""]},{"type":"role","area":"","slot":"SUSSEX","assign":["","","","",""]},{"type":"role","area":"","slot":"SURREY","assign":["","","","",""]},{"type":"role","area":"","slot":"OXFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTHAMPTONSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"BERKSHIRE & NORTH HAMPSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"ESSEX","assign":["","","","",""]}]},{"title":"HUB SOUTH & WEST","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"SWINDON","assign":["","","","",""]},{"type":"role","area":"","slot":"GLOUCESTER","assign":["","","","",""]},{"type":"role","area":"","slot":"SOMERSET","assign":["","","","",""]},{"type":"role","area":"","slot":"DEVON","assign":["","","","",""]},{"type":"role","area":"","slot":"CORNWALL","assign":["","","","",""]},{"type":"role","area":"","slot":"DORSET","assign":["","","","",""]},{"type":"role","area":"","slot":"WILTSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"COVENTRY & WARWICKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"HEREFORD & WORCESTERSHIRE","assign":["","","","",""]}]},{"title":"HUB NORTH","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"CUMBRIA","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTH YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"LANCASHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"STAFFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"EAST YORKSHIRE & NORTHERN LINCOLNSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"LINCOLNSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"BLACK COUNTRY & SHROPSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"PETERBOROUGH, STAMFORD & RUTLAND","assign":["","","","",""]}]},{"title":"OTHER","rows":[{"type":"role","area":"","slot":"OPERATIONS MANAGER","assign":["","","","",""]},{"type":"role","area":"","slot":"DIGITAL NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"BREAKFAST CONTENT EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"DRIVE CONTENT EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"SENIOR CORRESPONDENT","assign":["","","","",""]},{"type":"role","area":"","slot":"POLITICAL EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"REGIONAL CORRESPONDENT","assign":["","","","",""]},{"type":"role","area":"","slot":"HEAD OF NEWS AND SPORT","assign":["","","","",""]},{"type":"role","area":"","slot":"DEPUTY HEAD OF NEWS AND SPORT","assign":["","","","",""]}]}],"notes":[]},"weekendTemplate":{"type":"weekend","rows":[{"role":"Weekend Ops Manager","sat":"","sun":""},{"role":"Weekend Duty Editor","sat":"","sun":""},{"role":"AbsSport B60 B120 London","sat":"","sun":""},{"role":"Liverpool Manchester","sat":"","sun":""},{"role":"W Midlands E Midlands","sat":"","sun":""},{"role":"Hub North","sat":"","sun":""},{"role":"Hub South & East","sat":"","sun":""},{"role":"Hub South & West","sat":"","sun":""},{"role":"Awareness","sat":"","sun":""},{"role":"Creation","sat":"","sun":""},{"role":"Reporter","sat":"","sun":""},{"role":"BAUER 120 PM","sat":"","sun":""}],"codes":["BCS","NYO","CUM","PSR","EYL","SYO","BBH","LAN","S&C","BER","LIN","TEE","CAM","NEA","WYO","ESX","KEN","NOH","NOR","B&B","H&W","OXF","COR","SOM","SOC","C&W","SWI","SUF","DEV","WAL","SUR","DOR","WST","SUS","GLO","WIL"],"notes":[],"satHeader":"SATURDAY 3 JANUARY","sunHeader":"SUNDAY 4 JANUARY"},"weeks":[{"id":"trial-2026-11-01","name":"1 November 2026","kind":"weekend"},{"id":"trial-2026-11-02","name":"2-6 November 2026","kind":"weekday"},{"id":"trial-2026-11-07","name":"WE 7&8 Nov 2026","kind":"weekend"},{"id":"trial-2026-11-09","name":"9-13 November 2026","kind":"weekday"},{"id":"trial-2026-11-14","name":"WE 14&15 Nov 2026","kind":"weekend"},{"id":"trial-2026-11-16","name":"16-20 November 2026","kind":"weekday"},{"id":"trial-2026-11-21","name":"WE 21&22 Nov 2026","kind":"weekend"},{"id":"trial-2026-11-23","name":"23-27 November 2026","kind":"weekday"},{"id":"trial-2026-11-28","name":"WE 28&29 Nov 2026","kind":"weekend"},{"id":"trial-2026-11-30","name":"30 November - 4 December 2026","kind":"weekday"},{"id":"trial-2026-12-05","name":"WE 5&6 Dec 2026","kind":"weekend"},{"id":"trial-2026-12-07","name":"7-11 December 2026","kind":"weekday"},{"id":"trial-2026-12-12","name":"WE 12&13 Dec 2026","kind":"weekend"},{"id":"trial-2026-12-14","name":"14-18 December 2026","kind":"weekday"},{"id":"trial-2026-12-19","name":"WE 19&20 Dec 2026","kind":"weekend"},{"id":"trial-2026-12-21","name":"21-24 December 2026","kind":"weekday"},{"id":"WE 1 2 3 Jan","name":"WE 1 2 3 Jan","kind":"weekend"},{"id":"4-8 January","name":"4-8 January","kind":"weekday"},{"id":"WE 9&10 Jan","name":"WE 9&10 Jan","kind":"weekend"},{"id":"11-15 January","name":"11-15 January","kind":"weekday"},{"id":"WE 16&17 Jan","name":"WE 16&17 Jan","kind":"weekend"},{"id":"18-22 January","name":"18-22 January","kind":"weekday"},{"id":"WE 23&24 Jan","name":"WE 23&24 Jan","kind":"weekend"},{"id":"25-29 January","name":"25-29 January","kind":"weekday"},{"id":"WE 30&31 Jan","name":"WE 30&31 Jan","kind":"weekend"},{"id":"1-5 February","name":"1-5 February","kind":"weekday"},{"id":"WE 6&7 Feb","name":"WE 6&7 Feb","kind":"weekend"},{"id":"8-12 February","name":"8-12 February","kind":"weekday"},{"id":"WE 13&14 Feb","name":"WE 13&14 Feb","kind":"weekend"},{"id":"15-19 February","name":"15-19 February","kind":"weekday"},{"id":"WE 20&21 Feb","name":"WE 20&21 Feb","kind":"weekend"},{"id":"22-26 February","name":"22-26 February","kind":"weekday"},{"id":"WE 27&28 Feb","name":"WE 27&28 Feb","kind":"weekend"},{"id":"1-5 March","name":"1-5 March","kind":"weekday"},{"id":"WE 6&7 Mar","name":"WE 6&7 Mar","kind":"weekend"},{"id":"8-12 March","name":"8-12 March","kind":"weekday"},{"id":"WE 13&14 Mar","name":"WE 13&14 Mar","kind":"weekend"},{"id":"15-19 March","name":"15-19 March","kind":"weekday"},{"id":"WE 20&21 Mar","name":"WE 20&21 Mar","kind":"weekend"},{"id":"22-26 March","name":"22-26 March","kind":"weekday"},{"id":"WE 27&28 Mar","name":"WE 27&28 Mar","kind":"weekend"},{"id":"29 March - 2 April","name":"29 March - 2 April","kind":"weekday"},{"id":"WE 3&4 Apr","name":"WE 3&4 Apr","kind":"weekend"},{"id":"5-9 April","name":"5-9 April","kind":"weekday"},{"id":"WE 10&11 Apr","name":"WE 10&11 Apr","kind":"weekend"},{"id":"12-16 April","name":"12-16 April","kind":"weekday"},{"id":"WE 17&18 Apr","name":"WE 17&18 Apr","kind":"weekend"},{"id":"19-23 April","name":"19-23 April","kind":"weekday"},{"id":"WE 24&25 Apr","name":"WE 24&25 Apr","kind":"weekend"},{"id":"26-30 April","name":"26-30 April","kind":"weekday"},{"id":"WE 1&2 May","name":"WE 1&2 May","kind":"weekend"},{"id":"3-7 May","name":"3-7 May","kind":"weekday"},{"id":"WE 8&9 May","name":"WE 8&9 May","kind":"weekend"},{"id":"10-14 May","name":"10-14 May","kind":"weekday"},{"id":"WE 15&16 May","name":"WE 15&16 May","kind":"weekend"},{"id":"17-21 May","name":"17-21 May","kind":"weekday"},{"id":"WE 22&23 May","name":"WE 22&23 May","kind":"weekend"},{"id":"24-28 May","name":"24-28 May","kind":"weekday"},{"id":"WE 29&30 May","name":"WE 29&30 May","kind":"weekend"},{"id":"31 May - 4 June","name":"31 May - 4 June","kind":"weekday"},{"id":"WE 5&6 Jun","name":"WE 5&6 Jun","kind":"weekend"},{"id":"7-11 June","name":"7-11 June","kind":"weekday"},{"id":"WE 12&13 Jun","name":"WE 12&13 Jun","kind":"weekend"},{"id":"14-18 June","name":"14-18 June","kind":"weekday"},{"id":"WE 19&20 Jun","name":"WE 19&20 Jun","kind":"weekend"},{"id":"21-25 June","name":"21-25 June","kind":"weekday"},{"id":"WE 26&27 Jun","name":"WE 26&27 Jun","kind":"weekend"},{"id":"28 June - 2 July","name":"28 June - 2 July","kind":"weekday"},{"id":"WE 3&4 Jul","name":"WE 3&4 Jul","kind":"weekend"},{"id":"5-9 July","name":"5-9 July","kind":"weekday"},{"id":"WE 10&11 Jul","name":"WE 10&11 Jul","kind":"weekend"},{"id":"12-16 July","name":"12-16 July","kind":"weekday"},{"id":"WE 17&18 Jul","name":"WE 17&18 Jul","kind":"weekend"},{"id":"19-23 July","name":"19-23 July","kind":"weekday"},{"id":"WE 24&25 Jul","name":"WE 24&25 Jul","kind":"weekend"},{"id":"26-30 July","name":"26-30 July","kind":"weekday"},{"id":"WE 31 Jul 1 Aug","name":"WE 31 Jul 1 Aug","kind":"weekend"},{"id":"2-6 August","name":"2-6 August","kind":"weekday"},{"id":"WE 7&8 Aug","name":"WE 7&8 Aug","kind":"weekend"},{"id":"9-13 August","name":"9-13 August","kind":"weekday"},{"id":"WE 14&15 Aug","name":"WE 14&15 Aug","kind":"weekend"},{"id":"16-20 August","name":"16-20 August","kind":"weekday"},{"id":"WE 21&22 Aug","name":"WE 21&22 Aug","kind":"weekend"},{"id":"23-27 August","name":"23-27 August","kind":"weekday"},{"id":"WE 28&29 Aug","name":"WE 28&29 Aug","kind":"weekend"},{"id":"30 August - 3 September","name":"30 August - 3 September","kind":"weekday"},{"id":"WE 4&5 Sep","name":"WE 4&5 Sep","kind":"weekend"},{"id":"6-10 September","name":"6-10 September","kind":"weekday"},{"id":"WE 11&12 Sep","name":"WE 11&12 Sep","kind":"weekend"},{"id":"13-17 September","name":"13-17 September","kind":"weekday"},{"id":"WE 18&19 Sep","name":"WE 18&19 Sep","kind":"weekend"},{"id":"20-24 September","name":"20-24 September","kind":"weekday"},{"id":"WE 25&26 Sep","name":"WE 25&26 Sep","kind":"weekend"},{"id":"27 September - 1 October","name":"27 September - 1 October","kind":"weekday"},{"id":"WE 2&3 Oct","name":"WE 2&3 Oct","kind":"weekend"},{"id":"4-8 October","name":"4-8 October","kind":"weekday"},{"id":"WE 9&10 Oct","name":"WE 9&10 Oct","kind":"weekend"},{"id":"11-15 October","name":"11-15 October","kind":"weekday"},{"id":"WE 16&17 Oct","name":"WE 16&17 Oct","kind":"weekend"},{"id":"18-22 October","name":"18-22 October","kind":"weekday"},{"id":"WE 23&24 Oct","name":"WE 23&24 Oct","kind":"weekend"},{"id":"25-29 October","name":"25-29 October","kind":"weekday"},{"id":"WE 30&31 Oct","name":"WE 30&31 Oct","kind":"weekend"},{"id":"1-5 November","name":"1-5 November","kind":"weekday"},{"id":"WE 6&7 Nov","name":"WE 6&7 Nov","kind":"weekend"},{"id":"8-12 November","name":"8-12 November","kind":"weekday"},{"id":"WE 13&14 Nov","name":"WE 13&14 Nov","kind":"weekend"},{"id":"15-19 November","name":"15-19 November","kind":"weekday"},{"id":"WE 20&21 Nov","name":"WE 20&21 Nov","kind":"weekend"},{"id":"22-26 November","name":"22-26 November","kind":"weekday"},{"id":"WE 27&28 Nov","name":"WE 27&28 Nov","kind":"weekend"},{"id":"29 November - 3 December","name":"29 November - 3 December","kind":"weekday"},{"id":"WE 4&5 Dec","name":"WE 4&5 Dec","kind":"weekend"},{"id":"6-10 December","name":"6-10 December","kind":"weekday"},{"id":"WE 11&12 Dec","name":"WE 11&12 Dec","kind":"weekend"},{"id":"13-17 December","name":"13-17 December","kind":"weekday"},{"id":"WE 18&19 Dec","name":"WE 18&19 Dec","kind":"weekend"},{"id":"20-24 December","name":"20-24 December","kind":"weekday"},{"id":"WE 25&26 Dec","name":"WE 25&26 Dec","kind":"weekend"},{"id":"27-31 December","name":"27-31 December","kind":"weekday"}],"weeksData":{"WE 1 2 3 Jan":{"type":"weekend","rows":[{"role":"Weekend Ops Manager","sat":"","sun":"","fri":""},{"role":"Weekend Duty Editor","sat":"","sun":"","fri":""},{"role":"AbsSport B60 B120 London","sat":"","sun":"","fri":""},{"role":"Liverpool Manchester","sat":"","sun":"","fri":""},{"role":"W Midlands E Midlands","sat":"","sun":"","fri":""},{"role":"Hub North","sat":"","sun":"","fri":""},{"role":"Hub South & East","sat":"","sun":"","fri":""},{"role":"Hub South & West","sat":"","sun":"","fri":""},{"role":"Awareness","sat":"","sun":"","fri":""},{"role":"Creation","sat":"","sun":"","fri":""},{"role":"Reporter","sat":"","sun":"","fri":""},{"role":"BAUER 120 PM","sat":"","sun":"","fri":""}],"codes":["BCS","NYO","CUM","PSR","EYL","SYO","BBH","LAN","S&C","BER","LIN","TEE","CAM","NEA","WYO","ESX","KEN","NOH","NOR","B&B","H&W","OXF","COR","SOM","SOC","C&W","SWI","SUF","DEV","WAL","SUR","DOR","WST","SUS","GLO","WIL"],"notes":[],"satHeader":"SATURDAY 2 JANUARY","sunHeader":"SUNDAY 3 JANUARY","y":2027,"blocked":"See Christmas rota","friHeader":"FRIDAY 1 JANUARY"},"trial-2026-11-01":{"type":"weekend","rows":[{"role":"Weekend Ops Manager","vals":{"sun":""}},{"role":"Weekend Duty Editor","vals":{"sun":""}},{"role":"AbsSport B60 B120 London","vals":{"sun":""}},{"role":"Liverpool Manchester","vals":{"sun":""}},{"role":"W Midlands E Midlands","vals":{"sun":""}},{"role":"Hub North","vals":{"sun":""}},{"role":"Hub South & East","vals":{"sun":""}},{"role":"Hub South & West","vals":{"sun":""}},{"role":"Awareness","vals":{"sun":""}},{"role":"Creation","vals":{"sun":""}},{"role":"Reporter","vals":{"sun":""}},{"role":"BAUER 120 PM","vals":{"sun":""}}],"codes":["BCS","NYO","CUM","PSR","EYL","SYO","BBH","LAN","S&C","BER","LIN","TEE","CAM","NEA","WYO","ESX","KEN","NOH","NOR","B&B","H&W","OXF","COR","SOM","SOC","C&W","SWI","SUF","DEV","WAL","SUR","DOR","WST","SUS","GLO","WIL"],"notes":[],"y":2026,"special":true,"trial":true,"cols":[{"key":"sun","lbl":"Sun","sub":"1 Nov"}]}},"rosterDefaults":[],"aliases":{},"weekMeta":{"4-8 January":{"cols":[{"y":2027,"m":0,"d":4},{"y":2027,"m":0,"d":5},{"y":2027,"m":0,"d":6},{"y":2027,"m":0,"d":7},{"y":2027,"m":0,"d":8}]},"WE 9&10 Jan":{"satHeader":"SATURDAY 9 JANUARY","sunHeader":"SUNDAY 10 JANUARY","y":2027},"11-15 January":{"cols":[{"y":2027,"m":0,"d":11},{"y":2027,"m":0,"d":12},{"y":2027,"m":0,"d":13},{"y":2027,"m":0,"d":14},{"y":2027,"m":0,"d":15}]},"WE 16&17 Jan":{"satHeader":"SATURDAY 16 JANUARY","sunHeader":"SUNDAY 17 JANUARY","y":2027},"18-22 January":{"cols":[{"y":2027,"m":0,"d":18},{"y":2027,"m":0,"d":19},{"y":2027,"m":0,"d":20},{"y":2027,"m":0,"d":21},{"y":2027,"m":0,"d":22}]},"WE 23&24 Jan":{"satHeader":"SATURDAY 23 JANUARY","sunHeader":"SUNDAY 24 JANUARY","y":2027},"25-29 January":{"cols":[{"y":2027,"m":0,"d":25},{"y":2027,"m":0,"d":26},{"y":2027,"m":0,"d":27},{"y":2027,"m":0,"d":28},{"y":2027,"m":0,"d":29}]},"WE 30&31 Jan":{"satHeader":"SATURDAY 30 JANUARY","sunHeader":"SUNDAY 31 JANUARY","y":2027},"1-5 February":{"cols":[{"y":2027,"m":1,"d":1},{"y":2027,"m":1,"d":2},{"y":2027,"m":1,"d":3},{"y":2027,"m":1,"d":4},{"y":2027,"m":1,"d":5}]},"WE 6&7 Feb":{"satHeader":"SATURDAY 6 FEBRUARY","sunHeader":"SUNDAY 7 FEBRUARY","y":2027},"8-12 February":{"cols":[{"y":2027,"m":1,"d":8},{"y":2027,"m":1,"d":9},{"y":2027,"m":1,"d":10},{"y":2027,"m":1,"d":11},{"y":2027,"m":1,"d":12}]},"WE 13&14 Feb":{"satHeader":"SATURDAY 13 FEBRUARY","sunHeader":"SUNDAY 14 FEBRUARY","y":2027},"15-19 February":{"cols":[{"y":2027,"m":1,"d":15},{"y":2027,"m":1,"d":16},{"y":2027,"m":1,"d":17},{"y":2027,"m":1,"d":18},{"y":2027,"m":1,"d":19}]},"WE 20&21 Feb":{"satHeader":"SATURDAY 20 FEBRUARY","sunHeader":"SUNDAY 21 FEBRUARY","y":2027},"22-26 February":{"cols":[{"y":2027,"m":1,"d":22},{"y":2027,"m":1,"d":23},{"y":2027,"m":1,"d":24},{"y":2027,"m":1,"d":25},{"y":2027,"m":1,"d":26}]},"WE 27&28 Feb":{"satHeader":"SATURDAY 27 FEBRUARY","sunHeader":"SUNDAY 28 FEBRUARY","y":2027},"1-5 March":{"cols":[{"y":2027,"m":2,"d":1},{"y":2027,"m":2,"d":2},{"y":2027,"m":2,"d":3},{"y":2027,"m":2,"d":4},{"y":2027,"m":2,"d":5}]},"WE 6&7 Mar":{"satHeader":"SATURDAY 6 MARCH","sunHeader":"SUNDAY 7 MARCH","y":2027},"8-12 March":{"cols":[{"y":2027,"m":2,"d":8},{"y":2027,"m":2,"d":9},{"y":2027,"m":2,"d":10},{"y":2027,"m":2,"d":11},{"y":2027,"m":2,"d":12}]},"WE 13&14 Mar":{"satHeader":"SATURDAY 13 MARCH","sunHeader":"SUNDAY 14 MARCH","y":2027},"15-19 March":{"cols":[{"y":2027,"m":2,"d":15},{"y":2027,"m":2,"d":16},{"y":2027,"m":2,"d":17},{"y":2027,"m":2,"d":18},{"y":2027,"m":2,"d":19}]},"WE 20&21 Mar":{"satHeader":"SATURDAY 20 MARCH","sunHeader":"SUNDAY 21 MARCH","y":2027},"22-26 March":{"cols":[{"y":2027,"m":2,"d":22},{"y":2027,"m":2,"d":23},{"y":2027,"m":2,"d":24},{"y":2027,"m":2,"d":25},{"y":2027,"m":2,"d":26}]},"WE 27&28 Mar":{"satHeader":"SATURDAY 27 MARCH","sunHeader":"SUNDAY 28 MARCH","y":2027},"29 March - 2 April":{"cols":[{"y":2027,"m":2,"d":29},{"y":2027,"m":2,"d":30},{"y":2027,"m":2,"d":31},{"y":2027,"m":3,"d":1},{"y":2027,"m":3,"d":2}]},"WE 3&4 Apr":{"satHeader":"SATURDAY 3 APRIL","sunHeader":"SUNDAY 4 APRIL","y":2027},"5-9 April":{"cols":[{"y":2027,"m":3,"d":5},{"y":2027,"m":3,"d":6},{"y":2027,"m":3,"d":7},{"y":2027,"m":3,"d":8},{"y":2027,"m":3,"d":9}]},"WE 10&11 Apr":{"satHeader":"SATURDAY 10 APRIL","sunHeader":"SUNDAY 11 APRIL","y":2027},"12-16 April":{"cols":[{"y":2027,"m":3,"d":12},{"y":2027,"m":3,"d":13},{"y":2027,"m":3,"d":14},{"y":2027,"m":3,"d":15},{"y":2027,"m":3,"d":16}]},"WE 17&18 Apr":{"satHeader":"SATURDAY 17 APRIL","sunHeader":"SUNDAY 18 APRIL","y":2027},"19-23 April":{"cols":[{"y":2027,"m":3,"d":19},{"y":2027,"m":3,"d":20},{"y":2027,"m":3,"d":21},{"y":2027,"m":3,"d":22},{"y":2027,"m":3,"d":23}]},"WE 24&25 Apr":{"satHeader":"SATURDAY 24 APRIL","sunHeader":"SUNDAY 25 APRIL","y":2027},"26-30 April":{"cols":[{"y":2027,"m":3,"d":26},{"y":2027,"m":3,"d":27},{"y":2027,"m":3,"d":28},{"y":2027,"m":3,"d":29},{"y":2027,"m":3,"d":30}]},"WE 1&2 May":{"satHeader":"SATURDAY 1 MAY","sunHeader":"SUNDAY 2 MAY","y":2027},"3-7 May":{"cols":[{"y":2027,"m":4,"d":3},{"y":2027,"m":4,"d":4},{"y":2027,"m":4,"d":5},{"y":2027,"m":4,"d":6},{"y":2027,"m":4,"d":7}]},"WE 8&9 May":{"satHeader":"SATURDAY 8 MAY","sunHeader":"SUNDAY 9 MAY","y":2027},"10-14 May":{"cols":[{"y":2027,"m":4,"d":10},{"y":2027,"m":4,"d":11},{"y":2027,"m":4,"d":12},{"y":2027,"m":4,"d":13},{"y":2027,"m":4,"d":14}]},"WE 15&16 May":{"satHeader":"SATURDAY 15 MAY","sunHeader":"SUNDAY 16 MAY","y":2027},"17-21 May":{"cols":[{"y":2027,"m":4,"d":17},{"y":2027,"m":4,"d":18},{"y":2027,"m":4,"d":19},{"y":2027,"m":4,"d":20},{"y":2027,"m":4,"d":21}]},"WE 22&23 May":{"satHeader":"SATURDAY 22 MAY","sunHeader":"SUNDAY 23 MAY","y":2027},"24-28 May":{"cols":[{"y":2027,"m":4,"d":24},{"y":2027,"m":4,"d":25},{"y":2027,"m":4,"d":26},{"y":2027,"m":4,"d":27},{"y":2027,"m":4,"d":28}]},"WE 29&30 May":{"satHeader":"SATURDAY 29 MAY","sunHeader":"SUNDAY 30 MAY","y":2027},"31 May - 4 June":{"cols":[{"y":2027,"m":4,"d":31},{"y":2027,"m":5,"d":1},{"y":2027,"m":5,"d":2},{"y":2027,"m":5,"d":3},{"y":2027,"m":5,"d":4}]},"WE 5&6 Jun":{"satHeader":"SATURDAY 5 JUNE","sunHeader":"SUNDAY 6 JUNE","y":2027},"7-11 June":{"cols":[{"y":2027,"m":5,"d":7},{"y":2027,"m":5,"d":8},{"y":2027,"m":5,"d":9},{"y":2027,"m":5,"d":10},{"y":2027,"m":5,"d":11}]},"WE 12&13 Jun":{"satHeader":"SATURDAY 12 JUNE","sunHeader":"SUNDAY 13 JUNE","y":2027},"14-18 June":{"cols":[{"y":2027,"m":5,"d":14},{"y":2027,"m":5,"d":15},{"y":2027,"m":5,"d":16},{"y":2027,"m":5,"d":17},{"y":2027,"m":5,"d":18}]},"WE 19&20 Jun":{"satHeader":"SATURDAY 19 JUNE","sunHeader":"SUNDAY 20 JUNE","y":2027},"21-25 June":{"cols":[{"y":2027,"m":5,"d":21},{"y":2027,"m":5,"d":22},{"y":2027,"m":5,"d":23},{"y":2027,"m":5,"d":24},{"y":2027,"m":5,"d":25}]},"WE 26&27 Jun":{"satHeader":"SATURDAY 26 JUNE","sunHeader":"SUNDAY 27 JUNE","y":2027},"28 June - 2 July":{"cols":[{"y":2027,"m":5,"d":28},{"y":2027,"m":5,"d":29},{"y":2027,"m":5,"d":30},{"y":2027,"m":6,"d":1},{"y":2027,"m":6,"d":2}]},"WE 3&4 Jul":{"satHeader":"SATURDAY 3 JULY","sunHeader":"SUNDAY 4 JULY","y":2027},"5-9 July":{"cols":[{"y":2027,"m":6,"d":5},{"y":2027,"m":6,"d":6},{"y":2027,"m":6,"d":7},{"y":2027,"m":6,"d":8},{"y":2027,"m":6,"d":9}]},"WE 10&11 Jul":{"satHeader":"SATURDAY 10 JULY","sunHeader":"SUNDAY 11 JULY","y":2027},"12-16 July":{"cols":[{"y":2027,"m":6,"d":12},{"y":2027,"m":6,"d":13},{"y":2027,"m":6,"d":14},{"y":2027,"m":6,"d":15},{"y":2027,"m":6,"d":16}]},"WE 17&18 Jul":{"satHeader":"SATURDAY 17 JULY","sunHeader":"SUNDAY 18 JULY","y":2027},"19-23 July":{"cols":[{"y":2027,"m":6,"d":19},{"y":2027,"m":6,"d":20},{"y":2027,"m":6,"d":21},{"y":2027,"m":6,"d":22},{"y":2027,"m":6,"d":23}]},"WE 24&25 Jul":{"satHeader":"SATURDAY 24 JULY","sunHeader":"SUNDAY 25 JULY","y":2027},"26-30 July":{"cols":[{"y":2027,"m":6,"d":26},{"y":2027,"m":6,"d":27},{"y":2027,"m":6,"d":28},{"y":2027,"m":6,"d":29},{"y":2027,"m":6,"d":30}]},"WE 31 Jul 1 Aug":{"satHeader":"SATURDAY 31 JULY","sunHeader":"SUNDAY 1 AUGUST","y":2027},"2-6 August":{"cols":[{"y":2027,"m":7,"d":2},{"y":2027,"m":7,"d":3},{"y":2027,"m":7,"d":4},{"y":2027,"m":7,"d":5},{"y":2027,"m":7,"d":6}]},"WE 7&8 Aug":{"satHeader":"SATURDAY 7 AUGUST","sunHeader":"SUNDAY 8 AUGUST","y":2027},"9-13 August":{"cols":[{"y":2027,"m":7,"d":9},{"y":2027,"m":7,"d":10},{"y":2027,"m":7,"d":11},{"y":2027,"m":7,"d":12},{"y":2027,"m":7,"d":13}]},"WE 14&15 Aug":{"satHeader":"SATURDAY 14 AUGUST","sunHeader":"SUNDAY 15 AUGUST","y":2027},"16-20 August":{"cols":[{"y":2027,"m":7,"d":16},{"y":2027,"m":7,"d":17},{"y":2027,"m":7,"d":18},{"y":2027,"m":7,"d":19},{"y":2027,"m":7,"d":20}]},"WE 21&22 Aug":{"satHeader":"SATURDAY 21 AUGUST","sunHeader":"SUNDAY 22 AUGUST","y":2027},"23-27 August":{"cols":[{"y":2027,"m":7,"d":23},{"y":2027,"m":7,"d":24},{"y":2027,"m":7,"d":25},{"y":2027,"m":7,"d":26},{"y":2027,"m":7,"d":27}]},"WE 28&29 Aug":{"satHeader":"SATURDAY 28 AUGUST","sunHeader":"SUNDAY 29 AUGUST","y":2027},"30 August - 3 September":{"cols":[{"y":2027,"m":7,"d":30},{"y":2027,"m":7,"d":31},{"y":2027,"m":8,"d":1},{"y":2027,"m":8,"d":2},{"y":2027,"m":8,"d":3}]},"WE 4&5 Sep":{"satHeader":"SATURDAY 4 SEPTEMBER","sunHeader":"SUNDAY 5 SEPTEMBER","y":2027},"6-10 September":{"cols":[{"y":2027,"m":8,"d":6},{"y":2027,"m":8,"d":7},{"y":2027,"m":8,"d":8},{"y":2027,"m":8,"d":9},{"y":2027,"m":8,"d":10}]},"WE 11&12 Sep":{"satHeader":"SATURDAY 11 SEPTEMBER","sunHeader":"SUNDAY 12 SEPTEMBER","y":2027},"13-17 September":{"cols":[{"y":2027,"m":8,"d":13},{"y":2027,"m":8,"d":14},{"y":2027,"m":8,"d":15},{"y":2027,"m":8,"d":16},{"y":2027,"m":8,"d":17}]},"WE 18&19 Sep":{"satHeader":"SATURDAY 18 SEPTEMBER","sunHeader":"SUNDAY 19 SEPTEMBER","y":2027},"20-24 September":{"cols":[{"y":2027,"m":8,"d":20},{"y":2027,"m":8,"d":21},{"y":2027,"m":8,"d":22},{"y":2027,"m":8,"d":23},{"y":2027,"m":8,"d":24}]},"WE 25&26 Sep":{"satHeader":"SATURDAY 25 SEPTEMBER","sunHeader":"SUNDAY 26 SEPTEMBER","y":2027},"27 September - 1 October":{"cols":[{"y":2027,"m":8,"d":27},{"y":2027,"m":8,"d":28},{"y":2027,"m":8,"d":29},{"y":2027,"m":8,"d":30},{"y":2027,"m":9,"d":1}]},"WE 2&3 Oct":{"satHeader":"SATURDAY 2 OCTOBER","sunHeader":"SUNDAY 3 OCTOBER","y":2027},"4-8 October":{"cols":[{"y":2027,"m":9,"d":4},{"y":2027,"m":9,"d":5},{"y":2027,"m":9,"d":6},{"y":2027,"m":9,"d":7},{"y":2027,"m":9,"d":8}]},"WE 9&10 Oct":{"satHeader":"SATURDAY 9 OCTOBER","sunHeader":"SUNDAY 10 OCTOBER","y":2027},"11-15 October":{"cols":[{"y":2027,"m":9,"d":11},{"y":2027,"m":9,"d":12},{"y":2027,"m":9,"d":13},{"y":2027,"m":9,"d":14},{"y":2027,"m":9,"d":15}]},"WE 16&17 Oct":{"satHeader":"SATURDAY 16 OCTOBER","sunHeader":"SUNDAY 17 OCTOBER","y":2027},"18-22 October":{"cols":[{"y":2027,"m":9,"d":18},{"y":2027,"m":9,"d":19},{"y":2027,"m":9,"d":20},{"y":2027,"m":9,"d":21},{"y":2027,"m":9,"d":22}]},"WE 23&24 Oct":{"satHeader":"SATURDAY 23 OCTOBER","sunHeader":"SUNDAY 24 OCTOBER","y":2027},"25-29 October":{"cols":[{"y":2027,"m":9,"d":25},{"y":2027,"m":9,"d":26},{"y":2027,"m":9,"d":27},{"y":2027,"m":9,"d":28},{"y":2027,"m":9,"d":29}]},"WE 30&31 Oct":{"satHeader":"SATURDAY 30 OCTOBER","sunHeader":"SUNDAY 31 OCTOBER","y":2027},"1-5 November":{"cols":[{"y":2027,"m":10,"d":1},{"y":2027,"m":10,"d":2},{"y":2027,"m":10,"d":3},{"y":2027,"m":10,"d":4},{"y":2027,"m":10,"d":5}]},"WE 6&7 Nov":{"satHeader":"SATURDAY 6 NOVEMBER","sunHeader":"SUNDAY 7 NOVEMBER","y":2027},"8-12 November":{"cols":[{"y":2027,"m":10,"d":8},{"y":2027,"m":10,"d":9},{"y":2027,"m":10,"d":10},{"y":2027,"m":10,"d":11},{"y":2027,"m":10,"d":12}]},"WE 13&14 Nov":{"satHeader":"SATURDAY 13 NOVEMBER","sunHeader":"SUNDAY 14 NOVEMBER","y":2027},"15-19 November":{"cols":[{"y":2027,"m":10,"d":15},{"y":2027,"m":10,"d":16},{"y":2027,"m":10,"d":17},{"y":2027,"m":10,"d":18},{"y":2027,"m":10,"d":19}]},"WE 20&21 Nov":{"satHeader":"SATURDAY 20 NOVEMBER","sunHeader":"SUNDAY 21 NOVEMBER","y":2027},"22-26 November":{"cols":[{"y":2027,"m":10,"d":22},{"y":2027,"m":10,"d":23},{"y":2027,"m":10,"d":24},{"y":2027,"m":10,"d":25},{"y":2027,"m":10,"d":26}]},"WE 27&28 Nov":{"satHeader":"SATURDAY 27 NOVEMBER","sunHeader":"SUNDAY 28 NOVEMBER","y":2027},"29 November - 3 December":{"cols":[{"y":2027,"m":10,"d":29},{"y":2027,"m":10,"d":30},{"y":2027,"m":11,"d":1},{"y":2027,"m":11,"d":2},{"y":2027,"m":11,"d":3}]},"WE 4&5 Dec":{"satHeader":"SATURDAY 4 DECEMBER","sunHeader":"SUNDAY 5 DECEMBER","y":2027},"6-10 December":{"cols":[{"y":2027,"m":11,"d":6},{"y":2027,"m":11,"d":7},{"y":2027,"m":11,"d":8},{"y":2027,"m":11,"d":9},{"y":2027,"m":11,"d":10}]},"WE 11&12 Dec":{"satHeader":"SATURDAY 11 DECEMBER","sunHeader":"SUNDAY 12 DECEMBER","y":2027},"13-17 December":{"cols":[{"y":2027,"m":11,"d":13},{"y":2027,"m":11,"d":14},{"y":2027,"m":11,"d":15},{"y":2027,"m":11,"d":16},{"y":2027,"m":11,"d":17}]},"WE 18&19 Dec":{"satHeader":"SATURDAY 18 DECEMBER","sunHeader":"SUNDAY 19 DECEMBER","y":2027},"20-24 December":{"cols":[{"y":2027,"m":11,"d":20},{"y":2027,"m":11,"d":21},{"y":2027,"m":11,"d":22},{"y":2027,"m":11,"d":23},{"y":2027,"m":11,"d":24}]},"WE 25&26 Dec":{"blocked":"See Christmas rota","satHeader":"SATURDAY 25 DECEMBER","sunHeader":"SUNDAY 26 DECEMBER","y":2027},"27-31 December":{"cols":[{"y":2027,"m":11,"d":27},{"y":2027,"m":11,"d":28},{"y":2027,"m":11,"d":29},{"y":2027,"m":11,"d":30},{"y":2027,"m":11,"d":31}],"blocked":"See Christmas rota"},"trial-2026-11-02":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":2},{"y":2026,"m":10,"d":3},{"y":2026,"m":10,"d":4},{"y":2026,"m":10,"d":5},{"y":2026,"m":10,"d":6}]},"trial-2026-11-07":{"y":2026,"trial":true,"satHeader":"SATURDAY 7 NOVEMBER","sunHeader":"SUNDAY 8 NOVEMBER"},"trial-2026-11-09":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":9},{"y":2026,"m":10,"d":10},{"y":2026,"m":10,"d":11},{"y":2026,"m":10,"d":12},{"y":2026,"m":10,"d":13}]},"trial-2026-11-14":{"y":2026,"trial":true,"satHeader":"SATURDAY 14 NOVEMBER","sunHeader":"SUNDAY 15 NOVEMBER"},"trial-2026-11-16":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":16},{"y":2026,"m":10,"d":17},{"y":2026,"m":10,"d":18},{"y":2026,"m":10,"d":19},{"y":2026,"m":10,"d":20}]},"trial-2026-11-21":{"y":2026,"trial":true,"satHeader":"SATURDAY 21 NOVEMBER","sunHeader":"SUNDAY 22 NOVEMBER"},"trial-2026-11-23":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":23},{"y":2026,"m":10,"d":24},{"y":2026,"m":10,"d":25},{"y":2026,"m":10,"d":26},{"y":2026,"m":10,"d":27}]},"trial-2026-11-28":{"y":2026,"trial":true,"satHeader":"SATURDAY 28 NOVEMBER","sunHeader":"SUNDAY 29 NOVEMBER"},"trial-2026-11-30":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":30},{"y":2026,"m":11,"d":1},{"y":2026,"m":11,"d":2},{"y":2026,"m":11,"d":3},{"y":2026,"m":11,"d":4}]},"trial-2026-12-05":{"y":2026,"trial":true,"satHeader":"SATURDAY 5 DECEMBER","sunHeader":"SUNDAY 6 DECEMBER"},"trial-2026-12-07":{"y":2026,"trial":true,"cols":[{"y":2026,"m":11,"d":7},{"y":2026,"m":11,"d":8},{"y":2026,"m":11,"d":9},{"y":2026,"m":11,"d":10},{"y":2026,"m":11,"d":11}]},"trial-2026-12-12":{"y":2026,"trial":true,"satHeader":"SATURDAY 12 DECEMBER","sunHeader":"SUNDAY 13 DECEMBER"},"trial-2026-12-14":{"y":2026,"trial":true,"cols":[{"y":2026,"m":11,"d":14},{"y":2026,"m":11,"d":15},{"y":2026,"m":11,"d":16},{"y":2026,"m":11,"d":17},{"y":2026,"m":11,"d":18}]},"trial-2026-12-19":{"y":2026,"trial":true,"satHeader":"SATURDAY 19 DECEMBER","sunHeader":"SUNDAY 20 DECEMBER"},"trial-2026-12-21":{"y":2026,"trial":true,"cols":[{"y":2026,"m":11,"d":21},{"y":2026,"m":11,"d":22},{"y":2026,"m":11,"d":23},{"y":2026,"m":11,"d":24}]}}};
+const YEAR = 2027;                     // default template year and fixed rotation anchor; views support both years
 const LSKEY = "bauer_news_rota_v5";
 
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -1468,7 +1470,7 @@ function ensureStoreDefaults(target=store){
   store.cellColors = store.cellColors || {}; // { cellKey: keyId }
   store.cellNotes = store.cellNotes || {};   // { cellKey: text }
   store.cellVoid = store.cellVoid || {};     // { cellKey: true } — role not needed that day (grey diagonal)
-  store.allowances = store.allowances || {};  // { name: annual holiday days }
+  store.allowances = store.allowances || {};  // 2027 name values; __years holds independent annual overrides
   store.rules = store.rules || [];
   store.rotations = store.rotations || [];   // [{roles:[roleKey,...], names:[...]}]
   store.rotations = store.rotations.map(r=> r && r.roles ? r : {roles:(r&&r.role)?[r.role]:[], names:(r&&r.names)||[]});            // cover chains: [ [head, cover1, cover2, ...], ... ]
@@ -1500,6 +1502,7 @@ function ensureStoreDefaults(target=store){
     store.roster = (RAW.rosterDefaults||[]).map(x=>x[0]);
     (RAW.rosterDefaults||[]).forEach(x=>{ if(store.allowances[x[0]]==null) store.allowances[x[0]]=x[1]; });
   }
+  seedTrialAllowances(store);
   // drop cell markers left behind by deleted weeks (older builds forgot cellCover)
   const gone=new Set(store.deletedWeeks||[]);
   if(gone.size){
@@ -1520,6 +1523,7 @@ ensureStoreDefaults();
     const m=meta[w.id]; if(!m) return;
     const d=JSON.parse(JSON.stringify(w.kind==="weekend"?RAW.weekendTemplate:RAW.weekdayTemplate));
     Object.keys(m).forEach(k=>{ d[k]=m[k]; });
+    if(m.trial && d.sections && m.cols)d.sections.forEach(sec=>sec.rows.forEach(r=>{if(r.type==="role")r.assign=Array(m.cols.length).fill("");}));
     if(w.kind==="weekend" && m.friHeader) (d.rows||[]).forEach(r=>{ if(r.fri===undefined) r.fri=""; });
     RAW.weeksData[w.id]=d;
   });
@@ -1547,7 +1551,7 @@ function textOn(hex){
 
 var ROLEOPTS=null;                    // cached role list, cleared whenever a sheet changes
 function clearRoleCache(){ ROLEOPTS=null; TPLWEEK={}; }
-const state = { idx:0, editing:false, q:"", holOpen:false, view:"rota", adminYear:null, adminSort:{key:"name",dir:"asc"}, templateMode:false, tplId:null, officeSel:"Manchester", boothSel:"Manchester", boothHalf:"AM" };
+const state = { idx:0, editing:false, q:"", holOpen:false, view:"rota", reportYear:null, adminYear:null, adminSort:{key:"name",dir:"asc"}, templateMode:false, tplId:null, officeSel:"Manchester", boothSel:"Manchester", boothHalf:"AM" };
 const TPL_WEEK={id:"__tpl__",name:"Default template",kind:"weekday"};
 const OFFICES=["Manchester","Leeds","London","Newcastle"];
 
@@ -1577,7 +1581,7 @@ function tplById(id){ return (store.templates||[]).find(t=>t.id===id)||null; }
 function templateEntryFor(date){
   const ts=templatesSorted(); if(!ts.length) return null;
   const t=date?date.getTime():Date.now();
-  let pick=ts[0];                                   // nothing early enough? fall back to the earliest
+  let pick=null;                                   // future dated templates do not apply before their start
   ts.forEach(x=>{ if(tplFrom(x)<=t) pick=x; });
   return pick;
 }
@@ -1835,7 +1839,7 @@ function colDates(d,w){
   const wd=weekDates((w||week()).name); return wd||[];
 }
 function ensureCols(d){
-  if(!d.cols) d.cols = colDates(d).map(dt=>({m:dt.getMonth(),d:dt.getDate()}));
+  if(!d.cols) d.cols = colDates(d).map(dt=>({y:dt.getFullYear(),m:dt.getMonth(),d:dt.getDate()}));
   return d.cols;
 }
 // England bank holidays 2027 — handled on the weekend sheet, greyed out on weekday sheets
@@ -2074,7 +2078,7 @@ function renderWeekend(d){
   if(d.special && d.cols){
     days = d.cols.map(c=>({key:c.key,lbl:c.lbl,sub:c.sub||"",bh:!!c.bh}));
   } else {
-    const sat=parseWeDate(d.satHeader), sun=parseWeDate(d.sunHeader);
+    const sat=parseWeDate(d.satHeader,d.y), sun=parseWeDate(d.sunHeader,d.y);
     days=[];
     if(sat){ const fri=new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1); if(isBankHol(fri)) days.push({key:"fri",lbl:DAYLBL[fri.getDay()],sub:fmtDate(fri),bh:true}); }
     days.push({key:"sat",lbl:"Sat",sub:sat?fmtDate(sat):""});
@@ -2150,7 +2154,7 @@ function setEditable(on){
   });
   applyCellSel();
 }
-function isPublic(id){ return store.public[id]!==false; }
+function isPublic(id){ return Object.prototype.hasOwnProperty.call(store.public,id)?store.public[id]!==false:!String(id).startsWith('trial-2026-'); }
 function canViewWeek(w){
   return !!(w && (isPublic(w.id) || state.editing ||
     (typeof seeHiddenWeeks==="function" && seeHiddenWeeks())));
@@ -2681,7 +2685,7 @@ function refreshConflicts(){
   let days;
   if(d.special && d.cols) days=d.cols.map(c=>({key:c.key}));
   else{
-    const sat=parseWeDate(d.satHeader), sun=parseWeDate(d.sunHeader);
+    const sat=parseWeDate(d.satHeader,d.y), sun=parseWeDate(d.sunHeader,d.y);
     days=[{key:"sat"},{key:"sun"}];
     if(sat){ const fri=new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1); if(isBankHol(fri)) days.push({key:"fri"}); }
     if(sun){ const mon=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+1); if(isBankHol(mon)) days.push({key:"mon"}); }
@@ -2851,7 +2855,7 @@ function personSchedule(name){
       return;
     }
     if(w.kind==="weekend"){
-      const sd=parseWeDate(d.satHeader), ud=parseWeDate(d.sunHeader);
+      const sd=parseWeDate(d.satHeader,d.y), ud=parseWeDate(d.sunHeader,d.y);
       const daymap=[["sat",sd],["sun",ud]];
       if(sd){ const fri=new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()-1); if(isBankHol(fri)) daymap.push(["fri",fri]); }
       if(ud){ const mon=new Date(ud.getFullYear(),ud.getMonth(),ud.getDate()+1); if(isBankHol(mon)) daymap.push(["mon",mon]); }
@@ -2894,7 +2898,7 @@ function openPersonModal(name){
   const rec=personRecord(name);
   $("#personMeta").innerHTML = rec
     ? `<span class="chip">Office: <b>${rec.office?esc(rec.office):"not set"}</b></span>`+
-      `<span class="chip">Holiday allowance: <b>${rec.allowance===""?"not set":esc(String(rec.allowance))+" days"}</b></span>`+
+      `<span class="chip">2027 holiday allowance: <b>${rec.allowance===""?"not set":esc(String(rec.allowance))+" days"}</b></span>`+
       `<span class="chip">Type: <b>${rec.type==="freelance"?"Freelance":"Staff"}</b></span>`
     : `<span class="chip">Not on the personnel list</span>`;
   const eb=$("#personEditBtn");
@@ -2938,7 +2942,7 @@ function leaverScan(name,lastDay){                 // dry run — counts, no cha
           (cur.rows||[]).forEach((r,ri)=>{ if(nrm(r.vals&&r.vals[c.key])===target) hits.push({t:"val",ri,key:c.key}); });
           (cur.awayRows||[]).forEach((r,ri)=>{ if(nrm(r.vals&&r.vals[c.key])===target) hits.push({t:"aval",ri,key:c.key}); }); });
       } else {
-        const sat=parseWeDate(cur.satHeader), sun=parseWeDate(cur.sunHeader), daymap=[["sat",sat],["sun",sun]];
+        const sat=parseWeDate(cur.satHeader,cur.y), sun=parseWeDate(cur.sunHeader,cur.y), daymap=[["sat",sat],["sun",sun]];
         if(sat) daymap.push(["fri",new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1)]);
         if(sun) daymap.push(["mon",new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+1)]);
         daymap.forEach(([key,dt])=>{ if(!after(dt)) return;
@@ -2984,7 +2988,7 @@ function applyLeaver(name,lastDay,dropFromRoster){
   if(dropFromRoster){
     const nm=findPerson(name);
     if(nm){ store.roster=store.roster.filter(x=>x!==nm);
-      delete store.allowances[nm]; delete store.offices[nm]; delete store.freelance[nm]; }
+      delete store.allowances[nm]; removeAnnualAllowances(nm); delete store.offices[nm]; delete store.freelance[nm]; }
   }
   persist(); recordHistory();
   return scan;
@@ -3086,7 +3090,8 @@ function prepareImport(value){
   Object.values(out.overrides).forEach(checkWeek);
   ['public','cellVoid','cellCover','freelance'].forEach(k=>{if(out[k]&&!Object.values(out[k]).every(v=>typeof v==='boolean'))throw new Error('Invalid '+k+' values.');});
   ['cellNotes','cellColors','offices'].forEach(k=>{if(out[k]&&!Object.values(out[k]).every(v=>typeof v==='string'))throw new Error('Invalid '+k+' values.');});
-  if(out.allowances&&!Object.values(out.allowances).every(v=>(v===null||v===''||((typeof v==='number'||typeof v==='string')&&Number.isFinite(Number(v))&&Number(v)>=0))))throw new Error('Invalid allowances.');
+  const validAllowance=v=>v===null||v===''||((typeof v==='number'||typeof v==='string')&&Number.isFinite(Number(v))&&Number(v)>=0);
+  if(out.allowances){Object.entries(out.allowances).forEach(([k,v])=>{if(k==='__years'){if(!object(v)||!Object.entries(v).every(([year,values])=>/^(19|20)\d{2}$/.test(year)&&object(values)&&Object.values(values).every(validAllowance)))throw new Error('Invalid annual allowances.');}else if(!validAllowance(v))throw new Error('Invalid allowances.');});}
   if(out.roster&&!strings(out.roster)) throw new Error('Invalid personnel names.');
   if(out.deletedWeeks&&!strings(out.deletedWeeks)) throw new Error('Invalid removed weeks.');
   (out.extraWeeks||[]).forEach(w=>{if(!object(w)||typeof w.id!=='string'||typeof w.name!=='string'||!['weekday','weekend'].includes(w.kind))throw new Error('Invalid extra week.');});
@@ -3305,7 +3310,7 @@ function renderStaffList(){
         const opts=`<option value="">Office…</option>`+OFFICES.map(o=>`<option${o===off?" selected":""}>${o}</option>`).join("");
         return `<div class="staffrow"><span class="sn" data-act="editperson" data-name="${dn}" title="${locked?"Turn on Edit mode to change":"Edit"} ${dn}">${esc(n)}${store.freelance[n]?`<span class="fltag">freelance</span>`:""}</span>`+
           `<select class="soffice" data-name="${dn}" title="Home office"${dis}>${opts}</select>`+
-          `<input class="sallow" type="number" min="0" max="99" step="0.5" value="${al}" data-allow="${dn}" title="Holiday allowance (days)" placeholder="days"${dis}>`+
+          `<input class="sallow" type="number" min="0" max="99" step="0.5" value="${al}" data-allow="${dn}" title="2027 holiday allowance (days); use Admin to edit other years" placeholder="days"${dis}>`+
           `<button class="sdel" data-act="staffdel" data-name="${dn}" title="Remove ${dn}"${dis}>&times;</button></div>`; }).join("")
     : `<div class="staffempty">Nobody on the list yet — turn on Edit mode to add the first person.</div>`;
 }
@@ -3631,7 +3636,7 @@ function heatData(){
   return publicTotals('holidays',map);
 }
 function renderHeat(){
-  const map=heatData();
+  const YEAR=summaryYear(),map=filterSummaryYear(heatData());
   if(SYNC.on&&!PUBLIC_SUMMARY.data){$("#heatView").innerHTML="<h2>Holiday heat map</h2>"+summaryNotice();return;}
   let max=0; Object.values(map).forEach(v=>{ if(v.count>max) max=v.count; });
   const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -3647,12 +3652,13 @@ function renderHeat(){
   HEAT={};
   const _t=new Date(), TY=_t.getFullYear(), TM=_t.getMonth(), TD=_t.getDate();
   let months="";
-  for(let m=0;m<12;m++){
+  for(const m of summaryMonths(YEAR)){
     let off=new Date(YEAR,m,1).getDay(); off=(off===0?6:off-1);
     const dim=new Date(YEAR,m+1,0).getDate();
     let cells=WL.map(w=>`<div class="wl">${w}</div>`).join("");
     for(let i=0;i<off;i++) cells+=`<div class="hd blank"></div>`;
     for(let d=1;d<=dim;d++){
+      if(!inSummaryPeriod(YEAR,m,d)){cells+=`<div class="hd off" title="Separate Christmas rota">${d}</div>`;continue;}
       const key=YEAR+"-"+m+"-"+d;
       const info=map[key]||{count:0,names:[]};
       const tdot=(YEAR===TY&&m===TM&&d===TD)?'<span class="todot"></span>':"";
@@ -3667,8 +3673,8 @@ function renderHeat(){
     months+=`<div class="heatmonth"><h4>${MN[m]}</h4><div class="mcal">${cells}</div></div>`;
   }
   $("#heatView").innerHTML=
-    `<h2 class="heathead">Holiday heat map</h2>`+summaryNotice()+
-    `<div class="heatsub">How many people are in the Holiday list each day across ${YEAR}. Green means nobody off, red means 15+ off. Click a day to see who's off.</div>`+
+    `<div class="adminhead"><h2 class="heathead">Holiday heat map</h2>${summaryYearControl()}</div>`+trialPeriodNote(YEAR)+summaryNotice()+
+    `<div class="heatsub">How many people are in the Holiday list each day ${YEAR===2026?"during the 2026 trial":"across "+YEAR}. Green means nobody off, red means 15+ off. Click a day to see who's off.</div>`+
     `<div class="heatlegend">0 off<span class="scale">`+
       [0,3.75,7.5,11.25,15].map(c=>`<i style="background:${ramp(c).bg}"></i>`).join("")+
     `</span>15+ off${max?" &nbsp;\u00b7&nbsp; busiest day so far: "+max:""}</div>`+
@@ -3704,13 +3710,37 @@ document.addEventListener("click",e=>{
 
 // ---------- admin: holiday allowance & usage ----------
 const DEFAULT_ALLOWANCE=28;
-function allowanceOf(n){ const v=store.allowances[n]; return (v==null||v==="")?DEFAULT_ALLOWANCE:(+v); }
+function seedTrialAllowances(target){
+  const a=target.allowances||(target.allowances={});const years=a.__years||(a.__years={});const trial=years['2026']||(years['2026']={});
+  const names=new Set([...(target.roster||[]),...Object.keys(a).filter(n=>n!=='__years')]);
+  names.forEach(n=>{if(trial[n]==null){const v=a[n];trial[n]=(v==null||v==='')?28:Number(v);}});
+}
+function allowanceOf(n,year=YEAR){
+  const a=store.allowances||{},annual=a.__years?.[String(year)];
+  const v=year===YEAR?a[n]:(annual&&Object.prototype.hasOwnProperty.call(annual,n)?annual[n]:a[n]);
+  return (v==null||v==='')?DEFAULT_ALLOWANCE:Number(v);
+}
+function setAllowanceFor(n,year,value){
+  seedTrialAllowances(store);
+  const target=year===YEAR?store.allowances:(store.allowances.__years[String(year)]||(store.allowances.__years[String(year)]={}));
+  target[n]=(value==null||value==='')?DEFAULT_ALLOWANCE:Number(value);
+}
+function removeAnnualAllowances(name){Object.values(store.allowances.__years||{}).forEach(y=>delete y[name]);}
 function yearsInData(){
-  const ys=new Set();
-  RAW.weeks.forEach(w=>{ if(w.kind!=="weekday") return; const d=weekDates(w.name); if(d) d.forEach(dt=>ys.add(dt.getFullYear())); });
-  holidayEntries().forEach(e=>ys.add(e.date.getFullYear()));
+  const ys=new Set();RAW.weeks.forEach(w=>weekDatesOf(w).forEach(dt=>{if(dt)ys.add(dt.getFullYear());}));
   return [...ys].sort((a,b)=>a-b);
 }
+function summaryYear(){
+  const years=yearsInData(),current=new Date().getFullYear();
+  if(!years.includes(state.reportYear))state.reportYear=years.includes(current)?current:(years[years.length-1]||YEAR);
+  return state.reportYear;
+}
+function summaryYearControl(){const year=summaryYear();return '<label class="yrsel">Year <select class="summaryYear" aria-label="Summary year">'+yearsInData().map(y=>`<option value="${y}"${y===year?' selected':''}>${y}</option>`).join('')+'</select></label>';}
+function inSummaryPeriod(y,m,d){return y!==2026 || (m>=10 && (m<11||d<=24));}
+function summaryMonths(year){return year===2026?[10,11]:Array.from({length:12},(_,i)=>i);}
+function filterSummaryYear(map){const year=summaryYear(),prefix=year+'-';return Object.fromEntries(Object.entries(map).filter(([key])=>{const [y,m,d]=key.split('-').map(Number);return key.startsWith(prefix)&&inSummaryPeriod(y,m,d);}));}
+function trialPeriodNote(year){return year===2026?'<p class="summary-note">2026 trial: 1 November–24 December only. Earlier leave and the separate Christmas rota are not included. No full-year remaining balance is shown.</p>':'';}
+document.addEventListener('change',e=>{if(e.target.classList?.contains('summaryYear')){state.reportYear=Number(e.target.value);renderCurrentView();}});
 const ALIAS = RAW.aliases || {};
 function canonName(n){ return ALIAS[nrm(n)] || n; }
 function holidayEntries(){
@@ -3725,7 +3755,7 @@ function holidayEntries(){
     const d=store.overrides[w.id]||template(w);
     if(d.special){const dates=specialDates(w,d);(d.cols||[]).forEach((c,i)=>(d.awayRows||[]).forEach(r=>add(dates[i],r.vals&&r.vals[c.key])));}
     else if(w.kind==='weekend'){
-      const year=Number(((w.name||'').match(/(?:19|20)\d{2}/)||[])[0])||YEAR;
+      const year=Number(d.y)||Number(((w.name||'').match(/(?:19|20)\d{2}/)||[])[0])||YEAR;
       const sat=parseWeDate(d.satHeader,year),sun=parseWeDate(d.sunHeader,year);
       const days=[['sat',sat],['sun',sun]];
       const fri=d.friHeader?parseWeDate(d.friHeader,year):(sat?new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1):null);
@@ -3740,7 +3770,7 @@ function holidayEntries(){
 }
 function takenByPerson(year){
   const map={};
-  holidayEntries().forEach(({date,name})=>{if(date.getFullYear()===year){const k=nrm(canonName(name));map[k]=(map[k]||0)+1;}});
+  holidayEntries().forEach(({date,name})=>{if(date.getFullYear()===year&&inSummaryPeriod(year,date.getMonth(),date.getDate())){const k=nrm(canonName(name));map[k]=(map[k]||0)+1;}});
   return map;
 }
 function countWeekdays(from,to){
@@ -3759,10 +3789,10 @@ function remainingWeekdays(year){
 }
 let ADMIN={year:null,taken:{},staff:[]};
 function fmtNum(n){ return (Math.round(n*100)/100).toString(); }
-function personLeft(n){ return allowanceOf(n)-(ADMIN.taken[nrm(n)]||0); }
+function personLeft(n){ return allowanceOf(n,ADMIN.year)-(ADMIN.taken[nrm(n)]||0); }
 function updateAdminSummary(){
   let tAllow=0,tTaken=0,tLeft=0;
-  ADMIN.staff.forEach(n=>{ const a=allowanceOf(n), k=ADMIN.taken[nrm(n)]||0; tAllow+=a; tTaken+=k; tLeft+=Math.max(0,a-k); });
+  ADMIN.staff.forEach(n=>{ const a=allowanceOf(n,ADMIN.year), k=ADMIN.taken[nrm(n)]||0; tAllow+=a; tTaken+=k; tLeft+=Math.max(0,a-k); });
   const rem=remainingWeekdays(ADMIN.year);
   const set=(id,v)=>{ const el=$(id); if(el) el.textContent=v; };
   set("#sumAllow",fmtNum(tAllow)); set("#sumTaken",fmtNum(tTaken)); set("#sumLeft",fmtNum(tLeft));
@@ -3795,7 +3825,7 @@ function weekDatesOf(w){
   const d=(store.overrides&&store.overrides[w.id])||(RAW.weeksData||{})[w.id]||template(w);
   if(d && d.special) return specialDates(w,d).filter(Boolean);
   if(w.kind==="weekend"){
-    const out=[], sat=parseWeDate(d.satHeader), sun=parseWeDate(d.sunHeader);
+    const out=[], sat=parseWeDate(d.satHeader,d.y), sun=parseWeDate(d.sunHeader,d.y);
     if(sat){ const fri=new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1); if(isBankHol(fri)) out.push(fri); out.push(sat); }
     if(sun){ out.push(sun); const mon=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+1); if(isBankHol(mon)) out.push(mon); }
     return out;
@@ -3812,7 +3842,7 @@ function initialWeekIdx(){
   const usable=i=>{ const w=RAW.weeks[i]; const wd=(store.overrides&&store.overrides[w.id])||(RAW.weeksData||{})[w.id]||{}; return !wd.blocked; };
   let best=-1,bd=Infinity;
   RAW.weeks.forEach((w,i)=>{ if(!usable(i)) return;               // never land on a "see Christmas rota" page
-    const m=weekMonday(w); if(!m) return; const diff=Math.abs(m.getTime()-tm);
+    const m=weekRepDate(w); if(!m) return; const diff=Math.abs(m.getTime()-tm);
     if(diff<bd || (diff===bd && w.kind==="weekday")){ bd=diff; best=i; } });
   if(best<0) best=RAW.weeks.findIndex((_,i)=>usable(i));
   return best<0?0:best;
@@ -3822,8 +3852,9 @@ function weekCalHTML(mode){
   const dayWk={}; const _t=new Date(), TY=_t.getFullYear(), TM=_t.getMonth(), TD=_t.getDate();
   RAW.weeks.forEach((w,i)=>{ weekDatesOf(w).forEach(dt=>{ if(dt) dayWk[dt.getFullYear()+"-"+dt.getMonth()+"-"+dt.getDate()]=i; }); });
   let months="";
-  for(let idx=0; idx<13; idx++){
-    const y=YEAR+(idx<12?0:1), m=idx%12;
+  const calendarMonths=[...new Set(Object.keys(dayWk).map(k=>{const [y,m]=k.split('-').map(Number);return y*12+m;}))].sort((a,b)=>a-b);
+  for(const monthIndex of calendarMonths){
+    const y=Math.floor(monthIndex/12),m=monthIndex%12;
     let off=new Date(y,m,1).getDay(); off=(off===0?6:off-1);
     const dim=new Date(y,m+1,0).getDate();
     let cells=CALWL.map(w=>`<div class="wl">${w}</div>`).join("");
@@ -3865,7 +3896,7 @@ function workingByDay(){
         const sds=specialDates(w,d);
         d.cols.forEach((c,ci)=>{ const dt=sds[ci]; if(!dt) return; (d.rows||[]).forEach(r=>add(dt, r.vals&&r.vals[c.key])); });
       } else {
-        const sat=parseWeDate(d.satHeader), sun=parseWeDate(d.sunHeader);
+        const sat=parseWeDate(d.satHeader,d.y), sun=parseWeDate(d.sunHeader,d.y);
         const daymap=[["sat",sat],["sun",sun]];
         if(sat){ const fri=new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1); if(isBankHol(fri)) daymap.push(["fri",fri]); }
         if(sun){ const mon=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+1); if(isBankHol(mon)) daymap.push(["mon",mon]); }
@@ -3889,7 +3920,7 @@ function officeData(office){
   return publicTotals("offices",out,office);
 }
 function officeCalHTML(office){
-  const data=officeData(office); OFFICEHEAT=data;
+  const YEAR=summaryYear(),data=filterSummaryYear(officeData(office)); OFFICEHEAT=data;
   if(SYNC.on&&!PUBLIC_SUMMARY.data) return summaryNotice();
   let maxC=1; Object.values(data).forEach(v=>{ if(v.count>maxC) maxC=v.count; });
   const _t=new Date(),TY=_t.getFullYear(),TM=_t.getMonth(),TD=_t.getDate();
@@ -3897,19 +3928,20 @@ function officeCalHTML(office){
     const r=Math.round(244+(71-244)*t), g=Math.round(242+(0-242)*t), b=Math.round(249+(163-249)*t);
     const lum=0.299*r+0.587*g+0.114*b; return {bg:`rgb(${r},${g},${b})`, fg:lum<150?"#fff":"#4700a3"}; };
   let months="";
-  for(let m=0;m<12;m++){
+  for(const m of summaryMonths(YEAR)){
     let off=new Date(YEAR,m,1).getDay(); off=(off===0?6:off-1);
     const dim=new Date(YEAR,m+1,0).getDate();
     let cells=CALWL.map(w=>`<div class="wl">${w}</div>`).join("");
     for(let k=0;k<off;k++) cells+=`<div class="hd blank"></div>`;
     for(let d=1;d<=dim;d++){
+      if(!inSummaryPeriod(YEAR,m,d)){cells+=`<div class="hd off" title="Separate Christmas rota">${d}</div>`;continue;}
       const key=YEAR+"-"+m+"-"+d, info=data[key], c=info?info.count:0, h=ramp(c);
       const tdot=(YEAR===TY&&m===TM&&d===TD)?'<span class="todot"></span>':"";
       cells+=`<div class="hd${info?" clk":""}${tdot?" today":""}" style="background:${h.bg};color:${h.fg}"${info?` data-ok="${key}"`:""}><span class="dnum">${d}</span><span class="cnt">${c}</span>${tdot}</div>`;
     }
     months+=`<div class="heatmonth"><h4>${CALMN[m]}</h4><div class="mcal">${cells}</div></div>`;
   }
-  return summaryNotice()+`<div class="heatmonths">${months}</div>`;
+  return trialPeriodNote(summaryYear())+summaryNotice()+`<div class="heatmonths">${months}</div>`;
 }
 // ---- booth usage -------------------------------------------------------
 // A booth is needed by anyone on a reading shift: the AM/PM patch roles in the
@@ -3965,6 +3997,7 @@ function boothByDay(half){                 // { dateKey: Set(names) } — one bo
   return map;
 }
 function boothData(office, half){
+  if(SYNC.on)return PUBLIC_SUMMARY.data?.boothsIncluded?(PUBLIC_SUMMARY.data.booths?.[half]?.[office]||{}):{};
   const bbd=boothByDay(half), out={}, offMap={};
   Object.keys(store.offices||{}).forEach(n=>{ offMap[nrm(n)]=store.offices[n]; });
   Object.keys(bbd).forEach(k=>{
@@ -3976,34 +4009,36 @@ function boothData(office, half){
 }
 let BOOTHHEAT={};
 function boothCalHTML(office, half){
-  const data=boothData(office,half); BOOTHHEAT=data;
+  const YEAR=summaryYear(),data=filterSummaryYear(boothData(office,half)); BOOTHHEAT=data;
+  if(SYNC.on&&!PUBLIC_SUMMARY.data?.boothsIncluded)return '<p class="summary-note" role="status">'+(PUBLIC_SUMMARY.loading?'Loading booth usage from all weeks…':'Full booth usage is unavailable. Ask Operations to install the updated totals SQL; retrying automatically.')+'</p>';
   let maxC=1; Object.values(data).forEach(v=>{ if(v.count>maxC) maxC=v.count; });
   const _t=new Date(),TY=_t.getFullYear(),TM=_t.getMonth(),TD=_t.getDate();
   const ramp=(c)=>{ if(!c) return {bg:"var(--bg)",fg:"var(--muted-2)"}; const t=Math.min(c/maxC,1);
     const r=Math.round(244+(31-244)*t), g=Math.round(242+(209-242)*t), b=Math.round(249+(189-249)*t);
     return {bg:`rgb(${r},${g},${b})`, fg:"#4700a3"}; };
   let months="";
-  for(let m=0;m<12;m++){
+  for(const m of summaryMonths(YEAR)){
     let off=new Date(YEAR,m,1).getDay(); off=(off===0?6:off-1);
     const dim=new Date(YEAR,m+1,0).getDate();
     let cells=CALWL.map(w=>`<div class="wl">${w}</div>`).join("");
     for(let k=0;k<off;k++) cells+=`<div class="hd blank"></div>`;
     for(let d=1;d<=dim;d++){
-      const key=YEAR+"-"+m+"-"+d, info=data[key], c=info?info.count:0, hh=ramp(c);
+      if(!inSummaryPeriod(YEAR,m,d)){cells+=`<div class="hd off" title="Separate Christmas rota">${d}</div>`;continue;}
+      const key=YEAR+"-"+m+"-"+d, info=data[key]||{count:0,names:[]}, c=info.count, hh=ramp(c); BOOTHHEAT[key]=info;
       const tdot=(YEAR===TY&&m===TM&&d===TD)?'<span class="todot"></span>':"";
       cells+=`<div class="hd${info?" clk":""}${tdot?" today":""}" style="background:${hh.bg};color:${hh.fg}"${info?` data-bk="${key}"`:""}><span class="dnum">${d}</span>${info?`<span class="cnt">${c}</span>`:""}${tdot}</div>`;
     }
     months+=`<div class="heatmonth"><h4>${CALMN[m]}</h4><div class="mcal">${cells}</div></div>`;
   }
-  return `<div class="heatmonths">${months}</div>`;
+  return trialPeriodNote(summaryYear())+summaryNotice()+`<div class="heatmonths">${months}</div>`;
 }
 function renderBoothModal(){
-  $("#boothTabs").innerHTML=OFFICES.map(o=>`<button class="offtab${o===state.boothSel?" on":""}" data-booth="${o}">${o}</button>`).join("")+
+  $("#boothTabs").innerHTML=summaryYearControl()+OFFICES.map(o=>`<button class="offtab${o===state.boothSel?" on":""}" data-booth="${o}">${o}</button>`).join("")+
     `<span class="halfsw">`+["AM","PM"].map(x=>`<button class="halfbtn${x===state.boothHalf?" on":""}" data-half="${x}">${x}</button>`).join("")+`</span>`;
   $("#boothBody").innerHTML=boothCalHTML(state.boothSel, state.boothHalf);
-  const vals=Object.values(boothData(state.boothSel,state.boothHalf));
+  const vals=Object.values(filterSummaryYear(boothData(state.boothSel,state.boothHalf)));
   const peak=vals.reduce((a,v)=>Math.max(a,v.count),0);
-  $("#boothSub").textContent=`${state.boothHalf} shifts \u00b7 busiest day needs ${peak} booth${peak===1?"":"s"}`;
+  $("#boothSub").textContent=SYNC.on&&!PUBLIC_SUMMARY.data?.boothsIncluded?`${state.boothHalf} shifts · totals unavailable`:`${state.boothHalf} shifts \u00b7 busiest day needs ${peak} booth${peak===1?"":"s"}`;
 }
 $("#boothTabs").addEventListener("click",e=>{
   const o=e.target.closest("[data-booth]"), hf=e.target.closest("[data-half]");
@@ -4510,11 +4545,11 @@ function applyAutofill(){
 $("#autoModal").addEventListener("click",e=>{ if(e.target.id==="autoModal") closeAutofill(); });
 
 function renderOfficeModal(){
-  $("#officeTabs").innerHTML=OFFICES.map(o=>`<button class="offtab${o===state.officeSel?" on":""}" data-office="${o}">${o}</button>`).join("");
+  $("#officeTabs").innerHTML=summaryYearControl()+OFFICES.map(o=>`<button class="offtab${o===state.officeSel?" on":""}" data-office="${o}">${o}</button>`).join("");
   $("#officeBody").innerHTML=officeCalHTML(state.officeSel);
-  const total=Object.values(officeData(state.officeSel)).reduce((a,v)=>a+v.count,0);
+  const total=Object.values(filterSummaryYear(officeData(state.officeSel))).reduce((a,v)=>a+v.count,0);
   const nppl=Object.values(store.offices||{}).filter(o=>o===state.officeSel).length;
-  $("#officeSub").textContent=SYNC.on&&!PUBLIC_SUMMARY.data?`${nppl} based here · total unavailable`:`${nppl} based here · ${total} person-days this year`;
+  $("#officeSub").textContent=SYNC.on&&!PUBLIC_SUMMARY.data?`${nppl} based here · total unavailable`:`${nppl} based here · ${total} person-days in ${summaryYear()}`;
 }
 $("#officeTabs").addEventListener("click",e=>{ const b=e.target.closest("[data-office]"); if(!b) return; state.officeSel=b.dataset.office; renderOfficeModal(); $("#officePop").classList.remove("open"); });
 $("#officeBody").addEventListener("click",e=>{
@@ -4542,26 +4577,28 @@ function renderAdmin(){
   let year=state.adminYear;
   if(year==null) year=years.includes(ny)?ny:(years[years.length-1]||ny);
   state.adminYear=year;
+  const trial=year===2026;
+  if(trial&&state.adminSort.key==='left')state.adminSort.key='name';
   const taken=takenByPerson(year);
   const seen=new Set(), staff=[];
   (store.roster||[]).forEach(n=>{ const k=nrm(n); if(seen.has(k)) return; seen.add(k); staff.push(n); });
   const sk=state.adminSort.key, dir=state.adminSort.dir==="desc"?-1:1;
-  const metric=n=>{ const a=allowanceOf(n), k=taken[nrm(n)]||0; return sk==="allow"?a:sk==="taken"?k:sk==="left"?(a-k):0; };
+  const metric=n=>{ const a=allowanceOf(n,year), k=taken[nrm(n)]||0; return sk==="allow"?a:sk==="taken"?k:sk==="left"?(a-k):0; };
   staff.sort((x,y)=> sk==="name" ? dir*x.localeCompare(y) : ((metric(x)-metric(y))*dir || x.localeCompare(y)) );
   ADMIN={year,taken,staff};
   const ed=state.editing;
   const yopts=years.map(y=>`<option value="${y}"${y===year?" selected":""}>${y}</option>`).join("")||`<option>${year}</option>`;
   let rows=staff.map(n=>{
-    const a=allowanceOf(n), k=taken[nrm(n)]||0, left=a-k, dn=esc(n).replace(/"/g,"&quot;");
+    const a=allowanceOf(n,year), k=taken[nrm(n)]||0, left=a-k, dn=esc(n).replace(/"/g,"&quot;");
     const allowCell = ed
       ? `<td class="al"><input type="number" min="0" step="0.5" class="allow" data-name="${dn}" value="${fmtNum(a)}"></td>`
       : `<td class="al ro">${fmtNum(a)}</td>`;
     return `<tr><td class="nm">${esc(n)}</td>${allowCell}`+
       `<td class="tk">${fmtNum(k)}</td>`+
-      `<td class="lft${left<0?" neg":""}" data-name="${dn}">${fmtNum(left)}</td>`+
+      (trial?"":`<td class="lft${left<0?" neg":""}" data-name="${dn}">${fmtNum(left)}</td>`)+
       (ed?`<td class="rm"><button data-act="rosterdel" data-name="${dn}" title="Remove ${dn}">&times;</button></td>`:"")+`</tr>`;
   }).join("");
-  if(!staff.length) rows=`<tr><td colspan="${ed?5:4}" class="tblempty">No staff yet.</td></tr>`;
+  if(!staff.length) rows=`<tr><td colspan="${(ed?5:4)-(trial?1:0)}" class="tblempty">No staff yet.</td></tr>`;
   const th=(k,label,cls)=>{ const on=state.adminSort.key===k;
     const ar=on?(state.adminSort.dir==="asc"?"\u25B2":"\u25BC"):"";
     return `<th class="sortable${cls?" "+cls:""}${on?" on":""}" data-sort="${k}">${label}<span class="ar">${ar}</span></th>`; };
@@ -4574,18 +4611,18 @@ function renderAdmin(){
       `</div>`+
       `<label class="yrsel">Year <select id="adminYear">${yopts}</select></label></div>`+
     (ed?`<details class="viswrap" open><summary>Rota visibility — <b>${nPub}</b> of ${RAW.weeks.length} pages public</summary>`+
-      `<div class="visnote">Holiday and office names and totals include all weeks for everyone, including hidden weeks. Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
+      `<div class="visnote">Holiday, office and booth names and totals include all weeks for everyone, including hidden weeks. Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
       `<div class="callegend"><span class="lgd"><i class="sw pub"></i>Public</span><span class="lgd"><i class="sw hid"></i>Hidden</span></div>`+
       `<div class="viscal">${weekCalHTML("vis")}</div></details>`:"")+
-    `<div class="adminsub">Every Away day counts between 1 January and 31 December ${year}, including weekends, bank holidays and special rotas. Each person/date counts once. `+
-      (ed?`Allowance defaults to ${DEFAULT_ALLOWANCE} days — edit any value to override.`
+    trialPeriodNote(year)+`<div class="adminsub">Every Away day recorded ${trial?"during 1 November–24 December 2026":"between 1 January and 31 December "+year} counts, including weekends, bank holidays and special rotas. Each person/date counts once. `+
+      (trial?`2026 annual allowances were initially copied from 2027 and can be adjusted independently. `:"")+(ed?`Allowance defaults to ${DEFAULT_ALLOWANCE} days — edit any value to override.`
         : ops?`Turn on <b>Edit mode</b> to change allowances, manage staff, the default template, colour key and which weeks are public.`
         : `Figures are read-only in this view — the operations team keeps allowances and staffing up to date.`)+
       ` Click a column heading to sort.</div>`+
     `<div class="adminsum">`+
-      card("sumLeft","Days still to take","across everyone below")+
-      card("sumAvg","Avg people off / weekday",`if spread across the <b id="sumRemWk">0</b> weekdays left this year`)+
-      card("sumTaken","Days taken so far","company total, "+year)+
+      (trial?"":card("sumLeft","Days still to take","across everyone below")+
+      card("sumAvg","Avg people off / weekday",`if spread across the <b id="sumRemWk">0</b> weekdays left this year`))+
+      card("sumTaken",trial?"Recorded in trial":"Recorded Away days","company total, "+year)+
       card("sumAllow","Total allowance","company total, "+year)+
     `</div>`+
     (ed?`<div class="rosteradd">`+
@@ -4594,7 +4631,7 @@ function renderAdmin(){
       `<button class="primary" data-act="rosteradd">Add</button>`+
     `</div>`:"")+
     `<div class="admintblwrap"><table class="stafftbl"><thead><tr>`+
-      th("name","Staff")+th("allow","Allowance","num")+th("taken","Taken","num")+th("left","Left","num")+(ed?`<th class="rmh"></th>`:"")+
+      th("name","Staff")+th("allow","Allowance","num")+th("taken",trial?"Trial usage":"Recorded","num")+(trial?"":th("left","Left","num"))+(ed?`<th class="rmh"></th>`:"")+
       `</tr></thead>`+
       `<tbody>${rows}</tbody></table></div>`;
   updateAdminSummary();
@@ -4607,8 +4644,7 @@ $("#adminView").addEventListener("change",e=>{
   if(el.classList&&el.classList.contains("allow")){
     if(!requireEdit()) return;
     const nm=el.dataset.name, v=el.value.trim();
-    if(v==="") delete store.allowances[nm];
-    else { const n=+v; if(!isFinite(n)||n<0) return; store.allowances[nm]=n; }
+    const n=v===""?DEFAULT_ALLOWANCE:+v;if(!isFinite(n)||n<0)return;setAllowanceFor(nm,ADMIN.year,n);
     persist(); recordHistory();
     const cell=$('#adminView .lft[data-name="'+nm.replace(/"/g,'\\\"')+'"]');
     if(cell){ const left=personLeft(nm); cell.textContent=left; cell.classList.toggle("neg",left<0); }
@@ -4662,6 +4698,7 @@ function addPerson(name, office, allowance){
   if(!existing) store.roster.push(name);
   if(office!==undefined){ if(office) store.offices[nm]=office; else delete store.offices[nm]; }
   if(allowance!==undefined && allowance!=="" && allowance!=null) store.allowances[nm]=Number(allowance)||0;
+  seedTrialAllowances(store);
   return nm;
 }
 function replacePersonInData(d,from,to){
@@ -4683,6 +4720,7 @@ function renamePerson(oldName,newName){        // keeps every rota/template/rule
   store.roster=store.roster.map(n=>n===from?newName:n);
   if(store.offices[from]!==undefined){ store.offices[newName]=store.offices[from]; delete store.offices[from]; }
   if(store.allowances[from]!==undefined){ store.allowances[newName]=store.allowances[from]; delete store.allowances[from]; }
+  Object.values(store.allowances.__years||{}).forEach(y=>{if(y[from]!==undefined){y[newName]=y[from];delete y[from];}});
   if(store.freelance[from]) store.freelance[newName]=true;
   delete store.freelance[from];
   RAW.weeks.forEach(w=>{
@@ -5255,7 +5293,7 @@ function publicTotals(kind,visible,office){
 function summaryNotice(){
   if(!SYNC.on)return '<p class="summary-note">Local preview totals.</p>';
   if(!PUBLIC_SUMMARY.data)return '<p class="summary-note" role="status">'+(PUBLIC_SUMMARY.error?'Full totals are unavailable. Retrying automatically; ask Operations to check the totals upgrade.':'Loading totals from all weeks…')+'</p>';
-  return '<p class="summary-note" role="status">Holiday and office names and totals include all saved weeks, including unpublished weeks.'+
+  return '<p class="summary-note" role="status">Holiday, office and booth names and totals include all saved weeks, including unpublished weeks.'+
     (!PUBLIC_SUMMARY.data.namesIncluded?' Names from unpublished weeks are unavailable until Operations installs the updated totals SQL.':'')+
     (PUBLIC_SUMMARY.error?' Connection interrupted — showing the last successfully loaded totals.':'')+
     (SYNC.canEdit&&SYNC.dirty?' Your pending edits will be included after they save.':'')+'</p>';
@@ -5264,7 +5302,7 @@ function refreshPublicSummary(){
   if(!SYNC.on||PUBLIC_SUMMARY.loading)return;
   PUBLIC_SUMMARY.loading=true;
   const generation=SYNC.generation;
-  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
+  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded&&PUBLIC_SUMMARY.data?.boothsIncluded?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
     PUBLIC_SUMMARY.loading=false;
     if(generation!==SYNC.generation)return;
     if(!res||!res.ok){PUBLIC_SUMMARY.error='unavailable';refreshSummaryView();return;}
@@ -5277,7 +5315,8 @@ function refreshPublicSummary(){
 function refreshSummaryView(){
   if(state.view==='heat')renderHeat();
   if(state.view==='office')renderOfficeModal();
-  ['#heatPop','#officePop'].forEach(s=>$(s).classList.remove('open'));
+  if(state.view==='booth')renderBoothModal();
+  ['#heatPop','#officePop','#boothPop'].forEach(s=>$(s).classList.remove('open'));
 }
 
 state.idx = initialWeekIdx();
@@ -5471,7 +5510,7 @@ function buildEmailHTML(){
     let days;
     if(d.special && d.cols) days=d.cols.map(c=>({key:c.key,lbl:(c.lbl||"")+(c.sub?" "+c.sub:"")}));
     else{
-      const sat=parseWeDate(d.satHeader), sun=parseWeDate(d.sunHeader);
+      const sat=parseWeDate(d.satHeader,d.y), sun=parseWeDate(d.sunHeader,d.y);
       days=[];
       if(sat){ const fri=new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1); if(isBankHol(fri)) days.push({key:"fri",lbl:DAYLBL[fri.getDay()]+" "+fmtDate(fri)+" (Bank hol)"}); }
       days.push({key:"sat",lbl:"Sat"+(sat?" "+fmtDate(sat):"")});
@@ -5615,9 +5654,9 @@ function copyEmail(){
 function preparePrint(){
   const w=week();
   let title=w?w.name:"News rota", sub="";
-  if(state.view==="heat"){ title="Holiday heat map "+(state.adminYear||YEAR); }
-  else if(state.view==="office"){ title="Office occupancy — "+(state.officeSel||""); }
-  else if(state.view==="booth"){ title="Booth usage — "+(state.boothSel||"")+" · "+(state.boothHalf||"")+" shifts"; }
+  if(state.view==="heat"){ title="Holiday heat map "+summaryYear(); }
+  else if(state.view==="office"){ title="Office occupancy "+summaryYear()+" — "+(state.officeSel||""); }
+  else if(state.view==="booth"){ title="Booth usage "+summaryYear()+" — "+(state.boothSel||"")+" · "+(state.boothHalf||"")+" shifts"; }
   else if(state.view==="pers"){ title="Personnel list"; }
   else if(state.view==="admin"){ title="Holiday allowances "+(state.adminYear||YEAR); }
   else if(state.templateMode){ title="Default weekday template"; }
