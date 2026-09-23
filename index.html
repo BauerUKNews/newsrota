@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v22 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v22.2 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1075,7 +1075,6 @@ body.filling #grid *{user-select:none}
 body.role-ops #setupBtn{display:inline-flex;align-items:center}
 body.editing::before{top:auto;bottom:0;border-radius:8px 8px 0 0}
 .datewrap h1{white-space:normal;cursor:default}.datewrap:hover h1{color:inherit}
-.choose-week{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:white;color:var(--ink);border-radius:9px;padding:8px 12px;min-height:42px;margin-top:6px;font:600 13px inherit}
 .wkarrow{width:42px;height:42px}.datewrap{max-width:calc(100% - 90px)}
 .rota-scroll-hint{display:none;font-size:13px;color:var(--muted-2);padding:8px 0}
 #grid .card{max-width:100%}
@@ -1125,7 +1124,7 @@ button.hd:focus-visible{z-index:5;outline-offset:-3px}
  .rulechain{gap:5px}.rotrole{padding:10px 6px;font-size:12px}.rotpri{flex:none}
  .rolecard{padding:22px 18px}.rolecard h2{margin-top:12px}
 }
-@media print{.choose-week,.rota-scroll-hint,#setupBtn,.summary-note{display:none!important}#grid{overflow:visible}#grid .card{min-width:0}.dialogbody{overflow:visible}}
+@media print{.rota-scroll-hint,#setupBtn,.summary-note{display:none!important}#grid{overflow:visible}#grid .card{min-width:0}.dialogbody{overflow:visible}}
 
 #generationInfoBtn{color:white;background:var(--ink-3);border:1px solid var(--chrome-line);min-height:42px;border-radius:20px;padding:8px 14px;font:600 13px inherit}
 #fixedList .rulecard{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
@@ -1170,10 +1169,9 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 @media(max-width:1000px){.bar .rota-nav{flex-wrap:wrap;gap:6px}.bar .rota-nav .tabs{order:0;flex:1 1 100%;width:100%}.section-jumps{order:1;flex:1 1 100%;width:100%}}
 @media print{.rota-nav{display:none!important}}
 /* v22: consistent controls and compact reading navigation. */
-.desktop-person,.audience-switch,.personal-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.desktop-person{justify-content:center;margin:12px 0 0}
-.desktop-person button,.personal-controls button,.summary-month-controls button{font:inherit;font-size:13px;font-weight:600;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px 13px;background:var(--card);color:var(--ink)}
-.desktop-person button:first-child,.personal-controls button[aria-pressed="true"],.audience-switch button[aria-pressed="true"]{background:var(--mag-wash);border-color:#b7a3e0;color:var(--ink)}
+.audience-switch,.personal-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.personal-controls button,.summary-month-controls button{font:inherit;font-size:13px;font-weight:600;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px 13px;background:var(--card);color:var(--ink)}
+.personal-controls button[aria-pressed="true"],.audience-switch button[aria-pressed="true"]{background:var(--mag-wash);border-color:#b7a3e0;color:var(--ink)}
 .personal-controls{padding:12px 18px 0}.personal-controls span{font-size:12px;color:var(--muted)}
 .today-label{display:block;color:#006b60;font-size:11px;font-weight:700;margin-top:4px}
 .filter-status{font-size:13px;color:var(--ink);background:var(--mag-wash);padding:9px 12px;border-radius:10px;line-height:1.4}
@@ -1219,16 +1217,16 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
  .section-jumps{padding:2px 0;gap:5px}.section-jumps button{min-height:36px;padding:7px 9px;font-size:11px}
  .bar .savenote.s-view,.bar .savenote.s-ok{font-size:0!important;min-width:32px;min-height:36px!important;justify-content:center;gap:0;padding:0}.bar .savenote.s-view .live,.bar .savenote.s-ok .live{width:7px;height:7px}
  .bar .savenote.s-error{order:25!important;flex:1 1 100%;padding:7px 10px!important;max-width:100%;font-size:12px!important}
- .desktop-person{display:none}.mobile-heading{margin-bottom:5px}
+ .mobile-heading{margin-bottom:5px}
  .personal-controls{padding:8px 10px 0}.personal-controls span{display:none}
  #summaryDayModal{align-items:flex-end;padding:0}#summaryDayModal .modalcard{width:100%;max-width:100%;max-height:82dvh;margin:0;border-radius:20px 20px 0 0;padding-bottom:env(safe-area-inset-bottom)}
  .heatmonths{grid-template-columns:1fr}.mcal .hd{min-height:44px}.heathead{font-size:22px}.heatsub{font-size:13px;line-height:1.5}
  .searchpop{max-width:calc(100vw - 24px)}
 }
-@media print{body{padding-bottom:0}.desktop-person,.personal-controls,.filter-status,.summary-month-controls,.week-strip,.mobile-calendar{display:none!important}.search-muted{opacity:1!important}}
+@media print{body{padding-bottom:0}.personal-controls,.filter-status,.summary-month-controls,.week-strip,.mobile-calendar{display:none!important}.search-muted{opacity:1!important}}
 
 
-.meta{flex-wrap:wrap;gap:8px 24px}.metacenter{flex:0 0 100%}.desktop-person{margin:0}#desktopFilter{flex:0 1 650px;margin:0}
+.meta{flex-wrap:wrap;gap:8px 24px}.metacenter{flex:0 0 100%}#desktopFilter{flex:0 1 650px;margin:0}
 .searchpop{left:auto;right:0;width:400px;max-width:min(400px,calc(100vw - 24px))}
 #mobileView .audience-switch button[aria-pressed="true"]{background:var(--mag-wash);border-color:#b7a3e0;color:var(--ink)}
 @media(max-width:480px){.ptbl th:first-child,.ptbl td:first-child{width:94px}.ptbl td:first-child{font-size:12px}}
@@ -1242,6 +1240,10 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
  .bar .savenote{margin-left:auto}
 }
 @media(max-width:760px){body.phone-access-pending::before{display:none!important}}
+
+.datewrap #weekTitle{appearance:none;background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;letter-spacing:inherit;line-height:inherit;cursor:pointer;min-height:44px}
+.datewrap #weekTitle:hover{color:var(--mag)}
+.datewrap #weekTitle:focus-visible{outline:2px solid var(--teal);outline-offset:5px;border-radius:4px}
 </style>
 </head>
 <body>
@@ -1359,15 +1361,13 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
     <div class="datenav">
       <button class="wkarrow" id="prev" title="Previous week" aria-label="Previous week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div class="datewrap">
-        <h1 id="weekTitle"></h1>
-        <button class="choose-week" id="chooseWeek" type="button" aria-haspopup="dialog">Choose week <span id="rotaYear">2027</span> ▾</button>
-        <select id="weekSel" aria-label="Jump to a week"></select><button type="button" id="thisWeekBtn" class="choose-week">This week</button>
+        <h1><button id="weekTitle" type="button" aria-haspopup="dialog" aria-controls="jumpModal" title="Open week calendar"></button></h1>
+        <select id="weekSel" aria-label="Jump to a week"></select>
       </div>
       <button class="wkarrow" id="next" title="Next week" aria-label="Next week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
     <span class="reltag" id="weekRel"></span>
   </div>
-  <div class="desktop-person"><button type="button" id="desktopEveryone" aria-pressed="true">Everyone</button><button type="button" id="desktopPersonal">My rota</button><button type="button" id="desktopChangePerson">Choose person</button></div>
   <div class="keylegend" id="keyLegend"></div>
   <div id="desktopFilter" class="filter-status" hidden></div>
 </div>
@@ -1415,7 +1415,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v22</span>
+  <span class="pill">News Rota v22.2</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1582,7 +1582,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 </div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
- <div class="setup-intro"><p><b>Find your rota:</b> use Choose week, This week or My rota. Search for a person, role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, tap a day in the week strip or tap the date heading to choose another date. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
+ <div class="setup-intro"><p><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, tap a day in the week strip or tap the date heading to choose another date. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
 </div></div>
 <script>
@@ -1798,7 +1798,6 @@ function renderCurrentView(){
   else if(state.view==="pers") renderStaffList();
   else render();
   renderSectionJumps();
-  $('#desktopChangePerson').textContent=MOBILE.person?MOBILE.person+' · Change':'Choose person';
   refreshOpenViews();
 }
 
@@ -2012,7 +2011,6 @@ function selectMobilePerson(name){
   MOBILE.audience=MOBILE.person?'me':'everyone';
   try{localStorage.setItem('news_rota_my_person',MOBILE.person);}catch(_){}
   $('#mobilePersonModal').classList.remove('open');renderCurrentView();
-  if(UI22.desktopPicking&&MOBILE.person){UI22.desktopPicking=false;openPersonModal(MOBILE.person);}
 }
 function renderMobilePeople(){
   const q=nrm($('#mobilePersonSearch').value),names=allStaff().filter(n=>nrm(n).includes(q));
@@ -5037,7 +5035,7 @@ $("#jumpBody").addEventListener("click",e=>{
   const b=e.target.closest("[data-jump]"); if(!b) return;
   state.templateMode=false; state.idx=+b.dataset.jump; closeJump(); render();
 });
-$("#chooseWeek").addEventListener("click",()=>openJump("jump"));   // don't pass the click event as the mode
+$("#weekTitle").addEventListener("click",()=>openJump("jump"));
 function renderAdmin(){
   const years=yearsInData();
   const ny=new Date().getFullYear();
@@ -5983,8 +5981,8 @@ function renderWeekStrip(){
     return '<button type="button" data-strip-date="'+iso+'" aria-label="'+esc(dt.toLocaleDateString('en-GB',{dateStyle:'full'}))+'" aria-pressed="'+selected+'"'+(current?' aria-current="date"':'')+'><span>'+DAYLBL[dt.getDay()].slice(0,2)+'</span><b>'+dt.getDate()+'</b>'+(current?'<i aria-hidden="true"></i>':'')+'</button>';
   }).join('');
 }
-function openPersonPicker(desktop=false){
-  UI22.desktopPicking=desktop;$('#mobilePersonSearch').value='';renderMobilePeople();$('#mobilePersonModal').classList.add('open');requestAnimationFrame(()=>$('#mobilePersonSearch').focus());
+function openPersonPicker(){
+  $('#mobilePersonSearch').value='';renderMobilePeople();$('#mobilePersonModal').classList.add('open');requestAnimationFrame(()=>$('#mobilePersonSearch').focus());
 }
 function clearDesktopSearch(){state.q='';$('#search').value='';applySearch();$('#searchPop').classList.remove('open');}
 function scrollRotaTarget(target){
@@ -6021,17 +6019,10 @@ function openSummaryDay(title,total,names,privateCount){
 $('#search').addEventListener('keydown',e=>{if(e.key==='Escape'){clearDesktopSearch();}else if(e.key==='ArrowDown'){const result=$('#searchPop button');if(result){e.preventDefault();result.focus();}}});
 $('#desktopClearSearch').addEventListener('click',clearDesktopSearch);
 $('#desktopFilter').addEventListener('click',e=>{if(e.target.closest('[data-clear-rota-search]'))clearDesktopSearch();});
-$('#desktopPersonal').addEventListener('click',()=>{if(MOBILE.person)openPersonModal(MOBILE.person);else openPersonPicker(true);});
-$('#desktopChangePerson').addEventListener('click',()=>openPersonPicker(true));
-$('#desktopEveryone').addEventListener('click',()=>{clearDesktopSearch();closePersonModal();});
 $('#mobileMine').addEventListener('click',()=>{if(!MOBILE.person){openPersonPicker();return;}MOBILE.audience='me';renderMobileDay();});
 $('#mobileDayTitle').addEventListener('click',()=>{const el=$('#mobileCalendar');el.hidden=!el.hidden;$('#mobileDayTitle').setAttribute('aria-expanded',!el.hidden);if(!el.hidden){const input=$('#mobileDate');input.focus();try{input.showPicker();}catch(_){}}});
 $('#mobileWeekStrip').addEventListener('click',e=>{const b=e.target.closest('[data-strip-date]');if(b)chooseMobileDate(b.dataset.stripDate);});
-$('#thisWeekBtn').addEventListener('click',()=>{
-  const now=new Date(),start=localISO(mondayOf(now)),idx=RAW.weeks.findIndex(w=>weekDatesOf(w).some(d=>d&&localISO(mondayOf(d))===start));
-  if(idx<0){flash('There is no rota for this week. Choose an available week.');return;}
-  state.templateMode=false;state.idx=idx;render();window.scrollTo({top:0,behavior:'auto'});
-});
+
 $('#personModal').addEventListener('click',e=>{const b=e.target.closest('[data-person-range]');if(!b)return;UI22.personalRange=b.dataset.personRange;openPersonModal(UI22.personalName);$('#personModal .dialogbody').scrollTop=0;});
 document.addEventListener('click',e=>{
   const step=e.target.closest('[data-summary-step]'),overview=e.target.closest('[data-summary-overview]'),month=e.target.closest('[data-summary-month]');
@@ -6319,7 +6310,6 @@ function enhanceRotaUI(){
     const fixed=rule&&(store.fixedRules||[]).find(r=>r.role===rule.role&&r.day===rule.day);
     if(fixed){const badge=document.createElement('small');badge.className='fixed-badge';badge.textContent='Fixed: '+fixed.person;cell.append(badge);}
   });
-  const wy=weekRepDate(week());const ye=$('#rotaYear');if(ye)ye.textContent=wy?wy.getFullYear():YEAR;
   grid.querySelectorAll('.card').forEach(card=>{
     if(!card.querySelector('.row'))return;
     card.setAttribute('role','table');card.setAttribute('aria-label',(card.querySelector('.ct .name,.htitle')?.textContent||'Away')+' — '+week().name);
