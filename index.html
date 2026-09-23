@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v21 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v21.1 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -91,9 +91,14 @@ button{font-family:inherit;cursor:pointer}
 
 /* personal rota modal */
 #personModal .modalhead{align-items:baseline}
-.personbody{padding:6px 18px 4px;max-height:60vh;overflow:auto}
+.personbody{padding:14px 18px 4px;max-height:60vh;overflow:auto}
 .pnone{padding:14px 4px;color:var(--muted-2);font-size:13px}
-.ptbl{width:100%;border-collapse:collapse;font-size:13px}
+.pweek{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:16px;background:var(--card)}
+.pweek h4{margin:0;padding:10px 12px;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.4;border-bottom:1px solid var(--line)}
+.ptbl{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px}
+.ptbl th:first-child,.ptbl td:first-child{width:100px}
+.ptbl td:last-child{overflow-wrap:anywhere}
+@media(max-width:480px){.personbody{padding:10px 10px 0}.ptbl th:first-child,.ptbl td:first-child{width:82px}.ptbl tbody td{padding:8px}.pweek h4{padding:10px}}
 .ptbl thead th{position:sticky;top:0;background:var(--card);text-align:left;padding:7px 10px;
   font-family:"BauerMedia Sans",sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted-2);border-bottom:1px solid var(--line)}
@@ -834,6 +839,7 @@ body.template .tplbanner{display:flex}
   background:rgba(208,92,93,.2);
   animation:shiftgap 1.7s ease-in-out infinite;
 }
+body.role-staff .dc.vacant,body.role-staff .pline.vacant{animation:none;background:rgba(208,92,93,.12)}
 @keyframes shiftgap{0%,100%{background:rgba(208,92,93,.15)}50%{background:rgba(208,92,93,.36)}}
 @media (prefers-reduced-motion:reduce){ .pline.vacant{animation:none;background:rgba(208,92,93,.26)} }
 
@@ -1152,6 +1158,17 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
  #mobileView .summary-note{padding:8px 0;font-size:12px}
 }
 @media print{#mobileView,#mobileDailyReturn{display:none!important}body.mobile-daily #mobileView{display:block!important;max-width:none;padding:0}body.mobile-daily>.wrap,body.mobile-daily>.meta{display:none!important}#mobileView button,#mobileView .mobile-heading,#mobileView .mobile-dates,#mobileView .mobile-person,#mobileView .mobile-search,#mobileView .mobile-actions{display:none!important}.mobile-card{break-inside:avoid}}
+
+/* Section shortcuts share the navigation row, with their own horizontal scroll. */
+.bar .rota-nav{order:20;display:flex;align-items:center;gap:12px;width:100%;min-width:0}
+.bar .rota-nav .tabs{flex:0 1 auto;width:auto;margin-left:auto}
+.section-jumps{display:flex;align-items:center;gap:5px;flex:1 1 240px;min-width:0;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain;padding:3px 0}
+.section-jumps[hidden]{display:none}
+.section-jumps span{font-size:11px;color:#eeeaf6;white-space:nowrap}
+.section-jumps button{flex:none;border:1px solid var(--chrome-line);border-radius:8px;background:var(--ink-3);color:white;font:inherit;font-size:11px;font-weight:600;min-height:40px;padding:8px 10px;white-space:nowrap}
+.section-jumps button:hover,.section-jumps button:focus-visible{background:#6b3cc4}
+@media(max-width:1000px){.bar .rota-nav{flex-wrap:wrap;gap:6px}.bar .rota-nav .tabs{order:0;flex:1 1 100%;width:100%}.section-jumps{order:1;flex:1 1 100%;width:100%}}
+@media print{.rota-nav{display:none!important}}
 </style>
 </head>
 <body>
@@ -1161,6 +1178,8 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
     <span class="ey">Bauer Media Audio</span>
     <span class="wm"><span class="tab"></span>News Rota</span>
   </div>
+  <div class="rota-nav">
+  <nav id="sectionJumps" class="section-jumps" aria-label="Jump to rota section" hidden></nav>
   <div class="tabs" id="tabs">
     <button class="tab active" data-view="rota">Rota</button>
     <button class="tab" data-view="heat" aria-label="Holiday heat map"><span class="tab-wide">Holiday heat map</span><span class="tab-small" aria-hidden="true">Holidays</span></button>
@@ -1168,6 +1187,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
     <button class="tab" data-view="booth" aria-label="Booth usage"><span class="tab-wide">Booth usage</span><span class="tab-small" aria-hidden="true">Booths</span></button>
     <button class="tab" data-view="pers">Personnel</button>
     <button class="tab" data-view="admin">Admin</button>
+  </div>
   </div>
   <div class="spacer"></div>
 
@@ -1317,7 +1337,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 <div class="heatpop" id="heatPop"></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v21</span>
+  <span class="pill">News Rota v21.1</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1445,7 +1465,6 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
   <div class="modalcard wide">
     <div class="modalhead"><h3 id="personName">Personal rota</h3><span class="sub" id="personSub"></span>
       <button class="x" data-act="personclose" aria-label="Close">&times;</button></div>
-    <div class="pmeta" id="personMeta"></div>
     <div class="personbody" id="personBody"></div>
     <div class="modalfoot"><button class="ghostbtn editonly" data-act="addperson">+ Add a person</button>
       <button class="ghostbtn editonly" id="personEditBtn">Edit details</button>
@@ -1698,6 +1717,7 @@ function renderCurrentView(){
   else if(state.view==="booth") renderBoothModal();
   else if(state.view==="pers") renderStaffList();
   else render();
+  renderSectionJumps();
   refreshOpenViews();
 }
 
@@ -1870,7 +1890,7 @@ function renderMobileDay(){
   const selected=MOBILE.person,query=nrm(MOBILE.query||''),person=query?'':selected,day=filterMobileDay(mobileDayData(MOBILE.date,person),query);
   $('#mobileClearSearch').hidden=!query;
   if(day.weeks.length)state.idx=day.weeks.find(i=>RAW.weeks[i].id===day.sections[0]?.weekId)??day.weeks[0];
-  $('#generationInfoBtn').hidden=!day.weeks.includes(state.idx)||!canViewWeek(week())||!(store.overrides[week().id]||{}).generationReport;
+  $('#generationInfoBtn').hidden=state.role==='staff'||!day.weeks.includes(state.idx)||!canViewWeek(week())||!(store.overrides[week().id]||{}).generationReport;
   $('#mobileDayContext').textContent=MOBILE.date===localISO(new Date())?'Today':dt.getFullYear();
   $('#mobileDayTitle').textContent=dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
   if(document.activeElement!==$('#mobileDate'))$('#mobileDate').value=MOBILE.date;
@@ -1894,6 +1914,7 @@ function renderMobileDay(){
   day.notes.forEach(n=>{html+='<details class="mobile-card"><summary>Week notes · '+esc(n.week)+'</summary>'+n.notes.map(t=>'<p>'+esc(t)+'</p>').join('')+'</details>';});
   if(SYNC.on&&(!PUBLIC_SUMMARY.data||PUBLIC_SUMMARY.error))html+='<p class="mobile-status">'+(!PUBLIC_SUMMARY.data?'Away totals are loading; the holiday view shows their connection status.':'Away information was last loaded before the connection problem.')+'</p>';
   $('#mobileDayBody').innerHTML=html;
+  renderSectionJumps();
 }
 function chooseMobileDate(value){if(!mobileDateValue(value))return;MOBILE.date=value;MOBILE.followToday=value===localISO(new Date());MOBILE.fullWeek=false;renderCurrentView();}
 function moveMobileDay(step){const dt=mobileDateValue(MOBILE.date);dt.setDate(dt.getDate()+step);chooseMobileDate(localISO(dt));}
@@ -1929,7 +1950,7 @@ function render(){
   clearRoleCache();
   if(syncMobileLayout()){renderMobileDay();return;}
   const w=week(), d=data();
-  $("#generationInfoBtn").hidden=state.templateMode||!canViewWeek(w)||!d.generationReport;
+  $("#generationInfoBtn").hidden=state.role==="staff"||state.templateMode||!canViewWeek(w)||!d.generationReport;
   document.body.classList.toggle("template", state.templateMode);
   $("#weekSel").value=state.idx;
   const k=$("#weekRel");
@@ -1958,6 +1979,7 @@ function render(){
   if(state.editing) setEditable(true);
   applySearch();
   enhanceRotaUI();
+  renderSectionJumps();
 }
 
 // A week that's still marked Hidden in Admin: the team can reach it and see it
@@ -3085,28 +3107,32 @@ function openPersonModal(name){
   const items=personSchedule(name);
   $("#personName").textContent=name;
   const rec=personRecord(name);
-  $("#personMeta").innerHTML = rec
-    ? `<span class="chip">Office: <b>${rec.office?esc(rec.office):"not set"}</b></span>`+
-      `<span class="chip">2027 holiday allowance: <b>${rec.allowance===""?"not set":esc(String(rec.allowance))+" days"}</b></span>`+
-      `<span class="chip">Type: <b>${rec.type==="freelance"?"Freelance":"Staff"}</b></span>`
-    : `<span class="chip">Not on the personnel list</span>`;
   const eb=$("#personEditBtn");
   if(eb){ eb.textContent = rec?"Edit details":"Add to personnel list"; eb.dataset.name=name; }
   const work=items.filter(i=>i.kind==="work"||i.kind==="conflict").length,
         hol=items.filter(i=>i.kind==="holiday"||i.kind==="conflict").length;
-  $("#personSub").textContent = items.length+" days  ·  "+work+" on shift  ·  "+hol+" on holiday";
-  let body;
-  if(!items.length) body=`<div class="pnone">No dates in the rota yet.</div>`;
-  else body=`<table class="ptbl"><thead><tr><th>Date</th><th>Role</th></tr></thead><tbody>`+
-    items.map(i=>{
-      const dl=`<b>${DAYLBL[i.date.getDay()]}</b> ${fmtDate(i.date)}`;
-      if(i.kind==="holiday") return `<tr class="phol"><td>${dl}</td><td>On holiday</td></tr>`;
-      if(i.kind==="bh") return `<tr class="pbh"><td>${dl}</td><td>Bank holiday — see weekend rota</td></tr>`;
-      if(i.kind==="na") return `<tr class="pna"><td>${dl}</td><td>NA</td></tr>`;
-      const cell=i.entries.map(e=>`${esc(e.label)}${e.section?`<span class="psec">${esc(e.section)}</span>`:""}`).join('<span class="pplus"></span>');
-      if(i.kind==="conflict") return `<tr class="pconf"><td>${dl}</td><td><b>Conflict: also marked on holiday</b><span class="pplus"></span>${cell}</td></tr>`;
-      return `<tr><td>${dl}</td><td>${cell}</td></tr>`;
-    }).join("")+`</tbody></table>`;
+  $("#personSub").textContent = work+" on shift  ·  "+hol+" on holiday";
+  const weeks=new Map();
+  items.filter(i=>i.kind!=="na").forEach(i=>{
+    const monday=mondayOf(i.date),key=localISO(monday);
+    if(!weeks.has(key))weeks.set(key,{monday,items:[]});
+    weeks.get(key).items.push(i);
+  });
+  const body=!weeks.size ? `<div class="pnone">No roles or holiday entries in the available rota yet.</div>` :
+    [...weeks.values()].map(({monday,items},index)=>{
+      const sunday=new Date(monday);sunday.setDate(sunday.getDate()+6);
+      const label=fmtDate(monday)+(monday.getFullYear()!==sunday.getFullYear()?" "+monday.getFullYear():"")+" – "+fmtDate(sunday)+" "+sunday.getFullYear();
+      return `<section class="pweek" aria-labelledby="personWeek${index}"><h4 id="personWeek${index}">${label}</h4>`+
+        `<table class="ptbl" aria-labelledby="personWeek${index}"><thead><tr><th scope="col">Date</th><th scope="col">Role</th></tr></thead><tbody>`+
+        items.map(i=>{
+          const dl=`<b>${DAYLBL[i.date.getDay()]}</b> ${fmtDate(i.date)}`;
+          if(i.kind==="holiday") return `<tr class="phol"><td>${dl}</td><td>On holiday</td></tr>`;
+          if(i.kind==="bh") return `<tr class="pbh"><td>${dl}</td><td>Bank holiday — see weekend rota</td></tr>`;
+          const cell=i.entries.map(e=>`${esc(e.label)}${e.section?`<span class="psec">${esc(e.section)}</span>`:""}`).join('<span class="pplus"></span>');
+          if(i.kind==="conflict") return `<tr class="pconf"><td>${dl}</td><td><b>Conflict: also marked on holiday</b><span class="pplus"></span>${cell}</td></tr>`;
+          return `<tr><td>${dl}</td><td>${cell}</td></tr>`;
+        }).join("")+`</tbody></table></section>`;
+    }).join("");
   $("#personBody").innerHTML=body;
   $("#personModal").classList.add("open");
 }
@@ -3858,6 +3884,30 @@ document.addEventListener("scroll",closeCellMenu,true);
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeCellMenu(); closeNote(); closeHeatPop(); $("#searchPop").classList.remove("open"); $("#syncPop").classList.remove("open"); $("#exportMenu").classList.remove("open"); $("#keyModal").classList.remove("open"); $("#personModal").classList.remove("open"); $("#jumpModal").classList.remove("open"); $("#officePop").classList.remove("open"); $("#boothPop").classList.remove("open"); closeAutofill(); closeConfirm(); closePersonEditor(); closeLeaver(); closeTplModal(); if($("#ruleModal").classList.contains("open")) closeRuleModal(); } });
 
 // ---------- view tabs + holiday heat map ----------
+function renderSectionJumps(){
+  const nav=$('#sectionJumps');
+  if(state.view!=="rota"){nav.hidden=true;nav.innerHTML="";return;}
+  const mobile=useMobileDay();
+  const headings=[...document.querySelectorAll(mobile?'#mobileDayBody .mobile-card:not(.mobile-away)>h2':'#grid .card .ct .name')];
+  const buttons=headings.map((heading,i)=>{
+    const card=heading.closest(mobile?'.mobile-card':'.card');
+    card.dataset.jumpSection=String(i);
+    return '<button type="button" data-jump-section="'+i+'">'+esc(titleCase(heading.textContent.trim()))+'</button>';
+  });
+  const html=buttons.length?'<span>Jump to</span>'+buttons.join(''):'';
+  if(nav.innerHTML!==html)nav.innerHTML=html;
+  nav.hidden=!buttons.length;
+}
+$('#sectionJumps').addEventListener('click',e=>{
+  const button=e.target.closest('button[data-jump-section]');if(!button||state.view!=="rota")return;
+  const root=useMobileDay()?$('#mobileDayBody'):$('#grid');
+  const card=[...root.querySelectorAll('[data-jump-section]')].find(el=>el.dataset.jumpSection===button.dataset.jumpSection);
+  if(!card)return;
+  const top=card.getBoundingClientRect().top+window.scrollY-document.querySelector('.bar').getBoundingClientRect().height-12;
+  card.tabIndex=-1;card.focus({preventScroll:true});
+  window.scrollTo({top:Math.max(0,top),behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+});
+
 function scrollToToday(sel){
   requestAnimationFrame(()=>{ const t=document.querySelector(sel); if(t&&t.scrollIntoView) try{ t.scrollIntoView({block:"center"}); }catch(_){} });
 }
@@ -4722,6 +4772,7 @@ function buildGenerationReport(d,plan){
   return {version:1,weekId:week().id,weekName:plan.weekName,generatedAt:new Date().toISOString(),signature:generationSignature(d),groups,moves,gaps};
 }
 function openGenerationInfo(){
+  if(state.role==="staff")return;
   const d=data(),r=d.generationReport;
   if(state.templateMode||!canViewWeek(week())||!r){flash('Generate this week with Autofill to create its info page');return;}
   const rows=(list)=>list.length?list.map(x=>`<div class="arow"><span class="arole">${esc(x.role)}<br><small>${esc(x.day)}</small></span><span class="awhy">${x.from?esc(x.from)+' → ':''}<b>${esc(x.to||'Unfilled')}</b><br>${esc(x.why)}</span></div>`).join(''):'<p>No changes in this category.</p>';
@@ -6018,11 +6069,11 @@ function closeRestrictedViews(){
   $("#generationModal").classList.remove("open");$("#generationBody").innerHTML="";
   cancelFillDrag();
   document.querySelectorAll('.modal.open,.searchpop.open,.opop.open,#syncPop.open,#cellMenu.open,#heatPop.open').forEach(el=>el.classList.remove('open'));
-  ['personMeta','personBody','personSub','personName','autoBody','noteText','searchPop','officePop','boothPop','heatPop'].forEach(id=>{const e=document.getElementById(id);if(e){if('value' in e)e.value='';else e.textContent='';}});
+  ['personBody','personSub','personName','autoBody','noteText','searchPop','officePop','boothPop','heatPop'].forEach(id=>{const e=document.getElementById(id);if(e){if('value' in e)e.value='';else e.textContent='';}});
   AUTOPLAN=null;state.templateMode=false;document.body.classList.remove('template');
 }
 function refreshOpenViews(){
-  if($("#generationModal").classList.contains("open")){if(canViewWeek(week())&&data().generationReport)openGenerationInfo();else{$("#generationModal").classList.remove("open");$("#generationBody").innerHTML="";}}
+  if($("#generationModal").classList.contains("open")){if(state.role!=="staff"&&canViewWeek(week())&&data().generationReport)openGenerationInfo();else{$("#generationModal").classList.remove("open");$("#generationBody").innerHTML="";}}
   const person=$('#personModal');
   if(person&&person.classList.contains('open')) openPersonModal($('#personName').textContent);
   ['#searchPop','#officePop','#boothPop','#heatPop'].forEach(s=>{const e=$(s);if(e)e.classList.remove('open');});
