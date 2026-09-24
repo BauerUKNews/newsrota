@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v22.3 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v22.4 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -95,6 +95,7 @@ button{font-family:inherit;cursor:pointer}
 .pnone{padding:14px 4px;color:var(--muted-2);font-size:13px}
 .pweek{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:16px;background:var(--card)}
 .pweek-status{margin:12px;padding:14px;border-radius:10px;background:var(--bg);color:var(--muted);font-size:13px;line-height:1.5}
+.pday-empty td:last-child{color:var(--muted)}
 .pweek-status strong{display:block;color:var(--ink);margin-bottom:3px}
 .pweek h4{margin:0;padding:10px 12px;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.4;border-bottom:1px solid var(--line)}
 .ptbl{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px}
@@ -1417,7 +1418,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v22.3</span>
+  <span class="pill">News Rota v22.4</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -3224,7 +3225,6 @@ function personalScheduleWeeks(name,range,today){
     weekDatesOf(w).forEach(date=>{const entry=bucket(date);if(entry)entry[status].set(localISO(date),date);});
   });
   personalRangeItems(personSchedule(name),range,today).forEach(item=>{
-    if(item.kind==='na')return;
     const entry=weeks.get(localISO(mondayOf(item.date)));if(entry)entry.items.push(item);
   });
   return [...weeks.values()].sort((a,b)=>a.monday-b.monday).map(entry=>({
@@ -3266,13 +3266,14 @@ function openPersonModal(name){
         (items.length?`<table class="ptbl" aria-labelledby="personWeek${index}"><thead><tr><th scope="col">Date</th><th scope="col">Role</th></tr></thead><tbody>`+
         items.map(i=>{
           const dl=`<b>${DAYLBL[i.date.getDay()]}</b> ${fmtDate(i.date)}${localISO(i.date)===localISO(new Date())?'<span class="today-label">Today</span>':""}`;
+          if(i.kind==="na") return `<tr class="pday-empty"><td>${dl}</td><td><span aria-label="No assignment">—</span></td></tr>`;
           if(i.kind==="holiday") return `<tr class="phol"><td>${dl}</td><td>On holiday</td></tr>`;
           if(i.kind==="bh") return `<tr class="pbh"><td>${dl}</td><td>Bank holiday — see weekend rota</td></tr>`;
           const cell=i.entries.map(e=>`${esc(isPhone()?readableRole(e.label):e.label)}${e.section?`<span class="psec">${esc(e.section)}</span>`:""}`).join('<span class="pplus"></span>');
           if(i.kind==="conflict") return `<tr class="pconf"><td>${dl}</td><td><b>Conflict: also marked on holiday</b><span class="pplus"></span>${cell}</td></tr>`;
           return `<tr><td>${dl}</td><td>${cell}</td></tr>`;
         }).join("")+`</tbody></table>`:'')+
-        (!items.length&&visibleDates.length?`<div class="pweek-status">No shifts or holiday entries on the published dates.</div>`:'')+
+        (!items.some(i=>i.kind!=="na")&&visibleDates.length?`<div class="pweek-status">No shifts or holiday entries on the published dates.</div>`:'')+
         (hiddenDates.length?`<div class="pweek-status"><strong>Rota coming soon</strong>${esc(personalDateRanges(hiddenDates))} · Not published yet.</div>`:'')+
         (blockedDates.length?`<div class="pweek-status"><strong>Separate rota</strong>${esc(personalDateRanges(blockedDates))} · These dates are covered by a separate rota.</div>`:'')+
         `</section>`;
