@@ -1,0 +1,6 @@
+News Rota v21 icon
+Generated with the built-in image generation tool, 17 September 2026.
+The original generated image is included as icons/news-rota-original.png. Web-sized PNG copies were resized without altering the design.
+
+Final prompt:
+Use case: logo-brand. Create one polished square app icon for News Rota, a professional newsroom staff scheduling tool. Full-bleed opaque rich purple background #4700a3, with a simple bold white calendar silhouette and mint/teal #1fd1bd and #009392 schedule blocks. Integrate a subtle clever letter N into the arrangement of calendar blocks. Flat precise geometric design, strong small-size readability, balanced generous padding with all essential artwork within the central 70 percent, no small detail, no gradients, no shadows, no surrounding mockup or device. Square 1024x1024 canvas with straight outer corners (iOS applies its own rounding). No words, no text, no watermarks. A refined confident branded icon, white and mint on purple.

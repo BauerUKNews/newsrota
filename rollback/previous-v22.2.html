@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v22.4 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v22.2 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -94,9 +94,6 @@ button{font-family:inherit;cursor:pointer}
 .personbody{padding:14px 18px 4px;max-height:60vh;overflow:auto}
 .pnone{padding:14px 4px;color:var(--muted-2);font-size:13px}
 .pweek{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:16px;background:var(--card)}
-.pweek-status{margin:12px;padding:14px;border-radius:10px;background:var(--bg);color:var(--muted);font-size:13px;line-height:1.5}
-.pday-empty td:last-child{color:var(--muted)}
-.pweek-status strong{display:block;color:var(--ink);margin-bottom:3px}
 .pweek h4{margin:0;padding:10px 12px;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.4;border-bottom:1px solid var(--line)}
 .ptbl{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px}
 .ptbl th:first-child,.ptbl td:first-child{width:100px}
@@ -1418,7 +1415,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v22.4</span>
+  <span class="pill">News Rota v22.2</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1546,7 +1543,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
   <div class="modalcard wide">
     <div class="modalhead"><h3 id="personName">Personal rota</h3><span class="sub" id="personSub"></span>
       <button class="x" data-act="personclose" aria-label="Close">&times;</button></div>
-    <div class="personal-controls"><button type="button" data-person-range="upcoming" aria-pressed="true">Upcoming</button><button type="button" data-person-range="all" aria-pressed="false">All dates</button><span>Every scheduled week, with unpublished dates marked</span></div>
+    <div class="personal-controls"><button type="button" data-person-range="upcoming" aria-pressed="true">Upcoming</button><button type="button" data-person-range="all" aria-pressed="false">All dates</button><span>Published dates available to your profile</span></div>
     <div class="personbody" id="personBody"></div>
     <div class="modalfoot"><button class="ghostbtn editonly" data-act="addperson">+ Add a person</button>
       <button class="ghostbtn editonly" id="personEditBtn">Edit details</button>
@@ -3155,9 +3152,8 @@ function personSchedule(name){
   function slot(dt){ const k=dt.getFullYear()+"-"+dt.getMonth()+"-"+dt.getDate();
     if(!byDate[k]) byDate[k]={date:dt,work:[],holiday:false}; return byDate[k]; }
   RAW.weeks.forEach(w=>{
-    if((store.deletedWeeks||[]).includes(w.id)||!canViewWeek(w)) return;
+    if(!canViewWeek(w)) return;
     const d=store.overrides[w.id]||template(w);
-    if(d.blocked) return;
     if(w.kind==="weekend" && d.special && d.cols){
       // the Christmas sheet: real dates come from its column labels
       const sds=specialDates(w,d);
@@ -3207,49 +3203,11 @@ function personSchedule(name){
     : s.bh        ? {date:s.date,kind:"bh"}
     :               {date:s.date,kind:"na"});
 }
-// Build the timeline from scheduled dates, never from the presence of assignments.
-// Only personSchedule reads assignments, and it applies the current profile's visibility.
-function personalScheduleWeeks(name,range,today){
-  const weeks=new Map(), start=mondayOf(today);
-  function bucket(date){
-    if(!date||!Number.isFinite(date.getTime())||(range!=='all'&&date<start))return null;
-    const monday=mondayOf(date),key=localISO(monday);
-    if(!weeks.has(key))weeks.set(key,{monday,items:[],hiddenDates:new Map(),blockedDates:new Map(),visibleDates:new Map()});
-    return weeks.get(key);
-  }
-  RAW.weeks.forEach(w=>{
-    if((store.deletedWeeks||[]).includes(w.id))return;
-    const visible=canViewWeek(w);
-    const d=visible?(store.overrides[w.id]||template(w)):null;
-    const status=!visible?'hiddenDates':d.blocked?'blockedDates':'visibleDates';
-    weekDatesOf(w).forEach(date=>{const entry=bucket(date);if(entry)entry[status].set(localISO(date),date);});
-  });
-  personalRangeItems(personSchedule(name),range,today).forEach(item=>{
-    const entry=weeks.get(localISO(mondayOf(item.date)));if(entry)entry.items.push(item);
-  });
-  return [...weeks.values()].sort((a,b)=>a.monday-b.monday).map(entry=>({
-    ...entry,items:entry.items.sort((a,b)=>a.date-b.date),
-    hiddenDates:[...entry.hiddenDates.values()].sort((a,b)=>a-b),
-    blockedDates:[...entry.blockedDates.values()].sort((a,b)=>a-b),
-    visibleDates:[...entry.visibleDates.values()].sort((a,b)=>a-b)
-  }));
-}
-function personalDateRanges(dates){
-  const ranges=[];
-  dates.forEach(date=>{
-    const last=ranges[ranges.length-1],next=last&&new Date(last.end);
-    if(next)next.setDate(next.getDate()+1);
-    if(next&&localISO(next)===localISO(date))last.end=date;
-    else ranges.push({start:date,end:date});
-  });
-  return ranges.map(({start,end})=>fmtDate(start)+(localISO(start)===localISO(end)?'':' – '+fmtDate(end))).join(', ');
-}
 function openPersonModal(name){
   const wasOpen=$('#personModal').classList.contains('open');
   if(!wasOpen||UI22.personalName!==name)UI22.personalRange='upcoming';
   UI22.personalName=name;
-  const weeks=personalScheduleWeeks(name,UI22.personalRange,new Date());
-  const items=weeks.flatMap(w=>w.items);
+  const items=personalRangeItems(personSchedule(name),UI22.personalRange,new Date());
   document.querySelectorAll('[data-person-range]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.personRange===UI22.personalRange));
   $("#personName").textContent=name;
   const rec=personRecord(name);
@@ -3258,25 +3216,26 @@ function openPersonModal(name){
   const work=items.filter(i=>i.kind==="work"||i.kind==="conflict").length,
         hol=items.filter(i=>i.kind==="holiday"||i.kind==="conflict").length;
   $("#personSub").textContent = work+" on shift  ·  "+hol+" on holiday";
-  const body=!weeks.length ? `<div class="pnone">No scheduled weeks in this date range. Try All dates to see earlier weeks.</div>` :
-    weeks.map(({monday,items,hiddenDates,blockedDates,visibleDates},index)=>{
+  const weeks=new Map();
+  items.filter(i=>i.kind!=="na").forEach(i=>{
+    const monday=mondayOf(i.date),key=localISO(monday);
+    if(!weeks.has(key))weeks.set(key,{monday,items:[]});
+    weeks.get(key).items.push(i);
+  });
+  const body=!weeks.size ? `<div class="pnone">No roles or holiday entries in this date range. Try All dates to see earlier weeks.</div>` :
+    [...weeks.values()].map(({monday,items},index)=>{
       const sunday=new Date(monday);sunday.setDate(sunday.getDate()+6);
       const label=fmtDate(monday)+(monday.getFullYear()!==sunday.getFullYear()?" "+monday.getFullYear():"")+" – "+fmtDate(sunday)+" "+sunday.getFullYear();
       return `<section class="pweek" aria-labelledby="personWeek${index}"><h4 id="personWeek${index}">${label}</h4>`+
-        (items.length?`<table class="ptbl" aria-labelledby="personWeek${index}"><thead><tr><th scope="col">Date</th><th scope="col">Role</th></tr></thead><tbody>`+
+        `<table class="ptbl" aria-labelledby="personWeek${index}"><thead><tr><th scope="col">Date</th><th scope="col">Role</th></tr></thead><tbody>`+
         items.map(i=>{
           const dl=`<b>${DAYLBL[i.date.getDay()]}</b> ${fmtDate(i.date)}${localISO(i.date)===localISO(new Date())?'<span class="today-label">Today</span>':""}`;
-          if(i.kind==="na") return `<tr class="pday-empty"><td>${dl}</td><td><span aria-label="No assignment">—</span></td></tr>`;
           if(i.kind==="holiday") return `<tr class="phol"><td>${dl}</td><td>On holiday</td></tr>`;
           if(i.kind==="bh") return `<tr class="pbh"><td>${dl}</td><td>Bank holiday — see weekend rota</td></tr>`;
           const cell=i.entries.map(e=>`${esc(isPhone()?readableRole(e.label):e.label)}${e.section?`<span class="psec">${esc(e.section)}</span>`:""}`).join('<span class="pplus"></span>');
           if(i.kind==="conflict") return `<tr class="pconf"><td>${dl}</td><td><b>Conflict: also marked on holiday</b><span class="pplus"></span>${cell}</td></tr>`;
           return `<tr><td>${dl}</td><td>${cell}</td></tr>`;
-        }).join("")+`</tbody></table>`:'')+
-        (!items.some(i=>i.kind!=="na")&&visibleDates.length?`<div class="pweek-status">No shifts or holiday entries on the published dates.</div>`:'')+
-        (hiddenDates.length?`<div class="pweek-status"><strong>Rota coming soon</strong>${esc(personalDateRanges(hiddenDates))} · Not published yet.</div>`:'')+
-        (blockedDates.length?`<div class="pweek-status"><strong>Separate rota</strong>${esc(personalDateRanges(blockedDates))} · These dates are covered by a separate rota.</div>`:'')+
-        `</section>`;
+        }).join("")+`</tbody></table></section>`;
     }).join("");
   $("#personBody").innerHTML=body;
   $("#personModal").classList.add("open");

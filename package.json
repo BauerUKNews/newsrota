@@ -1,0 +1,10 @@
+{
+  "name": "news-rota-v22-4-regression-checks",
+  "private": true,
+  "scripts": {
+    "test": "node tests/core.cjs && node tests/summary.mjs && node tests/integration.mjs && node tests/trial.mjs && node tests/assets.cjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8"
+  }
+}

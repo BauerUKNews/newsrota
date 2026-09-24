@@ -1,0 +1,35 @@
+import {PGlite} from '@electric-sql/pglite';
+import {pgcrypto} from '@electric-sql/pglite/contrib/pgcrypto';
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const db=new PGlite({extensions:{pgcrypto}});
+await db.exec('create schema extensions;create role anon;create role authenticated;');
+for(const path of [new URL('./fixtures/setup.sql',import.meta.url),new URL('./fixtures/upgrade_concurrent_editing.sql',import.meta.url),new URL('./fixtures/upgrade_public_totals_v18.sql',import.meta.url),new URL('./fixtures/upgrade_public_totals_v18_1.sql',import.meta.url),new URL('../upgrade_public_totals.sql',import.meta.url)])await db.exec(fs.readFileSync(path,'utf8'));
+await db.query('select public.rota_admin_set_password($1,$2)',['ops','fictional-test-password']);
+async function rpc(fn,args){return db.transaction(async tx=>{await tx.exec('set local role anon');return (await tx.query('select public.'+fn+'('+args.map((_,i)=>'$'+(i+1)).join(',')+') v',args)).rows[0].v;});}
+const a=await rpc('rota_verify_access_password',['ops','fictional-test-password','editor-a']);const b=await rpc('rota_verify_access_password',['ops','fictional-test-password','editor-b']);assert(a.ok&&b.ok);assert.notEqual(a.token,b.token);
+assert((await rpc('rota_claim_edit',[0,a.token])).ok);assert((await rpc('rota_claim_edit',[0,b.token])).ok);
+const week={cols:[{y:2027,m:0,d:4}],sections:[{title:'Away',holiday:true,rows:[{type:'role',assign:['Fictional Person']}]}]};
+const change=(key,json,baseRev=0)=>({key,json:JSON.stringify(json),baseRev});
+const save=(token,changes)=>rpc('rota_save_changes',[JSON.stringify(changes),0,0,token]);
+let r=await save(a.token,[change('week:4-8 January',week),change('settings:public',{'4-8 January':false,'11-15 January':false},(await rpc('rota_get_bootstrap',[a.token])).data['settings:public']?.rev||0)]);assert(r.ok);assert.equal(r.conflicts.length,0);const firstRev=r.keyRev['week:4-8 January'];
+r=await save(b.token,[change('week:11-15 January',{...week,cols:[{y:2027,m:0,d:11}]})]);assert(r.ok);assert.equal(r.conflicts.length,0);
+r=await save(b.token,[change('week:4-8 January',{...week,notes:['stale']})]);assert.equal(r.conflicts[0].key,'week:4-8 January');
+r=await save(a.token,[change('week:4-8 January',{...week,notes:['current']},firstRev)]);assert.equal(r.conflicts.length,0);
+// Fixed settings use ordinary settings revisions; reports save atomically with their week.
+const fixed=[{role:'news||first',day:1,person:'Reserved Test Person'}];
+r=await save(a.token,[change('settings:fixedRules',fixed)]);assert.equal(r.conflicts.length,0);const fixedRev=r.keyRev['settings:fixedRules'];
+r=await save(b.token,[change('settings:fixedRules',[])]);assert.equal(r.conflicts[0].key,'settings:fixedRules');
+r=await save('',[change('settings:fixedRules',[],fixedRev)]);assert.equal(r.ok,false);
+let boot=await rpc('rota_get_bootstrap',[a.token]);assert.deepEqual(JSON.parse(boot.data['settings:fixedRules'].json),fixed);
+const report={version:1,weekId:'4-8 January',weekName:'4-8 January',generatedAt:'2026-09-14T00:00:00Z',signature:'saved-signature',groups:{holiday:[{name:'Fictional Person',days:['Monday']}],staff:[],freelance:[]},moves:[],gaps:[]};
+r=await save(a.token,[change('week:4-8 January',{...week,generationReport:report},boot.data['week:4-8 January'].rev)]);assert.equal(r.conflicts.length,0);
+boot=await rpc('rota_get_bootstrap',[b.token]);assert.deepEqual(JSON.parse(boot.data['week:4-8 January'].json).generationReport,report);
+assert(!JSON.stringify(await rpc('rota_get_bootstrap',[''])).includes('saved-signature'));
+console.log('PASS: fixed rule persistence, settings conflict protection and Staff write denial; report persists atomically in its week and remains hidden with unpublished rota data.');
+const staff=await rpc('rota_get_bootstrap',['']);assert.equal(staff.role,'staff');assert(!JSON.stringify(staff).includes('Fictional Person'));
+const totals=await rpc('rota_public_summary',[-1,-1]);assert.equal(totals.data.holidays['2027-0-4'],1);assert.equal(totals.data.holidays['2027-0-11'],1);assert.deepEqual(totals.data.holidayNames['2027-0-4'],['Fictional Person']);assert.deepEqual(totals.data.holidayNames['2027-0-11'],['Fictional Person']);assert(!JSON.stringify(totals).includes('current'));
+r=await save('',[change('week:4-8 January',week,999)]);assert.equal(r.ok,false);
+await db.query('update private.rota_sessions set expires_at=now()-interval \'1 minute\' where token=$1',[a.token]);
+const expired=await rpc('rota_get_bootstrap',[a.token]);assert.equal(expired.role,'staff');assert(!JSON.stringify(expired).includes('Fictional Person'));
+console.log('PASS: original setup + concurrent editing + totals upgrade; two Operations sessions; simultaneous edit permission; independent-week saves; same-week stale conflict; current revision save; Staff and expired-session filtering; Staff write denial; hidden holiday names and totals with full rota details still filtered.');
+await db.close();
