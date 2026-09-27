@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v22.4 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v22.5 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1181,7 +1181,11 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 .filter-status button{font:inherit;border:0;background:none;color:var(--ink);text-decoration:underline;min-height:32px;cursor:pointer}
 #desktopFilter{max-width:650px;margin:12px auto 0}
 .search .search-clear{border:0;background:transparent;color:white;min-width:32px;min-height:36px;font-size:21px}
-.search .count{position:static}.searchpop{max-height:65vh;overflow:auto;width:400px;max-width:90vw}
+.search .count{position:static;white-space:nowrap;color:var(--ink);background:var(--teal-wash)}.searchpop{max-height:65vh;overflow:auto;width:400px;max-width:90vw}
+.search-heading{padding:10px 11px 5px;font-size:11px;font-weight:700;color:var(--muted);border-top:1px solid var(--line)}
+.search-heading:first-child{border-top:0}
+.search-result-text{flex:1;min-width:0;overflow-wrap:anywhere}
+.search-today-tag{flex:none;border-radius:20px;padding:3px 7px;background:var(--teal-wash);color:var(--ink);font-size:10px;font-weight:700}
 .searchpop small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.4}
 #grid .row.search-muted{opacity:.28}body.editing #grid .row.search-muted{opacity:.65}
 #grid .search-match{outline:2px solid var(--teal);outline-offset:-2px}
@@ -1418,7 +1422,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v22.4</span>
+  <span class="pill">News Rota v22.5</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1934,10 +1938,10 @@ function mobileDayData(iso,person=''){
     const d=store.overrides[w.id]||template(w);if(d.blocked){out.blocked.push(w.name);return;}
     const add=(section,label,name,key)=>{
       name=String(name||'').trim();if(store.cellVoid[key])return;
-      if(!name){if(!target)out.gaps.push({section,label});return;}
+      if(!name){if(!target)out.gaps.push({section,label,key,weekId:w.id});return;}
       if(target&&nrm(name)!==target)return;
       let group=out.sections.find(x=>x.weekId===w.id&&x.title===section);if(!group){group={weekId:w.id,title:section,rows:[]};out.sections.push(group);}
-      group.rows.push({label,name,note:store.cellNotes[key]||'',cover:!!store.cellCover[key]});
+      group.rows.push({label,name,key,note:store.cellNotes[key]||'',cover:!!store.cellCover[key]});
     };
     if(w.kind==='weekday'){
       const di=colDates(d,w).findIndex(dt=>dt&&localISO(dt)===iso);if(di<0)return;
@@ -3114,32 +3118,64 @@ function desktopSearchEntries(){
     const section=card?.querySelector('.ct .name,.htitle')?.textContent.trim()||'';
     const shift=cell.classList.contains('am')?'AM':cell.classList.contains('pm')?'PM':'';
     const date=card?.querySelectorAll('.chday')[Number(name.dataset.day??[...row.querySelectorAll(':scope>.dc')].indexOf(cell.closest('.dc')))]?.innerText.replace(/\s+/g,' ').trim()||'';
-    return [{cell,name: name.textContent.trim()||'Unfilled',role:readableRole(role+(shift?' ('+shift+')':'')),section:readableRole(section),date}];
+    return [{cell,key:cell.dataset.cell,name: name.textContent.trim()||'Unfilled',role:readableRole(role+(shift?' ('+shift+')':'')),section:readableRole(section),date}];
   });
 }
 function applySearch(){
   const q=nrm(state.q),entries=desktopSearchEntries();let hits=0;
   entries.forEach(x=>{const hit=!!q&&nrm([x.name,x.role,x.section].join(' ')).includes(q);x.cell.classList.toggle('search-match',hit);if(hit)hits++;});
   document.querySelectorAll('#grid .row').forEach(row=>row.classList.toggle('search-muted',!!q&&!row.querySelector('.search-match')));
-  const c=$('#searchCount');c.style.display=q?'block':'none';c.textContent=hits;
+  const todayHits=q?todaySearchResults(q).matches.length:0;
+  const c=$('#searchCount');c.style.display=todayHits?'block':'none';c.textContent=todayHits+' today';c.title='Matching roles today';
   $('#desktopClearSearch').hidden=!q;
   $('#desktopFilter').hidden=!q;
   $('#desktopFilter').innerHTML=q?'Filtered by “'+esc(state.q)+'” · '+hits+' matching slots in this week <button type="button" data-clear-rota-search>Clear</button>':'';
 }
+function todaySearchResults(query,today=new Date()){
+  const date=localISO(today),day=mobileDayData(date),q=nrm(query);
+  const entries=day.sections.flatMap(sec=>sec.rows.map(r=>({key:r.key,weekId:sec.weekId,name:r.name,role:readableRole(r.label),section:readableRole(sec.title)})))
+    .concat(day.gaps.map(g=>({key:g.key,weekId:g.weekId,name:'Unfilled',role:readableRole(g.label),section:readableRole(g.section)})));
+  return {date,day,matches:entries.filter(x=>nrm([x.name,x.role,x.section].join(' ')).includes(q))};
+}
 function renderSearchPop(){
   const pop=$('#searchPop'),q=nrm(state.q);
   if(!q){pop.classList.remove('open');pop.innerHTML='';return;}
+  const today=todaySearchResults(q),todayKeys=new Set(today.matches.map(x=>x.key));
   const people=allStaff().filter(n=>nrm(n).includes(q)).slice(0,5);
-  const entries=desktopSearchEntries(),matches=entries.map((x,index)=>({...x,index})).filter(x=>nrm([x.name,x.role,x.section].join(' ')).includes(q));
-  pop.innerHTML=people.map(n=>'<button type="button" class="sres" data-person="'+esc(n)+'"><span>'+esc(n)+'<small>Personal rota · all available weeks</small></span>'+EYE+'</button>').join('')+
-    matches.slice(0,30).map(x=>'<button type="button" class="sres" data-search-slot="'+x.index+'"><span>'+esc(x.role)+' — '+esc(x.name)+'<small>'+esc(x.section)+' · '+esc(x.date)+'</small></span></button>').join('')+
-    (matches.length>30?'<p class="snores">Showing the first 30 matches. Refine your search for more.</p>':'')+
-    (!people.length&&!matches.length?'<p class="snores">No matching people, roles or sections in the available rota.</p>':'');
+  const entries=desktopSearchEntries(),matches=entries.map((x,index)=>({...x,index})).filter(x=>
+    (state.templateMode||!todayKeys.has(x.key))&&nrm([x.name,x.role,x.section].join(' ')).includes(q));
+  const heading=label=>'<div class="search-heading">'+esc(label)+'</div>';
+  let status='';
+  if(SYNC.on&&!SYNC.bootstrapped)status='Today’s rota is loading…';
+  else if(!today.day.weeks.length)status='No rota scheduled for today.';
+  else if(!today.matches.length)status=today.day.hidden.length?'Today’s rota is not published yet.':today.day.blocked.length?'Today is covered by a separate rota.':'No matching roles today.';
+  else if(today.day.hidden.length)status='Some of today’s rota is not published yet.';
+  pop.innerHTML=heading('Today · '+fmtDate(mobileDateValue(today.date)))+
+    (SYNC.lastError?'<p class="snores">Connection interrupted — results may be out of date.</p>':'')+
+    today.matches.slice(0,30).map(x=>'<button type="button" class="sres" data-search-today="'+esc(x.key)+'" data-search-week="'+esc(x.weekId)+'"><span class="search-result-text">'+esc(x.role)+' — '+esc(x.name)+'<small>'+esc(x.section)+'</small></span><span class="search-today-tag">Today</span></button>').join('')+
+    (status?'<p class="snores" role="status">'+esc(status)+'</p>':'')+
+    (today.matches.length>30?'<p class="snores">Showing the first 30 matches today. Refine your search for more.</p>':'')+
+    (people.length?heading('People')+people.map(n=>'<button type="button" class="sres" data-person="'+esc(n)+'"><span>'+esc(n)+'<small>Personal rota · all available weeks</small></span>'+EYE+'</button>').join(''):'')+
+    (matches.length?heading(state.templateMode?'Current template':'Viewing · '+(week()?.name||'current week'))+matches.slice(0,30).map(x=>'<button type="button" class="sres" data-search-slot="'+x.index+'"><span>'+esc(x.role)+' — '+esc(x.name)+'<small>'+esc(x.section)+' · '+esc(x.date)+'</small></span></button>').join(''):'')+
+    (matches.length>30?'<p class="snores">Showing the first 30 other matches. Refine your search for more.</p>':'');
   pop.classList.add('open');
 }
+function openTodaySearchResult(key,weekId){
+  // Recheck the current date and access: a result may have changed since typing.
+  const match=todaySearchResults('').matches.find(x=>x.key===key&&x.weekId===weekId);
+  const index=RAW.weeks.findIndex(w=>w.id===weekId);
+  if(!match||index<0){flash('This result has changed. Search again for the latest rota.');return;}
+  state.idx=index;setView('rota');
+  requestAnimationFrame(()=>{
+    if(week()?.id!==weekId||state.view!=='rota'||!canViewWeek(week()))return;
+    const cell=[...document.querySelectorAll('#grid [data-cell]')].find(el=>el.dataset.cell===key);
+    if(cell)scrollRotaTarget(cell);
+  });
+}
 $('#searchPop').addEventListener('click',e=>{
-  const person=e.target.closest('[data-person]'),slot=e.target.closest('[data-search-slot]');
-  if(person)openPersonModal(person.dataset.person);
+  const today=e.target.closest('[data-search-today]'),person=e.target.closest('[data-person]'),slot=e.target.closest('[data-search-slot]');
+  if(today)openTodaySearchResult(today.dataset.searchToday,today.dataset.searchWeek);
+  else if(person)openPersonModal(person.dataset.person);
   else if(slot){const item=desktopSearchEntries()[Number(slot.dataset.searchSlot)];if(item)scrollRotaTarget(item.cell);}
   $('#searchPop').classList.remove('open');
 });
