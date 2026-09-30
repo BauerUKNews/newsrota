@@ -29,6 +29,16 @@ console.log('PASS: fixed rule persistence, settings conflict protection and Staf
 const staff=await rpc('rota_get_bootstrap',['']);assert.equal(staff.role,'staff');assert(!JSON.stringify(staff).includes('Fictional Person'));
 const totals=await rpc('rota_public_summary',[-1,-1]);assert.equal(totals.data.holidays['2027-0-4'],1);assert.equal(totals.data.holidays['2027-0-11'],1);assert.deepEqual(totals.data.holidayNames['2027-0-4'],['Fictional Person']);assert.deepEqual(totals.data.holidayNames['2027-0-11'],['Fictional Person']);assert(!JSON.stringify(totals).includes('current'));
 r=await save('',[change('week:4-8 January',week,999)]);assert.equal(r.ok,false);
+const beforeCosmetics=(await rpc('rota_public_summary',[-1,-1])).data;
+const defaults=[{id:'weekend-normal',label:'Normal weekend',data:{rows:[{role:'Duty',sat:'Example A',sun:'Example B'}]}}];
+r=await save(a.token,[change('settings:weekendDefaults',defaults),change('settings:cellColors',{'4-8 January|0|0|0':'#ffe5cc'})]);assert.equal(r.conflicts.length,0);
+const defaultsRev=r.keyRev['settings:weekendDefaults'];
+boot=await rpc('rota_get_bootstrap',[b.token]);assert.deepEqual(JSON.parse(boot.data['settings:weekendDefaults'].json),defaults);assert.equal(JSON.parse(boot.data['settings:cellColors'].json)['4-8 January|0|0|0'],'#ffe5cc');
+assert.deepEqual((await rpc('rota_public_summary',[-1,-1])).data,beforeCosmetics);
+r=await save(b.token,[change('settings:weekendDefaults',[])]);assert.equal(r.conflicts[0].key,'settings:weekendDefaults');
+assert.equal((await save('',[change('settings:weekendDefaults',[],defaultsRev)])).ok,false);
+assert.equal((await save('',[change('settings:cellColors',{})])).ok,false);
+console.log('PASS: weekend defaults and direct cell colours persist through RPCs, preserve summary totals, reject stale settings and deny Staff writes.');
 await db.query('update private.rota_sessions set expires_at=now()-interval \'1 minute\' where token=$1',[a.token]);
 const expired=await rpc('rota_get_bootstrap',[a.token]);assert.equal(expired.role,'staff');assert(!JSON.stringify(expired).includes('Fictional Person'));
 console.log('PASS: original setup + concurrent editing + totals upgrade; two Operations sessions; simultaneous edit permission; independent-week saves; same-week stale conflict; current revision save; Staff and expired-session filtering; Staff write denial; hidden holiday names and totals with full rota details still filtered.');

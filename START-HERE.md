@@ -1,3 +1,37 @@
+# Start here — News Rota v23
+
+The maintained source is index.html: a single-page application with embedded JavaScript/CSS, public Supabase connection settings and static icons/manifest. Deploy index.html only for a v22.5 upgrade. No deployment has been performed.
+
+## Weekend defaults
+
+store.weekendDefaults is an array of {id,label,data:{rows:[{role,fri,sat,sun,mon}]}}. ensureStoreDefaults supplies an empty array. syncSnapshot already serializes settings generically; rota_save_changes uses the existing settings revision checks and Operations permission. No new SQL is needed. The whole defaults array is one revision-protected settings record.
+
+openWeekendDefaults and WEEKEND_DRAFT manage a separate draft. saveWeekendDefault checks the saved base to reject stale edits. weekendDefaultPlan derives actual dates via weekDatesOf, consults holidayEntries, preserves matched cellVoid slots and clears inactive Friday/Monday assignments. applyWeekendDefaultPlan clones the target week, replaces rows and remaps cellColors/cellNotes/cellVoid/cellCover by uniquely matching normalized role names. Cover markers are removed when assignments change. Away, dates, week notes and publication remain untouched. Special/blocked/non-weekend pages cannot be targets.
+
+previewWeekendDefault requires a saved unchanged default, captures the full sync snapshot and refuses to apply if either the week or snapshot changes while confirmation is open. Applying is manual for one weekend. Renaming or removing roles intentionally breaks marker matching; the preview lists removed roles. The usual persistent history supports undo.
+
+Imports validate the defaults' array shape and unique role names. Person renaming and leaver cleanup traverse weekend defaults as well as weekday templates. No per-week default selection or automatic generation is introduced.
+
+## Cosmetic colours
+
+store.cellColors values accept existing colour-key IDs or a six-digit #rrggbb value. resolvedCellColor validates raw colours and resolves key IDs. setCosmeticCellColor changes only cellColors. tagCls retains cover/freelance classes and adds has-custom-color; CSS prioritizes the override and suppresses automatic striping/pulsing on that cell. cellStyle selects contrasting text. Automatic reset deletes the colour value. emailCellBg and the mobile day list use the same resolver/style.
+
+Colour overrides are cell-level settings, not personnel or cover metadata. Existing server publication/profile rules remain. Editor/Staff cannot invoke save actions; phone layout remains Staff-only. Defaults are shared settings, so do not put secrets in their names or assignments. Settings are protected by existing RPC authorization/revision logic, not by hiding controls alone.
+
+## Verification and deployment
+
+See TEST-RESULTS.md and README.md. All browser checks used a separate local fixture server and fictional staff. No production data was modified. The optional fixed test date belongs to the local test server, never the delivered HTML. No new runtime dependencies.
+
+## Previous context
+
+# Start here — News Rota v22.5
+
+Replace index.html only when upgrading from v22.4. todaySearchResults uses mobileDayData(localISO(new Date())) to share existing date, publication, blocked-page and void-slot rules. mobileDayData entries now carry cell keys; gaps also carry weekId. The desktop dropdown puts these results before people and DOM-based current-week matches, deduplicated by cell key except in template mode. openTodaySearchResult rechecks the date/visibility, selects the week, switches to Rota and focuses/scrolls on the next animation frame. Today's date follows the device's local calendar as elsewhere in the app.
+
+Five new tests cover date-specific names, role/section/person matching, unpublished/deleted/blocked/void/bank-holiday cases, weekend/special/unfilled roles, revalidated navigation and result grouping/deduplication. Local test-server supports optional NEWS_ROTA_TEST_DATE to freeze a fictional preview's date; it is never injected into the shipped HTML. No production deployment occurred.
+
+## Previous context
+
 # Start here — News Rota v22.4
 
 Replace index.html only when upgrading from v22.3. personalScheduleWeeks now retains personSchedule entries with kind 'na'. openPersonModal renders these as dated rows with a dash and aria-label='No assignment', before the assignment renderer. Counts still explicitly filter for work/conflict/holiday. Entirely unassigned published weeks retain a summary message below their daily rows. Publication and profile restrictions are unchanged. No live deployment occurred.

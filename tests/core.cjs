@@ -359,3 +359,68 @@ test('Personal rota renders an accessible blank role for empty days without coun
  c.personalScheduleWeeks=()=>[{monday:new Date(2026,10,2),items:[{date:new Date(2026,10,4),kind:'na'}],hiddenDates:[],blockedDates:[],visibleDates:[new Date(2026,10,4)]}];
  c.openPersonModal('Alice');assert(c.$('#personBody').innerHTML.includes('<b>Wed</b> 4 Nov'));assert(c.$('#personBody').innerHTML.includes('aria-label="No assignment">—'));assert.equal(c.$('#personSub').textContent,'0 on shift  ·  0 on holiday');
 });
+function todaySearchContext(){const c=mobileContext();vm.runInContext(['titleCase','readableRole','todaySearchResults','openTodaySearchResult'].map(extract).join('\n'),c);return c;}
+test('Today search finds the assigned role on the requested day regardless of the displayed week',()=>{
+ const c=todaySearchContext();c.state.idx=2;const r=c.todaySearchResults('editor',new Date(2026,10,2));assert.equal(r.matches.length,1);assert.equal(r.matches[0].name,'Alice');assert.equal(r.matches[0].key,'a|0|0|0');assert.equal(r.matches[0].weekId,'a');assert.equal(c.state.idx,2);
+ assert.equal(c.todaySearchResults('editor',new Date(2026,10,3)).matches[0].name,'Bob');assert.equal(c.todaySearchResults('LONDON',new Date(2026,10,2)).matches.length,2);assert.equal(c.todaySearchResults('Bob',new Date(2026,10,2)).matches.length,1);
+});
+test('Today search respects hidden, deleted, blocked and void slots and bank holidays',()=>{
+ const c=todaySearchContext(),dt=new Date(2026,10,2);c.store.public.a=false;Object.defineProperty(c.store.overrides.a,'sections',{get(){throw Error('restricted read');},configurable:true});assert.equal(c.todaySearchResults('Alice',dt).matches.length,0);
+ const d=todaySearchContext();d.store.cellVoid['a|0|0|0']=true;assert.equal(d.todaySearchResults('editor',dt).matches.length,0);d.store.deletedWeeks=['a'];assert.equal(d.todaySearchResults('',dt).matches.length,0);d.store.deletedWeeks=[];d.store.overrides.a.blocked=true;assert.equal(d.todaySearchResults('',dt).matches.length,0);d.store.overrides.a.blocked=false;d.isBankHol=()=>true;assert.equal(d.todaySearchResults('',dt).matches.length,0);
+});
+test('Today search covers weekend, special-day and unfilled roles without borrowing other dates',()=>{
+ const c=todaySearchContext();assert.equal(c.todaySearchResults('Duty',new Date(2026,10,7)).matches[0].name,'Alice');assert.equal(c.todaySearchResults('Duty',new Date(2026,10,8)).matches[0].name,'Bob');assert.equal(c.todaySearchResults('Sunday role',new Date(2026,10,1)).matches[0].key,'s|we|0|sun');
+ const gap=c.todaySearchResults('PM',new Date(2026,10,3)).matches[0];assert.equal(gap.name,'Unfilled');assert.equal(gap.key,'a|0|2|1');assert.equal(gap.weekId,'a');assert.equal(c.todaySearchResults('Editor',new Date(2026,9,31)).matches.length,0);
+});
+test('Today result navigation revalidates access and selects the exact week and cell',()=>{
+ const c=todaySearchContext();let target=null;c.requestAnimationFrame=fn=>fn();c.todaySearchResults=()=>({matches:[{key:'a|0|0|0',weekId:'a'}]});c.setView=v=>{c.state.view=v};const cell={dataset:{cell:'a|0|0|0'}};c.document.querySelectorAll=()=>[cell];c.scrollRotaTarget=x=>{target=x};c.state.idx=2;c.openTodaySearchResult('a|0|0|0','a');assert.equal(c.state.idx,0);assert.equal(target,cell);
+ c.todaySearchResults=()=>({matches:[]});c.state.idx=2;target=null;c.openTodaySearchResult('a|0|0|0','a');assert.equal(c.state.idx,2);assert.equal(target,null);
+});
+test('Search renders Today before people and current-week matches without duplicating today slots',()=>{
+ const c=todaySearchContext();vm.runInContext(extract('renderSearchPop'),c);c.esc=s=>s;c.EYE='';c.fmtDate=()=> '2 Nov';c.state.q='Alice';c.todaySearchResults=()=>({date:'2026-11-02',day:{weeks:[0],hidden:[],blocked:[]},matches:[{key:'a|0|0|0',weekId:'a',role:'Editor',name:'Alice',section:'News'}]});
+ c.desktopSearchEntries=()=>[{key:'a|0|0|0',role:'Editor',name:'Alice',section:'News',date:'Mon'},{key:'a|0|0|1',role:'Editor',name:'Alice',section:'News',date:'Tue'}];c.renderSearchPop();const html=c.$('#searchPop').innerHTML;assert(html.indexOf('data-search-today')<html.indexOf('data-person'));assert(html.indexOf('data-person')<html.indexOf('data-search-slot'));assert(!html.includes('data-search-slot="0"'));assert(html.includes('data-search-slot="1"'));assert(html.includes('search-today-tag">Today'));
+});
+function weekendContext(){
+ const c=mobileContext();vm.runInContext(['prepareImport','weekendDefaultRows','weekendDefaultError','normalWeekend','weekendDefaultPlan','applyWeekendDefaultPlan','holidayEntries','saveWeekendDefault','previewWeekendDefault','resolvedCellColor','cellStyle','tagCls','setCosmeticCellColor','emailCellBg'].map(extract).join('\n'),c);
+ c.requireEdit=()=>c.state.role==='ops'&&c.state.editing;c.textOn=()=> '#111111';c.isFreelance=n=>!!c.store.freelance[n];c.store.weekendDefaults=[];c.esc=s=>s;c.uid=()=> 'new-default';c.loadWeekendDraft=()=>{};return c;
+}
+test('Weekend defaults preserve target dates, Away and notes and skip holidays for the actual day',()=>{
+ const c=weekendContext(),w=c.RAW.weeks[1],current=c.store.overrides.w;current.notes=['Keep me'];
+ const src={rows:[{role:'Duty',sat:'Bob',sun:'Alice',fri:'Alice',mon:'Bob'}]};const plan=c.weekendDefaultPlan(w,current,src);
+ assert.equal(plan.rows[0].sat,'');assert.equal(plan.rows[0].sun,'Alice');assert.equal(plan.rows[0].fri,'');assert.equal(plan.skipped[0].name,'Bob');
+ const next=c.applyWeekendDefaultPlan(w,current,plan);assert.equal(next.satHeader,'7 November');assert.equal(next.y,2026);assert.deepEqual(next.awayRows,current.awayRows);assert.deepEqual(next.notes,['Keep me']);assert.equal(src.rows[0].sat,'Bob');
+});
+test('Weekend default application remaps cosmetic and not-needed markers by role and removes stale cover flags',()=>{
+ const c=weekendContext(),w=c.RAW.weeks[1],current=c.store.overrides.w;current.rows.push({role:'Reporter',sat:'Bob',sun:'Alice'});
+ c.store.cellColors={'w|we|0|sat':'#ffe5cc','other|we|0|sat':'#ffffff'};c.store.cellNotes={'w|we|0|sat':'Duty note','w|wa|0|sat':'Away note'};c.store.cellVoid={'w|we|1|sun':true};c.store.cellCover={'w|we|0|sat':true,'w|we|0|sun':true};
+ const plan=c.weekendDefaultPlan(w,current,{rows:[{role:'Reporter',sat:'Alice',sun:'Bob'},{role:'Duty',sat:'Alice',sun:'Alice'}]});c.applyWeekendDefaultPlan(w,current,plan);
+ assert.equal(c.store.cellColors['w|we|1|sat'],'#ffe5cc');assert.equal(c.store.cellColors['other|we|0|sat'],'#ffffff');assert.equal(c.store.cellNotes['w|wa|0|sat'],'Away note');assert.equal(c.store.cellVoid['w|we|0|sun'],true);assert.equal(c.store.overrides.w.rows[0].sun,'');assert.equal(c.store.cellCover['w|we|1|sat'],true);assert(!c.store.cellCover['w|we|1|sun']);
+});
+test('Weekend defaults use bank-holiday days only where present and reject special/blocked/weekday targets',()=>{
+ const c=weekendContext(),w=c.RAW.weeks[1],current=c.store.overrides.w;c.isBankHol=d=>d&&[6,9].includes(d.getDate());
+ const plan=c.weekendDefaultPlan(w,current,{rows:[{role:'Duty',fri:'Alice',sat:'Alice',sun:'Alice',mon:'Alice'}]});assert.deepEqual(Array.from(plan.days,d=>d.key),['fri','sat','sun','mon']);assert.equal(plan.rows[0].fri,'Alice');assert.equal(plan.rows[0].mon,'Alice');
+ assert.equal(c.weekendDefaultPlan(w,{...current,special:true},{rows:[]}),null);assert.equal(c.weekendDefaultPlan(w,{...current,blocked:true},{rows:[]}),null);assert.equal(c.weekendDefaultPlan(c.RAW.weeks[0],current,{rows:[]}),null);
+});
+test('Saving a weekend default does not touch rota data; stale drafts and Staff saves are denied',()=>{
+ const c=weekendContext(),before=JSON.stringify(c.store.overrides);c.WEEKEND_DRAFT={id:'d1',label:'Normal',data:{rows:[{role:'Duty',sat:'Alice',sun:'Bob'}]},base:null};
+ assert(c.saveWeekendDefault());assert.equal(JSON.stringify(c.store.overrides),before);assert.equal(c.store.weekendDefaults.length,1);
+ c.WEEKEND_DRAFT.base=JSON.stringify(c.store.weekendDefaults[0]);c.store.weekendDefaults[0].label='Changed elsewhere';assert.equal(c.saveWeekendDefault(),false);c.state.role='staff';c.WEEKEND_DRAFT.base=null;c.WEEKEND_DRAFT.id='d2';assert.equal(c.saveWeekendDefault(),false);assert.equal(c.store.weekendDefaults.length,1);
+});
+test('Weekend apply preview rejects changed data instead of overwriting another editor',()=>{
+ const c=weekendContext();c.state.idx=1;c.WEEKEND_DRAFT={id:'d1',label:'Normal',base:'saved',dirty:false,data:{rows:[{role:'Duty',sat:'Alice',sun:'Bob'}]}};c.store.weekendDefaults=[{id:'d1',label:'Normal',data:clone(c.WEEKEND_DRAFT.data)}];c.WEEKEND_DRAFT.base=JSON.stringify(c.store.weekendDefaults[0]);let yes;c.askConfirm=(a,b,d,fn)=>{yes=fn};c.previewWeekendDefault();assert(yes);c.store.overrides.w.rows[0].sat='Remote edit';yes();assert.equal(c.store.overrides.w.rows[0].sat,'Remote edit');
+});
+test('Weekend defaults and direct colours round-trip backups; invalid defaults are rejected',()=>{
+ const c=weekendContext();c.store.weekendDefaults=[{id:'d1',label:'Normal',data:{rows:[{role:'Duty',sat:'Alice',sun:'Bob'}]}}];c.store.cellColors={'w|we|0|sat':'#ffe5cc'};
+ const imported=c.prepareImport(clone(c.store));assert.equal(imported.weekendDefaults[0].data.rows[0].sat,'Alice');assert.equal(imported.cellColors['w|we|0|sat'],'#ffe5cc');
+ for(const invalid of [{}, {id:'d',label:'x',data:{rows:[{role:'Duty',sat:99}]}},{id:'d',label:'x',data:{rows:[{role:'Duty'},{role:'duty'}]}}]){const v=clone(c.store);v.weekendDefaults=[invalid];assert.throws(()=>c.prepareImport(v));}
+});
+test('Manual colour changes only appearance; automatic freelance/cover styling returns when cleared',()=>{
+ const c=weekendContext(),key='w|we|0|sat';c.store.freelance.Alice=true;c.store.cellCover[key]=true;const before=clone(c.syncSnapshot());
+ assert(c.setCosmeticCellColor(key,'#ffe5cc'));assert.equal(c.resolvedCellColor(key),'#ffe5cc');assert(c.tagCls('Alice',key).includes('has-custom-color'));assert(c.tagCls('Alice',key).includes('isfree'));assert(c.tagCls('Alice',key).includes('iscover'));assert.equal(c.emailCellBg(key,'Alice').bg,'#ffe5cc');
+ for(const [k,v] of Object.entries(before))if(k!=='settings:cellColors')assert.deepEqual(c.syncSnapshot()[k],v,k);
+ assert(c.setCosmeticCellColor(key,''));assert.equal(c.resolvedCellColor(key),null);assert.equal(c.emailCellBg(key,'Alice').bg,'#befaeb');assert.equal(c.store.cellCover[key],true);assert.equal(c.store.freelance.Alice,true);
+ c.state.role='staff';assert.equal(c.setCosmeticCellColor(key,'#ffffff'),false);assert(!c.store.cellColors[key]);
+});
+test('Labelled colour keys retain priority alongside the new direct colour picker',()=>{
+ const c=weekendContext(),key='w|we|0|sat';c.store.key=[{id:'training',label:'Training',color:'#e1dcff'}];c.store.cellColors[key]='training';assert.equal(c.resolvedCellColor(key),'#e1dcff');assert(c.cellStyle(key).includes('--cell-custom:#e1dcff'));assert.equal(c.setCosmeticCellColor(key,'url(evil)'),false);
+});

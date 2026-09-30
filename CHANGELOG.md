@@ -1,3 +1,25 @@
+# News Rota v23
+
+- Named weekend defaults: create, copy the current weekend, edit, duplicate, save, delete, preview and apply.
+- Normal and bank-holiday weekends supported; special and blocked rotas excluded. Target-date holiday exceptions and existing not-needed slots are respected.
+- Applying preserves dates, Away entries and week notes; cell markers follow matching roles. Cover flags are cleared if the person changes.
+- Saved defaults participate in sync, revision conflicts, backups, undo, person renaming and leaver cleanup.
+- Right-click palette and custom colour picker override automatic freelance/cover shading without changing operational data. Automatic colour restores normal shading.
+- Shared settings supported by existing SQL; no database migration.
+
+## Previous releases
+
+# News Rota v22.5 — today-first role search
+
+- Desktop search shows today’s matching roles and assigned names first, with mint Today tags and a labelled today count.
+- People and matches from the viewed week follow in separate groups; today’s slots are not duplicated.
+- Activating a Today result opens the correct week and scrolls/focuses its cell, rechecking visibility first.
+- Missing, unpublished, separate and loading rotas have explicit messages. Connection errors warn about possibly stale results.
+- Phone search retains its selected-day behaviour, initially today.
+- No SQL, asset or shared-data changes.
+
+## Previous releases
+
 # News Rota v22.4 — show unassigned days in personal rotas
 
 - Keep a dated row for each published day, including unassigned weekdays and weekends.

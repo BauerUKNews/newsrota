@@ -1,41 +1,33 @@
-# News Rota v22.4 — desktop and phone interface update
+# News Rota v23 — weekend defaults and cosmetic cell colours
 
-Prepared 24 September 2026. Includes the previous releases. This package has not been deployed to the live site.
+Prepared 30 September 2026. Includes all previous releases. This package has not been deployed to the live site.
 
 ## Install
 
-If v21 through v22.3 is already installed, replace **index.html** in the GitHub repository. Keep the existing icons/ folder and manifest.webmanifest. Wait for GitHub Pages to deploy, reload, and check the footer says **News Rota v22.4**. No new SQL is required. Rota data, allowances, generation rules and publication settings are unchanged.
+When upgrading from v22.5, replace **index.html** in the GitHub repository. No SQL, icon or manifest update is required. Wait for GitHub Pages to finish deploying, reload and check the footer says **News Rota v23**. Existing saved rota data is retained.
 
-For older installations, README-v21.md explains the icon assets and cumulative SQL requirements; use this package's index.html. SQL remains identical to v19 onward. Keep a backup of the currently deployed HTML. rollback/previous-v22.3.html is the previous delivered candidate.
+Keep a backup of your deployed HTML. rollback/previous-v22.5.html is the previous delivered candidate; it may differ from your deployed version. Older setup requirements are in README-v21.md. README-v22.5.md describes the existing desktop and phone interface.
 
-## Phone use
+## Weekend defaults
 
-Phone layout is **Staff-only** (up to 760 CSS pixels wide). There is no profile switch or editing control. Use a desktop for Editor or Operations access and editing. This is an interface rule; server password permissions remain unchanged.
+1. On desktop, select Operations and turn on Edit.
+2. Open the weekend you want to copy, then More options (⋮) → Weekend defaults. The weekday Default templates manager also links here.
+3. Choose Copy this weekend, or New blank default. Give it a name, edit its role names and assignments, then Save default. Duplicate creates another reusable version. Friday and Monday assignments are used only when those bank-holiday days belong to the target weekend.
+4. Navigate to the weekend you want to populate. Open Weekend defaults and choose the saved default.
+5. Select Preview and apply to this weekend. Review the changes and holiday exceptions, then Apply default.
 
-Rota, Holidays, Offices and Booths sit in the bottom navigation. The header is slimmer. Tap a day in the Monday–Sunday strip; tap the date heading for the date picker. Today returns to the real current day, even when no rota exists for it.
+Applying replaces the target weekend's job rows, including removal of roles not in the default. The preview lists removed roles. Dates, Away entries, week notes and publication settings are retained. People listed on holiday on the target dates are skipped. Existing not-needed slots remain blank for matching roles. Cell colours, notes and not-needed markers follow uniquely matching role names; cover flags survive only where the person is unchanged. Removed or renamed roles lose their old cell markers.
 
-Everyone and My rota are separate buttons. Choose your name once, then switch between the team and your assignments without losing that name. Change person selects someone else. The personal name is stored on this device only. Searching a role, section or person searches everyone on the selected day; clearing the search restores the chosen view.
+Saving a default does not change any existing weekend. Applying is an explicit action for the selected weekend; it does not regenerate all future weekends. Defaults store roles and names only, not colours, holidays, notes, dates or cover flags. Christmas and other special/separate rotas are excluded. Existing undo/history and backup export/import include these changes. Wait for the saved status before closing.
 
-Summary calendars start with a single month. Use the month arrows, Summary year or Year overview to navigate. Tap a month in the overview to focus it. Tap a day for a larger panel containing the total and names. The existing all-week public holiday, office and booth totals are preserved.
+## Cell colours
 
-If a desktop session is resized to phone width, a clean elevated session switches to Staff. If Operations has pending edits, a save in progress, a conflict or a refresh still being checked, the narrow screen shows a message to continue on desktop. The existing data and token are retained so the edits can finish saving. Returning to a wider window restores that session; once saving completes, the phone can switch to Staff. No pending edits are discarded just to change the layout. Opening a fresh page always starts as Staff.
+In Operations Edit mode, right-click a rota cell. Choose a palette colour, a labelled colour from your existing key, or use Custom colour. Choose Automatic colour (freelance / cover) to remove the override.
 
-## Desktop use
+The override is cosmetic: it does not change the name, freelance classification, cover flag, holiday allowance, rules or totals. The original automatic shading returns when the override is removed. Colours belong to cells, not people. They sync to other viewers and appear in the phone day view and email rendering too. Editing remains desktop-only.
 
-Click the large date heading to open the week calendar. The heading is also a keyboard-accessible button: focus it and press Enter or Space. Use the left/right arrows for adjacent weeks. The separate Choose week and This week buttons have been removed. The extra Everyone / My rota / Choose person row has been removed. Search for a name and choose its Personal rota result to open that person's schedule.
+## Validation
 
-Search finds people, roles and sections. Results show the job, person, group and date, including unfilled slots. Person results open their full schedule; assignment results scroll to the slot. A visible filtered-by label and Clear button keep the search state explicit. Desktop assignment search covers the current week; phone search covers the selected day. Both respect publication and profile visibility.
+88 frontend checks pass, including weekend holiday exceptions, bank holidays, special-rota protection, marker remapping, stale previews, backup round trips and cosmetic colour isolation. Local database RPC tests pass for shared persistence, revision conflicts, Staff write denial and unchanged summary totals. Browser checks used fictional data. See TEST-RESULTS.md.
 
-Section shortcuts highlight the group currently being read. Faded edges indicate additional shortcuts off to the side. Clicking a shortcut leaves the heading below the fixed header. Keyboard users can move from desktop search into its result buttons with Arrow Down and clear it with Escape.
-
-## Personal rota and presentation
-
-The personal rota opens with Upcoming, starting at the current Monday week. All dates includes previous weeks. Every scheduled week appears in chronological order, including weeks without personal assignments. Unpublished dates show a Rota coming soon box, including unpublished weekends within a partly published week. Every published day has a dated row, including unassigned weekdays and weekends, which show an accessible dash. Blank days do not count towards shifts or holidays. Entirely empty published weeks also have an explanatory note, and dates covered by a separate rota are labelled separately. Excluded or deleted dates are not invented. Holiday/conflict entries and year-aware headings remain; today is marked when present. Normal capitalisation on phones preserves AM/PM and common station acronyms.
-
-Controls use consistent sizing and spacing. Routine sync confirmation is quieter, while errors remain prominent. The status indicator still opens connection details. Help using the rota has been updated.
-
-## Checks and limits
-
-75 frontend checks pass, including retention of an empty Wednesday between working days and rendering of accessible empty rows without changing totals. Local desktop and phone-width browser checks confirm blank daily rows alongside assignments. See TEST-RESULTS.md.
-
-No SQL or icon assets changed, so database suites were not repeated for this release. Physical iPhone/Safari installation and the live deployment remain to be checked after upload. Test fixtures are fictional and local; never run them against production. Run npm install then npm test for the packaged regression suites.
+Physical iPhone/Safari installation and production deployment were not tested. Run npm install, then npm test for the packaged test suites. Tests use local fictional databases; never point them at production.
