@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v23 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v24 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1259,6 +1259,16 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 .datewrap #weekTitle{appearance:none;background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;letter-spacing:inherit;line-height:inherit;cursor:pointer;min-height:44px}
 .datewrap #weekTitle:hover{color:var(--mag)}
 .datewrap #weekTitle:focus-visible{outline:2px solid var(--teal);outline-offset:5px;border-radius:4px}
+
+#parkingView{display:none;padding:24px 20px 60px;max-width:1180px;margin:0 auto}
+body.view-parking #parkingView{display:block}
+body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.view-parking .search,body.view-parking .wknav,body.view-parking #editBtn{display:none!important}
+#parkingTabs{padding:4px 0 16px}.parking-help,.parking-legend{font-size:13px;color:var(--muted);line-height:1.5}
+.driver-toggle{display:flex!important;align-items:center;gap:10px}.driver-toggle input{width:20px!important;height:20px;accent-color:var(--purple)}
+@keyframes parkingPulse{0%,100%{background:#b42336}50%{background:#750f20}}
+.hd.parking-over{animation:parkingPulse 1.6s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.hd.parking-over{animation:none;outline:2px solid #750f20}}
+@media print{#parkingView{display:none;padding:0;max-width:none}body.view-parking #parkingView{display:block}.hd.parking-over{animation:none}}
 </style>
 </head>
 <body>
@@ -1276,6 +1286,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
     <button class="tab" data-view="heat" aria-label="Holiday heat map"><span class="tab-wide">Holiday heat map</span><span class="tab-small" aria-hidden="true">Holidays</span></button>
     <button class="tab" data-view="office" aria-label="Office occupancy"><span class="tab-wide">Office occupancy</span><span class="tab-small" aria-hidden="true">Offices</span></button>
     <button class="tab" data-view="booth" aria-label="Booth usage"><span class="tab-wide">Booth usage</span><span class="tab-small" aria-hidden="true">Booths</span></button>
+    <button class="tab" data-view="parking">Parking</button>
     <button class="tab" data-view="pers">Personnel</button>
     <button class="tab" data-view="admin">Admin</button>
   </div>
@@ -1418,6 +1429,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
   <div id="officeBody"></div>
 </div>
 
+<div id="parkingView"><h2 class="heathead">Parking</h2><div class="heatsub" id="parkingSub"></div><p class="parking-help">Expected drivers, based on their assigned office and saved shifts. Each person counts once per day; people on holiday are excluded. This is an estimate, not a parking booking.</p><div class="officetabs" id="parkingTabs"></div><div id="parkingBody"></div></div>
 <div id="boothView">
   <h2 class="heathead">Booth usage</h2>
   <div class="heatsub" id="boothSub"></div>
@@ -1431,7 +1443,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v23</span>
+  <span class="pill">News Rota v24</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1466,6 +1478,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
         <input id="pEditAllow" type="number" min="0" max="99" step="0.5" placeholder="28"></label>
       <label class="pfield"><span>Type</span>
         <select id="pEditType"><option value="staff">Staff</option><option value="freelance">Freelance</option></select></label>
+      <label class="driver-toggle"><input id="pEditDriver" type="checkbox"> Commutes by car</label>
       <div class="pediterr" id="pEditErr"></div>
     </div>
     <div class="modalfoot"><button class="ghostbtn leaver" id="personLeaverBtn" style="margin-right:auto">Leaving the business&hellip;</button>
@@ -1475,7 +1488,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 
 <div id="persView">
   <h2 class="heathead">Personnel</h2>
-  <div class="heatsub"><span id="staffCount"></span> &mdash; only these people can be put on the rota. Click a name to edit their office, allowance or type.</div>
+  <div class="heatsub"><span id="staffCount"></span> &mdash; only these people can be put on the rota. Click a name to edit their office, allowance, type or car commute.</div>
   <div class="staffadd">
     <input id="staffAddInput" type="text" placeholder="New person’s name&hellip;" autocomplete="off" spellcheck="false">
     <button class="primary" data-act="staffadd">Add</button>
@@ -1609,7 +1622,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 </div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
- <div class="setup-intro"><p><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, tap a day in the week strip or tap the date heading to choose another date. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
+ <div class="setup-intro"><p><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, tap a day in the week strip or tap the date heading to choose another date. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Ten is red; eleven or more flashes red. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
 </div></div>
 <script>
@@ -1671,6 +1684,7 @@ function ensureStoreDefaults(target=store){
   store.extraWeeks = store.extraWeeks || [];  // user-added week/weekend pages
   store.deletedWeeks = store.deletedWeeks || []; // week ids the user has deleted
   store.public = store.public || {};          // { weekId: false } to hide from the public Rota view
+  store.drivers = store.drivers || {}; // people who normally commute by car
   store.offices = store.offices || {};        // { personName: "Manchester"|"Leeds"|"London"|"Newcastle" }
   store.resetEpoch = Number(store.resetEpoch)||0;   // bumped by a factory reset in Supabase
   store.freelance = store.freelance || {};   // { personName: true }
@@ -1745,7 +1759,7 @@ function textOn(hex){
 
 var ROLEOPTS=null;                    // cached role list, cleared whenever a sheet changes
 function clearRoleCache(){ ROLEOPTS=null; TPLWEEK={}; }
-const state = { idx:0, editing:false, q:"", holOpen:false, view:"rota", reportYear:null, adminYear:null, adminSort:{key:"name",dir:"asc"}, templateMode:false, tplId:null, officeSel:"Manchester", boothSel:"Manchester", boothHalf:"AM" };
+const state = { idx:0, editing:false, q:"", holOpen:false, view:"rota", reportYear:null, adminYear:null, adminSort:{key:"name",dir:"asc"}, templateMode:false, tplId:null, officeSel:"Manchester", parkingSel:"Manchester", boothSel:"Manchester", boothHalf:"AM" };
 const TPL_WEEK={id:"__tpl__",name:"Default template",kind:"weekday"};
 const OFFICES=["Manchester","Leeds","London","Newcastle"];
 
@@ -1822,6 +1836,7 @@ function renderCurrentView(){
   if(state.view==="heat") renderHeat();
   else if(state.view==="admin") renderAdmin();
   else if(state.view==="office") renderOfficeModal();
+  else if(state.view==="parking") renderParking();
   else if(state.view==="booth") renderBoothModal();
   else if(state.view==="pers") renderStaffList();
   else render();
@@ -3421,7 +3436,7 @@ function applyLeaver(name,lastDay,dropFromRoster){
   if(dropFromRoster){
     const nm=findPerson(name);
     if(nm){ store.roster=store.roster.filter(x=>x!==nm);
-      delete store.allowances[nm]; removeAnnualAllowances(nm); delete store.offices[nm]; delete store.freelance[nm]; }
+      delete store.allowances[nm]; removeAnnualAllowances(nm); delete store.offices[nm]; delete store.drivers[nm]; delete store.freelance[nm]; }
   }
   persist(); recordHistory();
   return scan;
@@ -3500,7 +3515,7 @@ function prepareImport(value){
   if(value.schema!==undefined && (!Number.isInteger(value.schema)||value.schema<0||value.schema>SCHEMA)) throw new Error('This backup version is not supported.');
   const out=clone(value), arrays=['weekendDefaults','fixedRules','key','rules','rotations','extraWeeks','deletedWeeks','templates','roster'];
   arrays.forEach(k=>{if(out[k]!==undefined&&!Array.isArray(out[k])) throw new Error('Invalid '+k+' in backup.');});
-  ['public','cellColors','cellNotes','cellVoid','cellCover','allowances','offices','freelance'].forEach(k=>{
+  ['public','cellColors','cellNotes','cellVoid','cellCover','allowances','offices','freelance','drivers'].forEach(k=>{
     if(out[k]!==undefined&&!object(out[k])) throw new Error('Invalid '+k+' in backup.');
   });
   const strings=a=>Array.isArray(a)&&a.every(x=>typeof x==='string');
@@ -3525,7 +3540,7 @@ function prepareImport(value){
     });
   };
   Object.values(out.overrides).forEach(checkWeek);
-  ['public','cellVoid','cellCover','freelance'].forEach(k=>{if(out[k]&&!Object.values(out[k]).every(v=>typeof v==='boolean'))throw new Error('Invalid '+k+' values.');});
+  ['public','cellVoid','cellCover','freelance','drivers'].forEach(k=>{if(out[k]&&!Object.values(out[k]).every(v=>typeof v==='boolean'))throw new Error('Invalid '+k+' values.');});
   ['cellNotes','cellColors','offices'].forEach(k=>{if(out[k]&&!Object.values(out[k]).every(v=>typeof v==='string'))throw new Error('Invalid '+k+' values.');});
   const validAllowance=v=>v===null||v===''||((typeof v==='number'||typeof v==='string')&&Number.isFinite(Number(v))&&Number(v)>=0);
   if(out.allowances){Object.entries(out.allowances).forEach(([k,v])=>{if(k==='__years'){if(!object(v)||!Object.entries(v).every(([year,values])=>/^(19|20)\d{2}$/.test(year)&&object(values)&&Object.values(values).every(validAllowance)))throw new Error('Invalid annual allowances.');}else if(!validAllowance(v))throw new Error('Invalid allowances.');});}
@@ -3697,6 +3712,7 @@ function openPersonEditor(name, opts){
     OFFICES.map(o=>`<option${rec&&rec.office===o?" selected":""}>${o}</option>`).join("");
   $("#pEditAllow").value = rec ? (rec.allowance!=="" ? rec.allowance : "") : DEFAULT_ALLOWANCE;
   $("#pEditType").value = rec ? rec.type : "staff";
+  $("#pEditDriver").checked = !!rec?.driver;
   $("#pEditErr").classList.remove("on");
   const lb=$("#personLeaverBtn");                 // leaver flow lives here, and only for existing people
   if(lb){ lb.style.display = pEditOrig ? "" : "none"; lb.dataset.name = pEditOrig || ""; }
@@ -3724,6 +3740,7 @@ function savePersonEditor(){
     final=addPerson(nm,office,allow===""?undefined:allow);
   }
   if(office) store.offices[final]=office; else delete store.offices[final];
+  if($("#pEditDriver").checked) store.drivers[final]=true; else delete store.drivers[final];
   if(allow==="") delete store.allowances[final]; else store.allowances[final]=Number(allow)||0;
   if(ptype==="freelance") store.freelance[final]=true; else delete store.freelance[final];
   persist(); recordHistory();                 // one complete personnel action = one undo step
@@ -4242,14 +4259,17 @@ function setView(v){
   document.body.classList.toggle("view-heat",v==="heat");
   document.body.classList.toggle("view-admin",v==="admin");
   document.body.classList.toggle("view-office",v==="office");
+  document.body.classList.toggle("view-parking",v==="parking");
   document.body.classList.toggle("view-booth",v==="booth");
   document.body.classList.toggle("view-pers",v==="pers");
   document.querySelectorAll("#tabs .tab").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
+  if(v==="parking" && !state.parkingSel) state.parkingSel=OFFICES[0];
   if(v==="office" && !state.officeSel) state.officeSel=OFFICES[0];
   if(v==="booth"){ if(!state.boothSel) state.boothSel=OFFICES[0]; if(!state.boothHalf) state.boothHalf="AM"; }
   renderCurrentView();
   if(v==="heat") scrollToToday("#heatView .hd.today");
   else if(v==="admin" && state.editing) scrollToToday(".viscal .hd.today");
+  else if(v==="parking") scrollToToday("#parkingBody .hd.today");
   else if(v==="office") scrollToToday("#officeBody .hd.today");
   else if(v==="booth") scrollToToday("#boothBody .hd.today");
 }
@@ -4546,8 +4566,9 @@ function officeData(office){
   Object.keys(wbd).forEach(k=>{ const names=[]; wbd[k].forEach(disp=>{ if(officeOfName(disp,offMap)===office) names.push(disp); }); if(names.length) out[k]={count:names.length,names:names.sort((a,b)=>a.localeCompare(b))}; });
   return publicTotals("offices",out,office);
 }
-function officeCalHTML(office){
-  const YEAR=summaryYear(),data=filterSummaryYear(officeData(office)); OFFICEHEAT=data;
+function officeCalHTML(office,parking=false){
+  const YEAR=summaryYear(),data=filterSummaryYear(parking?parkingData(office):officeData(office)); if(parking)PARKINGHEAT=data;else OFFICEHEAT=data;
+  if(parking&&SYNC.on&&!PUBLIC_SUMMARY.data?.parkingIncluded)return parkingNotice();
   if(SYNC.on&&!PUBLIC_SUMMARY.data) return summaryNotice();
   let maxC=1; Object.values(data).forEach(v=>{ if(v.count>maxC) maxC=v.count; });
   const _t=new Date(),TY=_t.getFullYear(),TM=_t.getMonth(),TD=_t.getDate();
@@ -4562,15 +4583,48 @@ function officeCalHTML(office){
     for(let k=0;k<off;k++) cells+=`<div class="hd blank"></div>`;
     for(let d=1;d<=dim;d++){
       if(!inSummaryPeriod(YEAR,m,d)){cells+=`<div class="hd off" title="Separate Christmas rota">${d}</div>`;continue;}
-      const key=YEAR+"-"+m+"-"+d, info=data[key]||{count:0,names:[]}, c=info.count, h=ramp(c);
-      OFFICEHEAT[key]=info;
+      const key=YEAR+"-"+m+"-"+d, info=data[key]||{count:0,names:[]}, c=info.count, h=parking?parkingTone(c):ramp(c);
+      if(parking)PARKINGHEAT[key]=info;else OFFICEHEAT[key]=info;
       const tdot=(YEAR===TY&&m===TM&&d===TD)?'<span class="todot"></span>':"";
-      cells+=`<div class="hd${info?" clk":""}${tdot?" today":""}" style="background:${h.bg};color:${h.fg}"${info?` data-ok="${key}"`:""}><span class="dnum">${d}</span><span class="cnt">${c}</span>${tdot}</div>`;
+      cells+=`<div class="hd${info?" clk":""}${tdot?" today":""}${parking&&c>=11?" parking-over":""}" style="background:${h.bg};color:${h.fg}"${info?` ${parking?"data-pk":"data-ok"}="${key}"`:""}><span class="dnum">${d}</span><span class="cnt">${c}</span>${tdot}</div>`;
     }
     months+=`<div class="heatmonth"><h4>${summaryMonthHeading(m,CALMN[m])}</h4><div class="mcal">${cells}</div></div>`;
   }
-  return trialPeriodNote(summaryYear())+summaryNotice()+`${summaryMonthControls(YEAR)}<div class="heatmonths">${months}</div>`;
+  return trialPeriodNote(summaryYear())+summaryNotice()+(parking?'<p class="parking-legend">0–9 drivers · <b>10: red</b> · <b>11+: flashing red</b></p>':'')+`${summaryMonthControls(YEAR)}<div class="heatmonths">${months}</div>`;
 }
+// ---- parking: daily drivers, independent of rota publication ----
+var PARKINGHEAT={};
+function parkingTone(count){
+  return count>=10?{bg:'#b42336',fg:'#ffffff'}:count>0?{bg:'#befaeb',fg:'#1b1922'}:{bg:'var(--bg)',fg:'var(--muted-2)'};
+}
+function parkingData(office){
+  if(SYNC.on)return PUBLIC_SUMMARY.data?.parkingIncluded?(PUBLIC_SUMMARY.data.parking?.[office]||{}):{};
+  const drivers=new Set(Object.keys(store.drivers||{}).filter(n=>store.drivers[n]===true).map(n=>nrm(canonName(n)))),offices={},away=new Set(),out={};
+  Object.keys(store.offices||{}).forEach(n=>offices[nrm(canonName(n))]=store.offices[n]);
+  holidayEntries().forEach(e=>away.add(localISO(e.date)+'|'+nrm(canonName(e.name))));
+  Object.entries(workingByDay()).forEach(([key,names])=>{
+    const [y,m,d]=key.split('-').map(Number),date=localISO(new Date(y,m,d)),found=new Map();
+    names.forEach(name=>{const canonical=canonName(name),id=nrm(canonical);if(drivers.has(id)&&offices[id]===office&&!away.has(date+'|'+id))found.set(id,canonical);});
+    if(found.size)out[key]={count:found.size,names:[...found.values()].sort((a,b)=>a.localeCompare(b))};
+  });return out;
+}
+function parkingNotice(){
+  if(!PUBLIC_SUMMARY.data)return summaryNotice();
+  return '<p class="summary-note" role="status">Parking totals are unavailable. Operations needs to run the parking SQL upgrade supplied with v24. No zero counts are shown until totals are available.</p>';
+}
+function renderParking(){
+  $('#parkingTabs').innerHTML=summaryYearControl()+OFFICES.map(o=>`<button class="offtab${o===state.parkingSel?' on':''}" data-parking="${o}">${o}</button>`).join('');
+  $('#parkingBody').innerHTML=officeCalHTML(state.parkingSel,true);
+  const peak=Object.values(filterSummaryYear(parkingData(state.parkingSel))).reduce((n,v)=>Math.max(n,v.count),0);
+  $('#parkingSub').textContent=SYNC.on&&!PUBLIC_SUMMARY.data?.parkingIncluded?'Totals unavailable':`${state.parkingSel} · busiest day: ${peak} driver${peak===1?'':'s'}`;
+}
+$('#parkingTabs').addEventListener('click',e=>{const b=e.target.closest('[data-parking]');if(b){state.parkingSel=b.dataset.parking;renderParking();}});
+$('#parkingBody').addEventListener('click',e=>{
+  const cell=e.target.closest('[data-pk]');if(!cell)return;const info=PARKINGHEAT[cell.dataset.pk];if(!info)return;
+  const [y,m,d]=cell.dataset.pk.split('-').map(Number);
+  openSummaryDay(new Date(y,m,d).toLocaleDateString('en-GB',{dateStyle:'full'}),`${info.count} driver${info.count===1?'':'s'} · ${state.parkingSel}`,info.names,0);
+});
+
 // ---- booth usage -------------------------------------------------------
 // A booth is needed by anyone on a reading shift: the AM/PM patch roles in the
 // FOCUS sections, everything under NATIONALS & LONDON (Behind the Headlines is
@@ -5296,7 +5350,7 @@ function renderAdmin(){
       `</div>`+
       `<label class="yrsel">Year <select id="adminYear">${yopts}</select></label></div>`+
     (ed?`<details class="viswrap" open><summary>Rota visibility — <b>${nPub}</b> of ${RAW.weeks.length} pages public</summary>`+
-      `<div class="visnote">Holiday, office and booth names and totals include all weeks for everyone, including hidden weeks. Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
+      `<div class="visnote">Holiday, office, booth and parking names and totals include all weeks for everyone, including hidden weeks. Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
       `<div class="callegend"><span class="lgd"><i class="sw pub"></i>Public</span><span class="lgd"><i class="sw hid"></i>Hidden</span></div>`+
       `<div class="viscal">${weekCalHTML("vis")}</div></details>`:"")+
     trialPeriodNote(year)+`<div class="adminsub">Every Away day recorded ${trial?"during 1 November–24 December 2026":"between 1 January and 31 December "+year} counts, including weekends, bank holidays and special rotas. Each person/date counts once. `+
@@ -5374,7 +5428,7 @@ function isKnownPerson(name){ return !String(name||"").trim() || !!findPerson(na
 function personRecord(name){
   const n=findPerson(name); if(!n) return null;
   return { name:n, office:store.offices[n]||"", allowance:(store.allowances[n]!=null?store.allowances[n]:""),
-           type:(store.freelance[n]?"freelance":"staff") };
+           driver:!!store.drivers?.[n], type:(store.freelance[n]?"freelance":"staff") };
 }
 function addPerson(name, office, allowance){
   name=String(name||"").trim(); if(!name) return null;
@@ -5403,6 +5457,7 @@ function renamePerson(oldName,newName){        // keeps every rota/template/rule
   if(clash && clash!==from) return false;
   if(from===newName) return from;
   store.roster=store.roster.map(n=>n===from?newName:n);
+  if(store.drivers?.[from]){store.drivers[newName]=true;delete store.drivers[from];}
   if(store.offices[from]!==undefined){ store.offices[newName]=store.offices[from]; delete store.offices[from]; }
   if(store.allowances[from]!==undefined){ store.allowances[newName]=store.allowances[from]; delete store.allowances[from]; }
   Object.values(store.allowances.__years||{}).forEach(y=>{if(y[from]!==undefined){y[newName]=y[from];delete y[from];}});
@@ -5985,7 +6040,7 @@ function publicTotals(kind,visible,office){
 function summaryNotice(){
   if(!SYNC.on)return '<p class="summary-note">Local preview totals.</p>';
   if(!PUBLIC_SUMMARY.data)return '<p class="summary-note" role="status">'+(PUBLIC_SUMMARY.error?'Full totals are unavailable. Retrying automatically; ask Operations to check the totals upgrade.':'Loading totals from all weeks…')+'</p>';
-  return '<p class="summary-note" role="status">Holiday, office and booth names and totals include all saved weeks, including unpublished weeks.'+
+  return '<p class="summary-note" role="status">Holiday, office, booth and parking names and totals include all saved weeks, including unpublished weeks.'+
     (!PUBLIC_SUMMARY.data.namesIncluded?' Names from unpublished weeks are unavailable until Operations installs the updated totals SQL.':'')+
     (PUBLIC_SUMMARY.error?' Connection interrupted — showing the last successfully loaded totals.':'')+
     (SYNC.canEdit&&SYNC.dirty?' Your pending edits will be included after they save.':'')+'</p>';
@@ -5994,7 +6049,7 @@ function refreshPublicSummary(){
   if(!SYNC.on||PUBLIC_SUMMARY.loading)return;
   PUBLIC_SUMMARY.loading=true;
   const generation=SYNC.generation;
-  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded&&PUBLIC_SUMMARY.data?.boothsIncluded?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
+  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded&&PUBLIC_SUMMARY.data?.boothsIncluded&&PUBLIC_SUMMARY.data?.parkingIncluded?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
     PUBLIC_SUMMARY.loading=false;
     if(generation!==SYNC.generation)return;
     if(!res||!res.ok){PUBLIC_SUMMARY.error='unavailable';refreshSummaryView();return;}
@@ -6008,6 +6063,7 @@ function refreshSummaryView(){
   if(useMobileDay())renderMobileDay();
   if(state.view==='heat')renderHeat();
   if(state.view==='office')renderOfficeModal();
+  if(state.view==='parking')renderParking();
   if(state.view==='booth')renderBoothModal();
   ['#heatPop','#officePop','#boothPop'].forEach(s=>$(s).classList.remove('open'));
 }
@@ -6460,6 +6516,7 @@ function preparePrint(){
   else if(state.view==="heat"){ title="Holiday heat map "+summaryYear(); }
   else if(state.view==="office"){ title="Office occupancy "+summaryYear()+" — "+(state.officeSel||""); }
   else if(state.view==="booth"){ title="Booth usage "+summaryYear()+" — "+(state.boothSel||"")+" · "+(state.boothHalf||"")+" shifts"; }
+  else if(state.view==="parking"){ title="Parking "+summaryYear()+" — "+state.parkingSel; }
   else if(state.view==="pers"){ title="Personnel list"; }
   else if(state.view==="admin"){ title="Holiday allowances "+(state.adminYear||YEAR); }
   else if(state.templateMode){ title="Default weekday template"; }
@@ -6475,7 +6532,7 @@ function preparePrint(){
     }
     if(!special){ const rel=relLabel(w); if(rel) sub += " · "+rel; }
   }
-  if(["heat","office","booth"].includes(state.view)&&isPhone()&&!UI22.yearOverview)sub=MONTHF[selectedSummaryMonth(summaryYear())]+" view";
+  if(["heat","office","booth","parking"].includes(state.view)&&isPhone()&&!UI22.yearOverview)sub=MONTHF[selectedSummaryMonth(summaryYear())]+" view";
   $("#phTitle").textContent=title;
   $("#phSub").textContent=sub;
   const n=new Date();
@@ -6573,9 +6630,9 @@ function initAccessibleUI(){
   const focusFirst=root=>{const el=root.querySelector('h2,h3')||tabbable(root)[0]||root;el.focus({preventScroll:true});};
   const annotate=()=>{
     document.querySelectorAll('button[title]:not([aria-label])').forEach(e=>{if(/^[+×▲▼⋮−−\s]*$/.test(e.textContent))e.setAttribute('aria-label',e.title);});
-    document.querySelectorAll('.hd[data-hk],.hd[data-ok],.hd[data-bk],.sortable,.panel>.head').forEach(e=>{e.setAttribute('role','button');e.tabIndex=0;if(e.classList.contains('sortable'))e.setAttribute('aria-label','Sort by '+e.textContent.trim());});
+    document.querySelectorAll('.hd[data-hk],.hd[data-ok],.hd[data-bk],.hd[data-pk],.sortable,.panel>.head').forEach(e=>{e.setAttribute('role','button');e.tabIndex=0;if(e.classList.contains('sortable'))e.setAttribute('aria-label','Sort by '+e.textContent.trim());});
     document.querySelectorAll('input:not([aria-label]):not([id])').forEach(e=>{if(e.placeholder)e.setAttribute('aria-label',e.placeholder);});
-    document.querySelectorAll('.hd[data-hk],.hd[data-ok],.hd[data-bk]').forEach(e=>{const key=e.dataset.hk||e.dataset.ok||e.dataset.bk;const parts=key.split('-').map(Number);if(parts.length===3&&parts.every(Number.isFinite)){const date=new Date(parts[0],parts[1],parts[2]);e.setAttribute('aria-label',date.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+', '+(e.querySelector('.cnt')?.textContent||'0')+(e.dataset.hk?' people away':e.dataset.ok?' people working':' booths'));}});
+    document.querySelectorAll('.hd[data-hk],.hd[data-ok],.hd[data-bk],.hd[data-pk]').forEach(e=>{const key=e.dataset.hk||e.dataset.ok||e.dataset.bk||e.dataset.pk;const parts=key.split('-').map(Number);if(parts.length===3&&parts.every(Number.isFinite)){const date=new Date(parts[0],parts[1],parts[2]);e.setAttribute('aria-label',date.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+', '+(e.querySelector('.cnt')?.textContent||'0')+(e.dataset.hk?' people away':e.dataset.ok?' people working':e.dataset.pk?' drivers':' booths'));}});
     document.querySelectorAll('#tabs button').forEach(e=>e.setAttribute('aria-pressed',e.classList.contains('active')));
   };
   const sync=()=>{
