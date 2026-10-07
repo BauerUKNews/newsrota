@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v24 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v24.1 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1443,7 +1443,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v24</span>
+  <span class="pill">News Rota v24.1</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1622,7 +1622,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 </div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
- <div class="setup-intro"><p><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, tap a day in the week strip or tap the date heading to choose another date. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Ten is red; eleven or more flashes red. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
+ <div class="setup-intro"><p><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, tap a day in the week strip or tap the date heading to choose another date. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Seven is red; eight or more flashes red. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
 </div></div>
 <script>
@@ -4586,16 +4586,16 @@ function officeCalHTML(office,parking=false){
       const key=YEAR+"-"+m+"-"+d, info=data[key]||{count:0,names:[]}, c=info.count, h=parking?parkingTone(c):ramp(c);
       if(parking)PARKINGHEAT[key]=info;else OFFICEHEAT[key]=info;
       const tdot=(YEAR===TY&&m===TM&&d===TD)?'<span class="todot"></span>':"";
-      cells+=`<div class="hd${info?" clk":""}${tdot?" today":""}${parking&&c>=11?" parking-over":""}" style="background:${h.bg};color:${h.fg}"${info?` ${parking?"data-pk":"data-ok"}="${key}"`:""}><span class="dnum">${d}</span><span class="cnt">${c}</span>${tdot}</div>`;
+      cells+=`<div class="hd${info?" clk":""}${tdot?" today":""}${parking&&c>=8?" parking-over":""}" style="background:${h.bg};color:${h.fg}"${info?` ${parking?"data-pk":"data-ok"}="${key}"`:""}><span class="dnum">${d}</span><span class="cnt">${c}</span>${tdot}</div>`;
     }
     months+=`<div class="heatmonth"><h4>${summaryMonthHeading(m,CALMN[m])}</h4><div class="mcal">${cells}</div></div>`;
   }
-  return trialPeriodNote(summaryYear())+summaryNotice()+(parking?'<p class="parking-legend">0–9 drivers · <b>10: red</b> · <b>11+: flashing red</b></p>':'')+`${summaryMonthControls(YEAR)}<div class="heatmonths">${months}</div>`;
+  return trialPeriodNote(summaryYear())+summaryNotice()+(parking?'<p class="parking-legend">0–6 drivers · <b>7: red</b> · <b>8+: flashing red</b></p>':'')+`${summaryMonthControls(YEAR)}<div class="heatmonths">${months}</div>`;
 }
 // ---- parking: daily drivers, independent of rota publication ----
 var PARKINGHEAT={};
 function parkingTone(count){
-  return count>=10?{bg:'#b42336',fg:'#ffffff'}:count>0?{bg:'#befaeb',fg:'#1b1922'}:{bg:'var(--bg)',fg:'var(--muted-2)'};
+  return count>=7?{bg:'#b42336',fg:'#ffffff'}:count>0?{bg:'#befaeb',fg:'#1b1922'}:{bg:'var(--bg)',fg:'var(--muted-2)'};
 }
 function parkingData(office){
   if(SYNC.on)return PUBLIC_SUMMARY.data?.parkingIncluded?(PUBLIC_SUMMARY.data.parking?.[office]||{}):{};
