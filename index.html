@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v25 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v25.1 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1275,6 +1275,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 .parking-board{position:relative;overflow:hidden;border-radius:12px;background:#ddd}.parking-board svg{display:block;width:100%;height:auto}.parking-map-scroll{overflow-x:auto;overscroll-behavior-x:contain}.parking-map-scroll .parking-board{min-width:850px}
 .parking-bay polygon{fill:#ffffffbb;stroke:#fff;stroke-width:3}.parking-bay.occupied polygon{fill:#b42336ed}.parking-bay.pool polygon{fill:#9e1e30ed}
 .parking-bay text{text-anchor:middle;fill:#1b1922;pointer-events:none;font-family:inherit;font-weight:700}.parking-bay.occupied text{fill:#fff}.parking-bay .bay-number{font-size:17px}.parking-bay:focus polygon,.parking-bay.selected polygon{stroke:#27ffcf;stroke-width:6}
+.parking-board.can-edit,.parking-board.can-edit *{-webkit-user-select:none;user-select:none;-webkit-user-drag:none}.parking-board svg image{pointer-events:none}
 .parking-board.can-edit [data-parking-bay]:not(.pool),.parking-board.can-edit .parking-person{cursor:grab;touch-action:none;user-select:none}
 .parking-unplaced{position:absolute;left:3%;top:28%;width:29%;max-height:62%;overflow:auto;background:#ffffffb8;backdrop-filter:blur(3px);border:1px solid #fff;border-radius:12px;padding:12px;color:#1b1922}
 .parking-unplaced h4{margin:0 0 8px;font-size:16px}.parking-unplaced p{font-size:13px}.parking-person{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid #9e1e3044;background:#ffffffbb;border-radius:7px;padding:7px 9px;width:100%;text-align:left;font:inherit;font-size:14px;margin-bottom:5px;color:#1b1922}.parking-person:disabled{opacity:1}.parking-person.selected{outline:3px solid #008c75}.parking-person small{font-size:11px}
@@ -1442,7 +1443,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
   <div id="officeBody"></div>
 </div>
 
-<div class="modal" id="parkingPlanModal"><div class="modalcard"><div class="modalhead"><h3 id="parkingPlanTitle">Manchester parking</h3><button class="x" data-close-overlay="parkingPlanModal" aria-label="Close parking plan">×</button></div><div id="parkingPlanBody"></div><div class="modalfoot"><button class="ghostbtn" id="parkingPlanReset">Reset automatic spaces</button><button class="primary" id="parkingPlanEdit">Edit parking</button><button class="ghostbtn" data-close-overlay="parkingPlanModal">Done</button></div></div></div>
+<div class="modal" id="parkingPlanModal"><div class="modalcard"><div class="modalhead"><h3 id="parkingPlanTitle">Manchester parking</h3><button class="x" data-close-overlay="parkingPlanModal" aria-label="Close parking plan">×</button></div><div id="parkingPlanBody"></div><div class="modalfoot"><button class="ghostbtn" id="parkingPlanReset">Reset automatic spaces</button><button class="ghostbtn" data-close-overlay="parkingPlanModal">Done</button></div></div></div>
 <div id="parkingView"><h2 class="heathead">Parking</h2><div class="heatsub" id="parkingSub"></div><p class="parking-help">Expected drivers, based on their assigned office and saved shifts. Each person counts once per day; people on holiday are excluded. This is an estimate, not a parking booking.</p><div class="officetabs" id="parkingTabs"></div><div id="parkingBody"></div></div>
 <div id="boothView">
   <h2 class="heathead">Booth usage</h2>
@@ -1457,7 +1458,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v25</span>
+  <span class="pill">News Rota v25.1</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -4664,15 +4665,22 @@ const MCR_BAYS=[
  {id:'42',points:'1086,598 1234,565 1246,629 1099,662',x:1163,y:604,w:130,pool:true},
  {id:'43',points:'1102,670 1249,638 1263,699 1114,732',x:1178,y:676,w:130,pool:true}
 ];
-function parkingPlanEditable(){return state.role==='ops'&&state.editing&&!isPhone()&&(!SYNC.on||(SYNC.canEdit&&!SYNC.refreshing&&!SYNC.conflict&&!PUBLIC_SUMMARY.error&&!PUBLIC_SUMMARY.loading&&!SYNC.dirty&&!SYNC.saving));}
+function parkingPlanEditable(){return !PARKING_PLAN.saving&&(!SYNC.on||(SYNC.bootstrapped&&PUBLIC_SUMMARY.data?.parkingStaffEditing&&!SYNC.refreshing&&!SYNC.conflict&&!PUBLIC_SUMMARY.error&&!SYNC.dirty&&!SYNC.saving&&PUBLIC_SUMMARY.rev>=Math.max(SYNC.rev,SYNC.keyRev['settings:parkingPlans']||0)));}
 function parkingPlanInfo(date){
-  if(SYNC.on&&(!PUBLIC_SUMMARY.data?.parkingPlanIncluded||PUBLIC_SUMMARY.rev<SYNC.rev))return null;
+  if(SYNC.on&&(!PUBLIC_SUMMARY.data?.parkingPlanIncluded||PUBLIC_SUMMARY.rev<Math.max(SYNC.rev,SYNC.keyRev['settings:parkingPlans']||0)))return null;
   const dt=mobileDateValue(date);if(!dt)return null;
   const key=dt.getFullYear()+'-'+dt.getMonth()+'-'+dt.getDate();
   return parkingData('Manchester')[key]||{count:0,names:[],pmNames:[],amNames:[]};
 }
+function parkingFreelance(name){return Object.entries(store.freelance||{}).some(([n,on])=>on===true&&nrm(n)===nrm(name));}
+function parkingPriorityIssue(plan){
+  const parked=Object.values(plan.bays);
+  if(plan.unparked.some(n=>!parkingFreelance(n))&&parked.some(parkingFreelance))return 'Staff have priority: a freelancer cannot take a space while a staff driver is unable to park.';
+  if(plan.bays.emergency&&!parkingFreelance(plan.bays.emergency)&&Object.entries(plan.bays).some(([bay,n])=>bay!=='emergency'&&parkingFreelance(n)))return 'Staff have priority for numbered bays; use the emergency corner for a freelancer first.';
+  return '';
+}
 function buildParkingPlan(info,saved){
-  const people=[...new Map((info.names||[]).map(n=>[nrm(n),n])).values()].sort((a,b)=>nrm(a).localeCompare(nrm(b)));
+  const people=[...new Map((info.names||[]).map(n=>[nrm(n),n])).values()].sort((a,b)=>Number(parkingFreelance(a))-Number(parkingFreelance(b))||nrm(a).localeCompare(nrm(b)));
   const byName=new Map(people.map(n=>[nrm(n),n])),pm=new Set((info.pmNames||[]).map(nrm)),used=new Set(),bays={},unparked=[];
   const put=(bay,name)=>{const id=nrm(name);if(!byName.has(id)||used.has(id))return false;bays[bay]=byName.get(id);used.add(id);return true;};
   // Saved manual choices take priority, but only eligible drivers remain.
@@ -4681,6 +4689,18 @@ function buildParkingPlan(info,saved){
   const remaining=()=>people.filter(n=>!used.has(nrm(n)));
   ['35','36'].forEach(b=>{if(!bays[b]){const n=remaining().find(n=>pm.has(nrm(n)));if(n)put(b,n);}});
   remaining().forEach(n=>{const b=['34','37','38','39','40','35','36',...(people.length>=8?['emergency']:[])].find(b=>!bays[b]);if(b)put(b,n);else{unparked.push(n);used.add(nrm(n));}});
+  // Staff priority also corrects older saved plans and later roster/type changes.
+  for(const person of [...unparked].filter(n=>!parkingFreelance(n))){
+    const candidates=Object.keys(bays).filter(b=>parkingFreelance(bays[b]));
+    candidates.sort((a,b)=>Number(pm.has(nrm(person))&&!['35','36'].includes(a))-Number(pm.has(nrm(person))&&!['35','36'].includes(b))||Number(a==='emergency')-Number(b==='emergency'));
+    const bay=candidates[0];if(!bay)break;
+    const i=unparked.indexOf(person);unparked[i]=bays[bay];bays[bay]=person;
+  }
+  if(bays.emergency&&!parkingFreelance(bays.emergency)){
+    const bay=Object.keys(bays).find(b=>b!=='emergency'&&parkingFreelance(bays[b]));
+    if(bay)[bays[bay],bays.emergency]=[bays.emergency,bays[bay]];
+  }
+  unparked.sort((a,b)=>Number(parkingFreelance(a))-Number(parkingFreelance(b))||nrm(a).localeCompare(nrm(b)));
   return {bays,unparked,people};
 }
 function moveParkingPerson(plan,name,target){
@@ -4694,15 +4714,34 @@ function moveParkingPerson(plan,name,target){
   else {next.bays[target]=person;if(occupant){if(source)next.bays[source]=occupant;else next.unparked.push(occupant);}}
   return next;
 }
-function parkingPlanVersion(){return JSON.stringify({date:PARKING_PLAN.date,info:parkingPlanInfo(PARKING_PLAN.date),saved:store.parkingPlans?.[PARKING_PLAN.date]||null});}
+function parkingPlanVersion(){return JSON.stringify({date:PARKING_PLAN.date,info:parkingPlanInfo(PARKING_PLAN.date),saved:store.parkingPlans?.[PARKING_PLAN.date]||null,freelance:store.freelance||{}});}
 function saveParkingMove(name,target,version){
-  if(!parkingPlanEditable()){flash('Use Operations Edit mode and wait for changes to finish saving.');return false;}
+  if(!parkingPlanEditable()){flash('Parking is waiting for current information or the parking upgrade.');return false;}
   if(version!==parkingPlanVersion()){flash('The parking plan changed. Please try again.');renderParkingPlan();return false;}
   const date=PARKING_PLAN.date,info=parkingPlanInfo(date);if(!info)return false;
   const plan=buildParkingPlan(info,store.parkingPlans?.[date]),next=moveParkingPerson(plan,name,target);if(!next)return false;
-  store.parkingPlans[date]={bays:next.bays,unparked:next.unparked};PARKING_PLAN.selected=null;
-  persist();recordHistory();if(state.view==='parking')renderParking();renderParkingPlan();flash('Parking change queued for saving');return true;
+  const issue=parkingPriorityIssue(next);if(issue){PARKING_PLAN.message=issue;flash(issue);renderParkingPlan();return false;}
+  return saveParkingArrangement(date,{bays:next.bays,unparked:next.unparked});
 }
+function saveParkingArrangement(date,plan){
+  PARKING_PLAN.selected=null;PARKING_PLAN.message='';
+  if(!SYNC.on){if(plan===null)delete store.parkingPlans[date];else store.parkingPlans[date]=plan;persistLocal();if(state.view==='parking')renderParking();renderParkingPlan();return true;}
+  const epoch=SYNC.epoch;PARKING_PLAN.saving=true;renderParkingPlan();
+  gasCall('saveParkingPlan',[date,plan,SYNC.keyRev['settings:parkingPlans']||0,PUBLIC_SUMMARY.rev,epoch],res=>{
+    PARKING_PLAN.saving=false;
+    if(epoch!==SYNC.epoch)return;
+    if(!res?.ok){
+      PARKING_PLAN.message=res?.error==='staff-priority'?'Staff have priority over freelancers. Please choose another swap.':'The parking or rota information changed. Your move was not saved; refresh the plan and try again.';
+      if(res?.error==='epoch-mismatch'){handleEpochMismatch(res.epoch);return;}
+      pollChanges();refreshPublicSummary();renderParkingPlan();return;
+    }
+    applyServerData({'settings:parkingPlans':{json:JSON.stringify(res.plans),rev:res.rev}},false);
+    persistLocal();PARKING_PLAN.message='Parking saved.';
+    if(state.view==='parking')renderParking();renderParkingPlan();pollChanges();refreshPublicSummary();
+  },()=>{PARKING_PLAN.saving=false;PARKING_PLAN.message='Parking could not be saved. Check your connection and make sure upgrade_staff_parking.sql has been installed, then try again.';renderParkingPlan();});
+  return true;
+}
+
 function parkingDisplayName(name){const parts=String(name).trim().split(/\s+/);return parts.length>1?parts[0]+' '+Array.from(parts[parts.length-1])[0]:parts[0];}
 function parkingNameLines(name,width){
   const max=Math.max(8,Math.floor(width/10)),words=String(name).split(/\s+/),lines=[];let line='';
@@ -4710,14 +4749,16 @@ function parkingNameLines(name,width){
   return lines;
 }
 function openParkingPlan(date){
-  PARKING_PLAN.date=date;PARKING_PLAN.selected=null;cancelParkingDrag();
+  PARKING_PLAN.date=date;PARKING_PLAN.selected=null;PARKING_PLAN.renderKey=null;PARKING_PLAN.message='';cancelParkingDrag();
   $('#parkingPlanModal').classList.add('open');renderParkingPlan();
 }
 function renderParkingPlan(){
   if(!PARKING_PLAN.date||!$('#parkingPlanModal').classList.contains('open'))return;
   const date=PARKING_PLAN.date,dt=mobileDateValue(date),info=parkingPlanInfo(date),editable=parkingPlanEditable(),saved=store.parkingPlans?.[date];
+  if(PARKING_PLAN.drag){if(editable&&PARKING_PLAN.drag.version===parkingPlanVersion())return;cancelParkingDrag();}
+  const renderKey=JSON.stringify([parkingPlanVersion(),editable,state.role,state.editing,isPhone(),PUBLIC_SUMMARY.error,PARKING_PLAN.selected,PARKING_PLAN.saving,PARKING_PLAN.message]);
+  if(renderKey===PARKING_PLAN.renderKey)return;PARKING_PLAN.renderKey=renderKey;
   $('#parkingPlanTitle').textContent='Manchester parking · '+dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-  $('#parkingPlanEdit').hidden=state.role!=='ops'||isPhone();$('#parkingPlanEdit').textContent=state.editing?'Finish editing':'Edit parking';
   $('#parkingPlanReset').hidden=!editable||!saved;
   if(!info){$('#parkingPlanBody').innerHTML='<p class="parking-plan-message">'+(PUBLIC_SUMMARY.data?.parkingPlanIncluded?'Refreshing parking information…':'The Manchester plan needs the v25 parking-plan SQL upgrade. Driver totals remain available in the calendar.')+'</p>';return;}
   const oldMap=$('#parkingPlanBody .parking-map-scroll'),oldScroll=oldMap?.dataset.date===date&&oldMap?.dataset.phone===String(isPhone())?oldMap.scrollLeft:null;
@@ -4730,35 +4771,53 @@ function renderParkingPlan(){
   }).join('');
   const waiting=plan.unparked.map(n=>`<button type="button" data-parking-person="${esc(n)}" title="${esc(n)}" aria-label="${esc(n)}" class="parking-person${nrm(n)===nrm(PARKING_PLAN.selected||'')?' selected':''}"${editable?'':' disabled'}>${esc(parkingDisplayName(n))}${shift(n)?'<small>'+shift(n)+'</small>':''}</button>`).join('')||'<p>Everyone has a space.</p>';
   const rows=MCR_BAYS.map(b=>`<tr><th>${b.id==='emergency'?'Emergency corner':b.id}</th><td>${esc(b.pool?'POOL':plan.bays[b.id]||'Free')}${!b.pool&&plan.bays[b.id]&&shift(plan.bays[b.id])?' · '+shift(plan.bays[b.id]):''}</td></tr>`).join('');
-  $('#parkingPlanBody').innerHTML=`<p class="parking-plan-message">${plan.people.length} staff drivers · 3 pool cars · ${plan.unparked.length} unable to park. ${saved?'Saved arrangements':'Automatic allocation'}${PUBLIC_SUMMARY.error?' · Connection interrupted: showing last loaded information.':''}</p><p class="parking-plan-guide">${editable?'Drag a name onto another bay to swap, or into Unable to park. You can also select a name, then select a destination.':state.role==='ops'&&state.editing&&!isPhone()?'Waiting for saving or refresh to finish…':'View only. Operations can change spaces on desktop.'} Bays 41–43 are reserved for POOL. Bays 35–36 favour PM staff. The emergency corner is available from eight staff drivers.${isPhone()?' Swipe the diagram sideways; full names are listed below.':''}</p><div class="parking-map-scroll" data-date="${date}" data-phone="${isPhone()}"><div class="parking-board${editable?' can-edit':''}"><svg viewBox="0 0 1597 985" aria-label="Manchester car park"><image href="assets/manchester-parking.png" width="1597" height="985"/>${svg}</svg><div class="parking-unplaced" data-parking-target="unparked" tabindex="0" role="button" aria-label="Unable to park: select to move the selected person here"><h4>Unable to park</h4>${waiting}</div></div></div><details class="parking-text-list"${isPhone()?' open':''}><summary>${editable?'Bay list and keyboard controls':'Bay list'}</summary><table><thead><tr><th>Bay</th><th>Person</th></tr></thead><tbody>${rows}</tbody></table>${plan.unparked.length?'<p><b>Unable to park:</b> '+plan.unparked.map(esc).join(', ')+'</p>':''}${editable?`<label>Person <select id="parkingMoveName">${plan.people.map(n=>`<option>${esc(n)}</option>`).join('')}</select></label><label>Destination <select id="parkingMoveBay">${MCR_STAFF_BAYS.filter(b=>b!=='emergency'||plan.people.length>=8).map(b=>`<option value="${b}">${b==='emergency'?'Emergency corner':'Bay '+b}</option>`).join('')}<option value="unparked">Unable to park</option></select></label><button type="button" id="parkingMoveApply">Move / swap</button>`:''}</details>`;
+  $('#parkingPlanBody').innerHTML=`<p class="parking-plan-message">${plan.people.length} drivers · 3 pool cars · ${plan.unparked.length} unable to park. ${saved?'Saved arrangements':'Automatic allocation'}${PUBLIC_SUMMARY.error?' · Connection interrupted: showing last loaded information.':''}</p><p class="parking-plan-status" role="status">${PARKING_PLAN.saving?'Saving parking…':esc(PARKING_PLAN.message||'')}</p><p class="parking-plan-guide">${editable?'Drag a name onto another bay to swap, or into Unable to park. Everyone can move parking spaces. You can also tap a name, then tap a destination.':SYNC.on&&!PUBLIC_SUMMARY.data?.parkingStaffEditing?'Install the staff parking SQL upgrade to enable moves for everyone.':'Waiting for saving or refresh to finish…'} Bays 41–43 are reserved for POOL. Staff park before freelancers, including priority for numbered bays. Bays 35–36 favour PM staff. The emergency corner is available from eight staff drivers.${isPhone()?' Swipe the diagram sideways; full names are listed below.':''}</p><div class="parking-map-scroll" data-date="${date}" data-phone="${isPhone()}"><div class="parking-board${editable?' can-edit':''}"><svg viewBox="0 0 1597 985" aria-label="Manchester car park"><image href="assets/manchester-parking.png" width="1597" height="985"/>${svg}</svg><div class="parking-unplaced" data-parking-target="unparked" tabindex="0" role="button" aria-label="Unable to park: select to move the selected person here"><h4>Unable to park</h4>${waiting}</div></div></div><details class="parking-text-list"${isPhone()?' open':''}><summary>${editable?'Bay list and keyboard controls':'Bay list'}</summary><table><thead><tr><th>Bay</th><th>Person</th></tr></thead><tbody>${rows}</tbody></table>${plan.unparked.length?'<p><b>Unable to park:</b> '+plan.unparked.map(esc).join(', ')+'</p>':''}${editable?`<label>Person <select id="parkingMoveName">${plan.people.map(n=>`<option>${esc(n)}</option>`).join('')}</select></label><label>Destination <select id="parkingMoveBay">${MCR_STAFF_BAYS.filter(b=>b!=='emergency'||plan.people.length>=8).map(b=>`<option value="${b}">${b==='emergency'?'Emergency corner':'Bay '+b}</option>`).join('')}<option value="unparked">Unable to park</option></select></label><button type="button" id="parkingMoveApply">Move / swap</button>`:''}</details>`;
   const map=$('#parkingPlanBody .parking-map-scroll');map.scrollLeft=oldScroll??(isPhone()?Math.min(map.scrollWidth-map.clientWidth,map.scrollWidth*.43):0);
 }
-function cancelParkingDrag(){PARKING_PLAN.drag=null;$('#parkingDragGhost')?.remove();document.querySelectorAll('.parking-drop').forEach(e=>e.classList.remove('parking-drop'));}
+function cancelParkingDrag(){
+  const drag=PARKING_PLAN.drag;PARKING_PLAN.drag=null;
+  const body=$('#parkingPlanBody');if(drag&&body.hasPointerCapture?.(drag.pointer))body.releasePointerCapture(drag.pointer);
+  $('#parkingDragGhost')?.remove();document.querySelectorAll('.parking-drop').forEach(e=>e.classList.remove('parking-drop'));
+}
 function parkingTargetAt(x,y){const el=document.elementFromPoint(x,y)?.closest('[data-parking-bay],[data-parking-target]');return el?.dataset.parkingBay||el?.dataset.parkingTarget||null;}
-$('#parkingPlanBody').addEventListener('pointerdown',e=>{
-  if(!parkingPlanEditable()||e.button!==0||e.isPrimary===false)return;
+function startParkingDrag(e){
+  PARKING_PLAN.ignoreClick=false;
+  if(e.button!==0||e.isPrimary===false)return;
   const el=e.target.closest('[data-parking-bay],[data-parking-person]');if(!el)return;
-  const info=parkingPlanInfo(PARKING_PLAN.date),plan=buildParkingPlan(info,store.parkingPlans?.[PARKING_PLAN.date]);
+  if(!parkingPlanEditable()){flash('Please wait for parking to finish saving or refreshing.');return;}
+  const info=parkingPlanInfo(PARKING_PLAN.date);if(!info)return;
+  const plan=buildParkingPlan(info,store.parkingPlans?.[PARKING_PLAN.date]);
   const name=el.dataset.parkingPerson||plan.bays[el.dataset.parkingBay];if(!name)return;
+  e.preventDefault();
   PARKING_PLAN.drag={name,x:e.clientX,y:e.clientY,pointer:e.pointerId,version:parkingPlanVersion(),moving:false};
-});
-document.addEventListener('pointermove',e=>{
+  $('#parkingPlanBody').setPointerCapture?.(e.pointerId);
+}
+function moveParkingDrag(e){
   const drag=PARKING_PLAN.drag;if(!drag||drag.pointer!==e.pointerId)return;
-  if(!parkingPlanEditable()||drag.version!==parkingPlanVersion()){cancelParkingDrag();return;}
+  if(!parkingPlanEditable()||drag.version!==parkingPlanVersion()){cancelParkingDrag();renderParkingPlan();return;}
   if(!drag.moving&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<6)return;
   drag.moving=true;e.preventDefault();let ghost=$('#parkingDragGhost');if(!ghost){ghost=document.createElement('div');ghost.id='parkingDragGhost';ghost.textContent=parkingDisplayName(drag.name);$('#parkingPlanModal').appendChild(ghost);}
   ghost.style.left=e.clientX+14+'px';ghost.style.top=e.clientY+14+'px';
   document.querySelectorAll('.parking-drop').forEach(el=>el.classList.remove('parking-drop'));
   const target=parkingTargetAt(e.clientX,e.clientY);if(target==='unparked'||MCR_STAFF_BAYS.includes(target))document.querySelector(`[data-parking-${target==='unparked'?'target':'bay'}="${target}"]`)?.classList.add('parking-drop');
-},{passive:false});
-document.addEventListener('pointerup',e=>{
+}
+function finishParkingDrag(e){
   const drag=PARKING_PLAN.drag;if(!drag||drag.pointer!==e.pointerId)return;
   const target=parkingTargetAt(e.clientX,e.clientY);cancelParkingDrag();
-  if(drag.moving){PARKING_PLAN.ignoreClick=true;setTimeout(()=>PARKING_PLAN.ignoreClick=false,0);if(target)saveParkingMove(drag.name,target,drag.version);}
-});
+  PARKING_PLAN.ignoreClick=true;setTimeout(()=>PARKING_PLAN.ignoreClick=false,400);
+  if(!parkingPlanEditable()||drag.version!==parkingPlanVersion()){renderParkingPlan();return;}
+  if(drag.moving){if(target)saveParkingMove(drag.name,target,drag.version);}
+  else if(target&&PARKING_PLAN.selected){saveParkingMove(PARKING_PLAN.selected,target,drag.version);}
+  else {PARKING_PLAN.selected=drag.name;renderParkingPlan();}
+}
+$('#parkingPlanBody').addEventListener('pointerdown',startParkingDrag);
+$('#parkingPlanBody').addEventListener('dragstart',e=>e.preventDefault());
+$('#parkingPlanBody').addEventListener('lostpointercapture',e=>{if(PARKING_PLAN.drag?.pointer===e.pointerId)cancelParkingDrag();});
+document.addEventListener('pointermove',moveParkingDrag,{passive:false});
+document.addEventListener('pointerup',finishParkingDrag);
 document.addEventListener('pointercancel',cancelParkingDrag);window.addEventListener('blur',cancelParkingDrag);
 $('#parkingPlanBody').addEventListener('click',e=>{
-  if(PARKING_PLAN.ignoreClick||!parkingPlanEditable())return;
+  if((PARKING_PLAN.ignoreClick&&e.detail!==0)||!parkingPlanEditable())return;
   if(e.target.closest('#parkingMoveApply')){saveParkingMove($('#parkingMoveName').value,$('#parkingMoveBay').value,parkingPlanVersion());return;}
   const el=e.target.closest('[data-parking-bay],[data-parking-person],[data-parking-target]');if(!el)return;
   const bay=el.dataset.parkingBay,target=bay||el.dataset.parkingTarget,info=parkingPlanInfo(PARKING_PLAN.date),plan=buildParkingPlan(info,store.parkingPlans?.[PARKING_PLAN.date]);
@@ -4766,8 +4825,7 @@ $('#parkingPlanBody').addEventListener('click',e=>{
   PARKING_PLAN.selected=el.dataset.parkingPerson||plan.bays[bay]||null;renderParkingPlan();
 });
 $('#parkingPlanBody').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-parking-bay],[data-parking-target]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
-$('#parkingPlanEdit').addEventListener('click',()=>{if(state.role==='ops'&&!isPhone()){toggleEdit();renderParkingPlan();}});
-$('#parkingPlanReset').addEventListener('click',()=>{if(!parkingPlanEditable())return;const version=parkingPlanVersion(),date=PARKING_PLAN.date;askConfirm('Reset parking spaces?','This date will return to automatic allocation. Rota assignments stay unchanged.','Reset spaces',()=>{if(!parkingPlanEditable()||version!==parkingPlanVersion()){flash('The parking plan changed. Try again.');return;}delete store.parkingPlans[date];persist();recordHistory();PARKING_PLAN.selected=null;if(state.view==='parking')renderParking();renderParkingPlan();});});
+$('#parkingPlanReset').addEventListener('click',()=>{if(!parkingPlanEditable())return;const version=parkingPlanVersion(),date=PARKING_PLAN.date;askConfirm('Reset parking spaces?','This date will return to automatic allocation. Rota assignments stay unchanged.','Reset spaces',()=>{if(!parkingPlanEditable()||version!==parkingPlanVersion()){flash('The parking plan changed. Try again.');return;}saveParkingArrangement(date,null);});});
 
 // ---- booth usage -------------------------------------------------------
 // A booth is needed by anyone on a reading shift: the AM/PM patch roles in the
@@ -5982,6 +6040,7 @@ function hideBackendBanner(){
   if(el) el.style.display="none";
 }
 const RPC_MAP={
+  saveParkingPlan:{name:"rota_save_parking_plan",params:a=>({p_date:a[0],p_plan:a[1],p_base_rev:Number(a[2]),p_summary_rev:Number(a[3]),p_client_epoch:Number(a[4])})},
   getPublicSummary:{name:"rota_public_summary",params:a=>({p_since_rev:Number(a[0]??-1),p_client_epoch:Number(a[1]??-1)})},
   getBootstrap:{name:"rota_get_bootstrap",params:a=>({p_token:a[0]||""})},
   getChanges:{name:"rota_get_changes",params:a=>({p_since_rev:Number(a[0]||0),p_client_epoch:Number(a[1]||0),p_token:a[2]||""})},
@@ -6111,7 +6170,7 @@ $("#syncPop").addEventListener("click",e=>{
 });
 window.addEventListener("pagehide",()=>{ /* no global edit lease in concurrent mode */ });
 window.addEventListener("beforeunload",e=>{
-  if(SYNC.on && SYNC.canEdit && (SYNC.dirty||SYNC.saving)){ e.preventDefault(); e.returnValue=""; return ""; }
+  if(PARKING_PLAN.saving||(SYNC.on && SYNC.canEdit && (SYNC.dirty||SYNC.saving))){ e.preventDefault(); e.returnValue=""; return ""; }
 });
 
 function processBootstrap(res, refresh, message){
@@ -6194,7 +6253,7 @@ function refreshPublicSummary(){
   if(!SYNC.on||PUBLIC_SUMMARY.loading)return;
   PUBLIC_SUMMARY.loading=true;
   const generation=SYNC.generation;
-  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded&&PUBLIC_SUMMARY.data?.boothsIncluded&&PUBLIC_SUMMARY.data?.parkingIncluded&&PUBLIC_SUMMARY.data?.parkingPlanIncluded?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
+  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded&&PUBLIC_SUMMARY.data?.boothsIncluded&&PUBLIC_SUMMARY.data?.parkingIncluded&&PUBLIC_SUMMARY.data?.parkingPlanIncluded&&PUBLIC_SUMMARY.data?.parkingStaffEditing?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
     PUBLIC_SUMMARY.loading=false;
     if(generation!==SYNC.generation)return;
     if(!res||!res.ok){PUBLIC_SUMMARY.error='unavailable';refreshSummaryView();return;}
