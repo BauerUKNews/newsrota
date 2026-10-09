@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v25.1 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v25.2 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1458,7 +1458,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v25.1</span>
+  <span class="pill">News Rota v25.2</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -4665,7 +4665,7 @@ const MCR_BAYS=[
  {id:'42',points:'1086,598 1234,565 1246,629 1099,662',x:1163,y:604,w:130,pool:true},
  {id:'43',points:'1102,670 1249,638 1263,699 1114,732',x:1178,y:676,w:130,pool:true}
 ];
-function parkingPlanEditable(){return !PARKING_PLAN.saving&&(!SYNC.on||(SYNC.bootstrapped&&PUBLIC_SUMMARY.data?.parkingStaffEditing&&!SYNC.refreshing&&!SYNC.conflict&&!PUBLIC_SUMMARY.error&&!SYNC.dirty&&!SYNC.saving&&PUBLIC_SUMMARY.rev>=Math.max(SYNC.rev,SYNC.keyRev['settings:parkingPlans']||0)));}
+function parkingPlanEditable(){return !PARKING_PLAN.saving&&(!SYNC.on||(SYNC.bootstrapped&&PUBLIC_SUMMARY.data?.parkingStaffEditing&&PUBLIC_SUMMARY.data?.parkingPriorityVersion===2&&!SYNC.refreshing&&!SYNC.conflict&&!PUBLIC_SUMMARY.error&&!SYNC.dirty&&!SYNC.saving&&PUBLIC_SUMMARY.rev>=Math.max(SYNC.rev,SYNC.keyRev['settings:parkingPlans']||0)));}
 function parkingPlanInfo(date){
   if(SYNC.on&&(!PUBLIC_SUMMARY.data?.parkingPlanIncluded||PUBLIC_SUMMARY.rev<Math.max(SYNC.rev,SYNC.keyRev['settings:parkingPlans']||0)))return null;
   const dt=mobileDateValue(date);if(!dt)return null;
@@ -4673,14 +4673,13 @@ function parkingPlanInfo(date){
   return parkingData('Manchester')[key]||{count:0,names:[],pmNames:[],amNames:[]};
 }
 function parkingFreelance(name){return Object.entries(store.freelance||{}).some(([n,on])=>on===true&&nrm(n)===nrm(name));}
+function parkingRank(name,info){return (info.amNames||[]).some(n=>nrm(n)===nrm(name))?0:parkingFreelance(name)?2:1;}
 function parkingPriorityIssue(plan){
-  const parked=Object.values(plan.bays);
-  if(plan.unparked.some(n=>!parkingFreelance(n))&&parked.some(parkingFreelance))return 'Staff have priority: a freelancer cannot take a space while a staff driver is unable to park.';
-  if(plan.bays.emergency&&!parkingFreelance(plan.bays.emergency)&&Object.entries(plan.bays).some(([bay,n])=>bay!=='emergency'&&parkingFreelance(n)))return 'Staff have priority for numbered bays; use the emergency corner for a freelancer first.';
+  if(plan.unparked.some(n=>Object.values(plan.bays).some(p=>parkingRank(p,plan)>parkingRank(n,plan))))return 'Parking priority is Breakfast first (including freelancers), then other staff, then remaining freelancers. Please choose another swap.';
   return '';
 }
 function buildParkingPlan(info,saved){
-  const people=[...new Map((info.names||[]).map(n=>[nrm(n),n])).values()].sort((a,b)=>Number(parkingFreelance(a))-Number(parkingFreelance(b))||nrm(a).localeCompare(nrm(b)));
+  const people=[...new Map((info.names||[]).map(n=>[nrm(n),n])).values()].sort((a,b)=>parkingRank(a,info)-parkingRank(b,info)||nrm(a).localeCompare(nrm(b)));
   const byName=new Map(people.map(n=>[nrm(n),n])),pm=new Set((info.pmNames||[]).map(nrm)),used=new Set(),bays={},unparked=[];
   const put=(bay,name)=>{const id=nrm(name);if(!byName.has(id)||used.has(id))return false;bays[bay]=byName.get(id);used.add(id);return true;};
   // Saved manual choices take priority, but only eligible drivers remain.
@@ -4689,20 +4688,25 @@ function buildParkingPlan(info,saved){
   const remaining=()=>people.filter(n=>!used.has(nrm(n)));
   ['35','36'].forEach(b=>{if(!bays[b]){const n=remaining().find(n=>pm.has(nrm(n)));if(n)put(b,n);}});
   remaining().forEach(n=>{const b=['34','37','38','39','40','35','36',...(people.length>=8?['emergency']:[])].find(b=>!bays[b]);if(b)put(b,n);else{unparked.push(n);used.add(nrm(n));}});
-  // Staff priority also corrects older saved plans and later roster/type changes.
-  for(const person of [...unparked].filter(n=>!parkingFreelance(n))){
-    const candidates=Object.keys(bays).filter(b=>parkingFreelance(bays[b]));
-    candidates.sort((a,b)=>Number(pm.has(nrm(person))&&!['35','36'].includes(a))-Number(pm.has(nrm(person))&&!['35','36'].includes(b))||Number(a==='emergency')-Number(b==='emergency'));
-    const bay=candidates[0];if(!bay)break;
+  // Admission priority wins over old saved placements, without ranking bay quality.
+  unparked.sort((a,b)=>parkingRank(a,info)-parkingRank(b,info)||nrm(a).localeCompare(nrm(b)));
+  for(const person of [...unparked]){
+    const candidates=Object.keys(bays).filter(b=>parkingRank(bays[b],info)>parkingRank(person,info));
+    candidates.sort((a,b)=>parkingRank(bays[b],info)-parkingRank(bays[a],info)||Number(pm.has(nrm(person))&&!['35','36'].includes(a))-Number(pm.has(nrm(person))&&!['35','36'].includes(b)));
+    const bay=candidates[0];if(!bay)continue;
     const i=unparked.indexOf(person);unparked[i]=bays[bay];bays[bay]=person;
   }
-  if(bays.emergency&&!parkingFreelance(bays.emergency)){
-    const bay=Object.keys(bays).find(b=>b!=='emergency'&&parkingFreelance(bays[b]));
+  // A saved emergency occupant is an explicit manual choice. Otherwise prefer
+  // a PM driver who already qualifies for parking; do not displace Breakfast.
+  const manualEmergency=saved?.bays?.emergency&&nrm(saved.bays.emergency)===nrm(bays.emergency);
+  if(bays.emergency&&!manualEmergency&&!pm.has(nrm(bays.emergency))){
+    const bay=['34','37','38','39','40','36','35'].find(b=>bays[b]&&pm.has(nrm(bays[b])));
     if(bay)[bays[bay],bays.emergency]=[bays.emergency,bays[bay]];
   }
-  unparked.sort((a,b)=>Number(parkingFreelance(a))-Number(parkingFreelance(b))||nrm(a).localeCompare(nrm(b)));
-  return {bays,unparked,people};
+  unparked.sort((a,b)=>parkingRank(a,info)-parkingRank(b,info)||nrm(a).localeCompare(nrm(b)));
+  return {bays,unparked,people,amNames:info.amNames||[]};
 }
+
 function moveParkingPerson(plan,name,target){
   if(target!=='unparked'&&!MCR_STAFF_BAYS.includes(target))return null;
   if(target==='emergency'&&plan.people.length<8)return null;
@@ -4731,14 +4735,14 @@ function saveParkingArrangement(date,plan){
     PARKING_PLAN.saving=false;
     if(epoch!==SYNC.epoch)return;
     if(!res?.ok){
-      PARKING_PLAN.message=res?.error==='staff-priority'?'Staff have priority over freelancers. Please choose another swap.':'The parking or rota information changed. Your move was not saved; refresh the plan and try again.';
+      PARKING_PLAN.message=['staff-priority','parking-priority'].includes(res?.error)?'Parking priority is Breakfast first, then other staff, then remaining freelancers. Please choose another swap.':'The parking or rota information changed. Your move was not saved; refresh the plan and try again.';
       if(res?.error==='epoch-mismatch'){handleEpochMismatch(res.epoch);return;}
       pollChanges();refreshPublicSummary();renderParkingPlan();return;
     }
     applyServerData({'settings:parkingPlans':{json:JSON.stringify(res.plans),rev:res.rev}},false);
     persistLocal();PARKING_PLAN.message='Parking saved.';
     if(state.view==='parking')renderParking();renderParkingPlan();pollChanges();refreshPublicSummary();
-  },()=>{PARKING_PLAN.saving=false;PARKING_PLAN.message='Parking could not be saved. Check your connection and make sure upgrade_staff_parking.sql has been installed, then try again.';renderParkingPlan();});
+  },()=>{PARKING_PLAN.saving=false;PARKING_PLAN.message='Parking could not be saved. Check your connection and make sure upgrade_parking_priority.sql has been installed, then try again.';renderParkingPlan();});
   return true;
 }
 
@@ -4771,7 +4775,7 @@ function renderParkingPlan(){
   }).join('');
   const waiting=plan.unparked.map(n=>`<button type="button" data-parking-person="${esc(n)}" title="${esc(n)}" aria-label="${esc(n)}" class="parking-person${nrm(n)===nrm(PARKING_PLAN.selected||'')?' selected':''}"${editable?'':' disabled'}>${esc(parkingDisplayName(n))}${shift(n)?'<small>'+shift(n)+'</small>':''}</button>`).join('')||'<p>Everyone has a space.</p>';
   const rows=MCR_BAYS.map(b=>`<tr><th>${b.id==='emergency'?'Emergency corner':b.id}</th><td>${esc(b.pool?'POOL':plan.bays[b.id]||'Free')}${!b.pool&&plan.bays[b.id]&&shift(plan.bays[b.id])?' · '+shift(plan.bays[b.id]):''}</td></tr>`).join('');
-  $('#parkingPlanBody').innerHTML=`<p class="parking-plan-message">${plan.people.length} drivers · 3 pool cars · ${plan.unparked.length} unable to park. ${saved?'Saved arrangements':'Automatic allocation'}${PUBLIC_SUMMARY.error?' · Connection interrupted: showing last loaded information.':''}</p><p class="parking-plan-status" role="status">${PARKING_PLAN.saving?'Saving parking…':esc(PARKING_PLAN.message||'')}</p><p class="parking-plan-guide">${editable?'Drag a name onto another bay to swap, or into Unable to park. Everyone can move parking spaces. You can also tap a name, then tap a destination.':SYNC.on&&!PUBLIC_SUMMARY.data?.parkingStaffEditing?'Install the staff parking SQL upgrade to enable moves for everyone.':'Waiting for saving or refresh to finish…'} Bays 41–43 are reserved for POOL. Staff park before freelancers, including priority for numbered bays. Bays 35–36 favour PM staff. The emergency corner is available from eight staff drivers.${isPhone()?' Swipe the diagram sideways; full names are listed below.':''}</p><div class="parking-map-scroll" data-date="${date}" data-phone="${isPhone()}"><div class="parking-board${editable?' can-edit':''}"><svg viewBox="0 0 1597 985" aria-label="Manchester car park"><image href="assets/manchester-parking.png" width="1597" height="985"/>${svg}</svg><div class="parking-unplaced" data-parking-target="unparked" tabindex="0" role="button" aria-label="Unable to park: select to move the selected person here"><h4>Unable to park</h4>${waiting}</div></div></div><details class="parking-text-list"${isPhone()?' open':''}><summary>${editable?'Bay list and keyboard controls':'Bay list'}</summary><table><thead><tr><th>Bay</th><th>Person</th></tr></thead><tbody>${rows}</tbody></table>${plan.unparked.length?'<p><b>Unable to park:</b> '+plan.unparked.map(esc).join(', ')+'</p>':''}${editable?`<label>Person <select id="parkingMoveName">${plan.people.map(n=>`<option>${esc(n)}</option>`).join('')}</select></label><label>Destination <select id="parkingMoveBay">${MCR_STAFF_BAYS.filter(b=>b!=='emergency'||plan.people.length>=8).map(b=>`<option value="${b}">${b==='emergency'?'Emergency corner':'Bay '+b}</option>`).join('')}<option value="unparked">Unable to park</option></select></label><button type="button" id="parkingMoveApply">Move / swap</button>`:''}</details>`;
+  $('#parkingPlanBody').innerHTML=`<p class="parking-plan-message">${plan.people.length} drivers · 3 pool cars · ${plan.unparked.length} unable to park. ${saved?'Saved arrangements':'Automatic allocation'}${PUBLIC_SUMMARY.error?' · Connection interrupted: showing last loaded information.':''}</p><p class="parking-plan-status" role="status">${PARKING_PLAN.saving?'Saving parking…':esc(PARKING_PLAN.message||'')}</p><p class="parking-plan-guide">${editable?'Drag a name onto another bay to swap, or into Unable to park. Everyone can move parking spaces. You can also tap a name, then tap a destination.':SYNC.on&&PUBLIC_SUMMARY.data?.parkingPriorityVersion!==2?'Install upgrade_parking_priority.sql to enable the updated parking rules.':'Waiting for saving or refresh to finish…'} Bays 41–43 are reserved for POOL. Breakfast parks first (including freelancers), then other staff, then remaining freelancers. The emergency corner favours PM drivers unless manually changed; bays 35–36 also favour PM. The emergency corner is available from eight staff drivers.${isPhone()?' Swipe the diagram sideways; full names are listed below.':''}</p><div class="parking-map-scroll" data-date="${date}" data-phone="${isPhone()}"><div class="parking-board${editable?' can-edit':''}"><svg viewBox="0 0 1597 985" aria-label="Manchester car park"><image href="assets/manchester-parking.png" width="1597" height="985"/>${svg}</svg><div class="parking-unplaced" data-parking-target="unparked" tabindex="0" role="button" aria-label="Unable to park: select to move the selected person here"><h4>Unable to park</h4>${waiting}</div></div></div><details class="parking-text-list"${isPhone()?' open':''}><summary>${editable?'Bay list and keyboard controls':'Bay list'}</summary><table><thead><tr><th>Bay</th><th>Person</th></tr></thead><tbody>${rows}</tbody></table>${plan.unparked.length?'<p><b>Unable to park:</b> '+plan.unparked.map(esc).join(', ')+'</p>':''}${editable?`<label>Person <select id="parkingMoveName">${plan.people.map(n=>`<option>${esc(n)}</option>`).join('')}</select></label><label>Destination <select id="parkingMoveBay">${MCR_STAFF_BAYS.filter(b=>b!=='emergency'||plan.people.length>=8).map(b=>`<option value="${b}">${b==='emergency'?'Emergency corner':'Bay '+b}</option>`).join('')}<option value="unparked">Unable to park</option></select></label><button type="button" id="parkingMoveApply">Move / swap</button>`:''}</details>`;
   const map=$('#parkingPlanBody .parking-map-scroll');map.scrollLeft=oldScroll??(isPhone()?Math.min(map.scrollWidth-map.clientWidth,map.scrollWidth*.43):0);
 }
 function cancelParkingDrag(){
@@ -6253,7 +6257,7 @@ function refreshPublicSummary(){
   if(!SYNC.on||PUBLIC_SUMMARY.loading)return;
   PUBLIC_SUMMARY.loading=true;
   const generation=SYNC.generation;
-  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded&&PUBLIC_SUMMARY.data?.boothsIncluded&&PUBLIC_SUMMARY.data?.parkingIncluded&&PUBLIC_SUMMARY.data?.parkingPlanIncluded&&PUBLIC_SUMMARY.data?.parkingStaffEditing?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
+  gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded&&PUBLIC_SUMMARY.data?.boothsIncluded&&PUBLIC_SUMMARY.data?.parkingIncluded&&PUBLIC_SUMMARY.data?.parkingPlanIncluded&&PUBLIC_SUMMARY.data?.parkingStaffEditing&&PUBLIC_SUMMARY.data?.parkingPriorityVersion===2?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
     PUBLIC_SUMMARY.loading=false;
     if(generation!==SYNC.generation)return;
     if(!res||!res.ok){PUBLIC_SUMMARY.error='unavailable';refreshSummaryView();return;}
