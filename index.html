@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v25.2 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v26 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1283,6 +1283,21 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 #parkingDragGhost{position:fixed;z-index:450;pointer-events:none;background:#b42336;color:white;border-radius:9px;padding:10px 14px;box-shadow:0 4px 18px #0006}
 .parking-text-list{margin-top:14px}.parking-text-list table{width:100%;border-collapse:collapse}.parking-text-list th,.parking-text-list td{padding:7px;border-bottom:1px solid var(--line);text-align:left}.parking-text-list label{display:inline-block;margin:12px 12px 0 0}.parking-text-list select,.parking-text-list button{padding:8px;font:inherit}
 @media(max-width:760px){#parkingPlanBody{padding:0 8px 12px}.parking-unplaced{left:2%;width:34%;padding:5px;top:23%;max-height:70%;border-radius:6px}.parking-unplaced h4{font-size:11px;margin-bottom:4px}.parking-person{font-size:10px;padding:3px;margin-bottom:3px}.parking-person small{font-size:8px}.parking-unplaced p{font-size:10px}.parking-plan-guide{font-size:12px}}
+
+/* Phone week view: one readable column, with every day retained. */
+#mobileView .mobile-week-nav{grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;margin-bottom:14px}
+.mobile-week-nav h1{margin:0;min-width:0;text-align:center}
+#mobileView #mobileDayTitle{font-size:clamp(17px,5vw,23px);min-height:44px;text-align:center;width:100%;line-height:1.25}
+.mobile-week-day{margin:18px 0 24px;min-width:0;scroll-margin-top:100px}
+.mobile-day-heading{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:17px;margin:0;padding:10px 0;border-bottom:2px solid var(--ink);color:var(--ink)}
+.mobile-today-tag{font-size:11px;background:var(--teal-wash);color:#005b5a;border-radius:12px;padding:4px 8px}
+.mobile-card h3{font-size:13px;font-weight:700;margin:0;padding:10px 12px;background:var(--mag-wash);color:var(--ink)}
+.mobile-away h3{background:var(--teal-wash);color:#005b5a}
+.mobile-gaps h3,.mobile-gaps .mobile-row{background:#f9e9e9}
+.mobile-empty h3{margin:0;font-size:15px}
+.mobile-week-day .mobile-empty{padding:12px;text-align:left}
+@media print{.mobile-week-day{break-inside:auto}.mobile-day-heading{break-after:avoid}}
+
 </style>
 </head>
 <body>
@@ -1413,16 +1428,15 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
   <div id="desktopFilter" class="filter-status" hidden></div>
 </div>
 
-<section id="mobileView" aria-label="Daily rota" hidden>
-  <div class="mobile-heading"><div><span id="mobileDayContext">Today</span><h1><button type="button" id="mobileDayTitle" aria-label="Choose a date" aria-expanded="false" aria-controls="mobileCalendar"></button></h1></div><button id="mobileToday" type="button">Today</button></div>
-  <div class="mobile-calendar" id="mobileCalendar" hidden><label>Choose date <input type="date" id="mobileDate" aria-label="Choose rota date"></label></div>
-  <div class="mobile-dates"><button id="mobilePrev" type="button" aria-label="Previous day">‹</button><div id="mobileWeekStrip" class="week-strip" aria-label="Days of selected week"></div><button id="mobileNext" type="button" aria-label="Next day">›</button></div>
+<section id="mobileView" aria-label="Weekly rota" hidden>
+  <div class="mobile-dates mobile-week-nav"><button id="mobilePrev" type="button" aria-label="Previous week">‹</button><h1><button type="button" id="mobileDayTitle" aria-label="Choose a week" aria-expanded="false" aria-controls="mobileCalendar"></button></h1><button id="mobileNext" type="button" aria-label="Next week">›</button></div>
+  <div class="mobile-calendar" id="mobileCalendar" hidden><label>Pick any date in the week <input type="date" id="mobileDate" aria-label="Choose rota week"></label></div>
   <div class="mobile-person"><div class="audience-switch"><button id="mobileEveryone" type="button">Everyone</button><button id="mobileMine" type="button">My rota</button></div><div class="person-choice"><span id="mobilePersonLabel"></span><button id="mobileWho" type="button" aria-haspopup="dialog">Choose person</button></div></div>
-  <div class="mobile-search"><input id="mobileSearch" type="search" placeholder="Find a role or person…" aria-label="Search daily roles or people" autocomplete="off"><button id="mobileClearSearch" type="button" hidden>Clear</button></div>
+  <div class="mobile-search"><input id="mobileSearch" type="search" placeholder="Find a role or person…" aria-label="Search this week’s roles or people" autocomplete="off"><button id="mobileClearSearch" type="button" hidden>Clear</button></div>
   <div id="mobileDayBody" aria-live="polite"></div>
-  <div class="mobile-actions"><button id="mobilePersonal" type="button" hidden>Full personal rota</button><button id="mobileFullWeek" type="button">Full week view</button></div>
+  <div class="mobile-actions"><button id="mobilePersonal" type="button" hidden>Full personal rota</button></div>
 </section>
-<button id="mobileDailyReturn" type="button" hidden>Back to daily view</button>
+
 <div class="modal" id="mobilePersonModal"><div class="modalcard sm">
   <div class="modalhead"><h3>Choose your name</h3><button class="x" data-close-overlay="mobilePersonModal" aria-label="Close name picker">×</button></div>
   <div class="mobile-person-search"><input id="mobilePersonSearch" type="search" placeholder="Search names…" aria-label="Search personnel" autocomplete="off"><div id="mobilePersonList"></div></div>
@@ -1458,7 +1472,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v25.2</span>
+  <span class="pill">News Rota v26</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1637,7 +1651,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 </div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
- <div class="setup-intro"><p><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, tap a day in the week strip or tap the date heading to choose another date. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Manchester shows the bay diagram when you select a date: the calendar is green when everyone fits, orange when the emergency corner is used, and flashing red when anyone is unable to park. Other offices turn red at seven and flash at eight. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
+ <div class="setup-intro"><p><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, use the arrows to move between full weeks or tap the W/C heading to choose a week. Scroll down for Monday to Sunday. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Manchester shows the bay diagram when you select a date: the calendar is green when everyone fits, orange when the emergency corner is used, and flashing red when anyone is unable to park. Other offices turn red at seven and flash at eight. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
 </div></div>
 <script>
@@ -1974,10 +1988,9 @@ function mobileDateValue(value){
   const [y,m,d]=value.split('-').map(Number),dt=new Date(y,m-1,d);
   return Number.isFinite(dt.getTime())&&localISO(dt)===value?dt:null;
 }
-function useMobileDay(){return window.matchMedia('(max-width:760px)').matches&&state.view==='rota'&&!state.editing&&!state.templateMode&&!MOBILE.fullWeek;}
+function useMobileDay(){return window.matchMedia('(max-width:760px)').matches&&state.view==='rota'&&!state.editing&&!state.templateMode;}
 function syncMobileLayout(){
   const daily=useMobileDay();document.body.classList.toggle('mobile-daily',daily);$('#mobileView').hidden=!daily;
-  $('#mobileDailyReturn').hidden=!(window.matchMedia('(max-width:760px)').matches&&state.view==='rota'&&MOBILE.fullWeek&&!state.editing&&!state.templateMode);
   return daily;
 }
 function mobileDayData(iso,person=''){
@@ -2023,48 +2036,51 @@ function filterMobileDay(day,query){
   return {...day,sections:day.sections.map(sec=>({...sec,rows:sec.rows.filter(r=>match(sec.title,r.label,r.name))})).filter(sec=>sec.rows.length),
     away:day.away.filter(n=>match('Away holiday',n)),gaps:day.gaps.filter(g=>match(g.section,g.label,'unfilled')),notes:[]};
 }
+function mobileWeekData(iso,person='',query=''){
+  return weekStripDates(iso).map(date=>({date,iso:localISO(date),day:filterMobileDay(mobileDayData(localISO(date),person),query)}));
+}
+function mobileDayMarkup(entry,person,query){
+  const {date,iso,day}=entry,today=iso===localISO(new Date());
+  let html='<section class="mobile-week-day" aria-label="'+esc(date.toLocaleDateString('en-GB',{dateStyle:'full'}))+'"><h2 class="mobile-day-heading">'+esc(date.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'}))+(today?'<span class="mobile-today-tag">Today</span>':'')+'</h2>';
+  if(day.hidden.length)html+='<div class="mobile-empty"><h3>Rota coming soon</h3><p>The rota for this day has not been published yet.</p></div>';
+  if(day.blocked.length)html+='<div class="mobile-empty"><h3>Separate rota</h3><p>This date is covered by a separate rota. Check with Operations.</p></div>';
+  if(!day.weeks.length)html+='<div class="mobile-empty"><p>'+ (date.getFullYear()===2026&&date.getMonth()===11&&date.getDate()>24?'The Christmas period uses a separate rota.':'No rota scheduled for this date.')+'</p></div>';
+  if(day.away.length)html+='<section class="mobile-card mobile-away"><h3>'+(person?'On holiday':'Away · '+day.away.length)+'</h3><p>'+day.away.map(esc).join(', ')+'</p></section>';
+  if(person&&day.away.length&&day.sections.length)html+='<p class="mobile-status">You are also assigned below. Please ask Operations to check this clash.</p>';
+  day.sections.forEach(sec=>{html+='<section class="mobile-card"><h3>'+esc(readableRole(sec.title))+'</h3><ul>'+sec.rows.map(r=>'<li class="mobile-row"'+cellStyle(r.key)+'><span>'+esc(readableRole(r.label))+'</span><strong>'+esc(r.name)+(r.cover?'<small>Cover</small>':'')+'</strong>'+(r.note?'<div class="mobile-note">'+esc(r.note)+'</div>':'')+'</li>').join('')+'</ul></section>';});
+  if(day.weeks.length&&!day.hidden.length&&!day.blocked.length&&!day.sections.length&&!day.away.length&&!day.gaps.length)html+='<div class="mobile-empty"><p>'+(query?'No matches on this day.':person?'— No assignment shown':'No assignments yet.')+'</p></div>';
+  if(day.gaps.length)html+='<section class="mobile-card mobile-gaps"><h3>Unfilled roles · '+day.gaps.length+'</h3><ul>'+day.gaps.map(g=>'<li class="mobile-row"><span>'+esc(readableRole(g.section))+'</span><strong>'+esc(readableRole(g.label))+'</strong></li>').join('')+'</ul></section>';
+  return html+'</section>';
+}
 function renderMobileDay(){
   if(!enforcePhoneStaff())return;
   if(MOBILE.followToday)MOBILE.date=localISO(new Date());
   const dt=mobileDateValue(MOBILE.date)||new Date();MOBILE.date=localISO(dt);
-  const known=allStaff().find(n=>nrm(n)===nrm(MOBILE.person));
+  const start=mondayOf(dt),known=allStaff().find(n=>nrm(n)===nrm(MOBILE.person));
   if(known)MOBILE.person=known;else if(SYNC.bootstrapped)MOBILE.person='';
-  const selected=MOBILE.person,query=nrm(MOBILE.query||''),person=query||MOBILE.audience==='everyone'?'':selected,day=filterMobileDay(mobileDayData(MOBILE.date,person),query);
+  const selected=MOBILE.person,query=nrm(MOBILE.query||''),person=MOBILE.audience==='everyone'?'':selected,days=mobileWeekData(MOBILE.date,person,query);
   $('#mobileClearSearch').hidden=!query;
-  if(day.weeks.length)state.idx=day.weeks.find(i=>RAW.weeks[i].id===day.sections[0]?.weekId)??day.weeks[0];
-  $('#generationInfoBtn').hidden=state.role==='staff'||!day.weeks.includes(state.idx)||!canViewWeek(week())||!(store.overrides[week().id]||{}).generationReport;
-  $('#mobileDayContext').textContent=MOBILE.date===localISO(new Date())?'Today':dt.getFullYear();
-  $('#mobileDayTitle').textContent=dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-  $('#mobileDayTitle').setAttribute('aria-label','Choose a date · '+dt.toLocaleDateString('en-GB',{dateStyle:'full'}));
-  if(document.activeElement!==$('#mobileDate'))$('#mobileDate').value=MOBILE.date;
+  const first=days.find(e=>e.day.weeks.length);if(first)state.idx=first.day.weeks[0];
+  $('#generationInfoBtn').hidden=true;
+  $('#mobileDayTitle').textContent='W/C '+start.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  $('#mobileDayTitle').setAttribute('aria-label','Choose a week · week commencing '+start.toLocaleDateString('en-GB',{dateStyle:'long'}));
+  if(document.activeElement!==$('#mobileDate'))$('#mobileDate').value=localISO(start);
   $('#mobileWho').textContent=selected?'Change person':'Choose person';
   $('#mobilePersonLabel').textContent=selected||'Choose your name for My rota';
   $('#mobileEveryone').setAttribute('aria-pressed',MOBILE.audience==='everyone');
   $('#mobileMine').setAttribute('aria-pressed',MOBILE.audience!=='everyone');
   $('#mobilePersonal').hidden=!selected;
-  renderWeekStrip();
-  $('#mobileFullWeek').disabled=!day.weeks.length;
-  let html=query?'<p class="filter-status">Filtered by “'+esc(MOBILE.query.trim())+'” · everyone</p>':'';
+  let html=query?'<p class="filter-status">Filtered by “'+esc(MOBILE.query.trim())+'”'+(person?' · '+esc(person):' · everyone')+'</p>':'';
   if(SYNC.on&&!SYNC.bootstrapped)html+='<p class="mobile-status" role="status">'+(SYNC.lastError?'Unable to refresh the rota. Reconnecting…':'Loading the latest rota…')+'</p>';
-  else if(SYNC.lastError)html+='<p class="mobile-status" role="status">Connection interrupted — showing the last loaded rota.</p>';
-  if(day.hidden.length)html+='<div class="mobile-empty"><h2>Rota coming soon</h2><p>The rota for this day has not been published yet.</p></div>';
-  if(day.blocked.length)html+='<div class="mobile-empty"><h2>Separate rota</h2><p>This date is covered by a separate rota. Check with Operations.</p></div>';
-  if(!day.weeks.length){
-    const next=RAW.weeks.flatMap(w=>weekDatesOf(w)).filter(d=>d&&localISO(d)>MOBILE.date).sort((a,b)=>a-b)[0];
-    html+='<div class="mobile-empty"><h2>No rota for this date</h2><p>Choose another date'+(dt.getFullYear()===2026&&dt.getMonth()===11&&dt.getDate()>24?' — the Christmas period uses a separate rota.':'.')+'</p>'+(next?'<button type="button" data-mobile-date="'+localISO(next)+'">Next rota · '+esc(fmtDate(next))+'</button>':'')+'</div>';
-  }
-  if(day.away.length)html+='<section class="mobile-card mobile-away"><h2>'+ (person?'On holiday':'Away · '+day.away.length)+'</h2><p>'+day.away.map(esc).join(', ')+'</p></section>';
-  if(person&&day.away.length&&day.sections.length)html+='<p class="mobile-status">You are also assigned below. Please ask Operations to check this clash.</p>';
-  day.sections.forEach(sec=>{html+='<section class="mobile-card"><h2>'+esc(readableRole(sec.title))+'</h2><ul>'+sec.rows.map(r=>'<li class="mobile-row"'+cellStyle(r.key)+'><span>'+esc(readableRole(r.label))+'</span><strong>'+esc(r.name)+(r.cover?'<small>Cover</small>':'')+'</strong>'+(r.note?'<div class="mobile-note">'+esc(r.note)+'</div>':'')+'</li>').join('')+'</ul></section>';});
-  if(day.weeks.length&&!day.hidden.length&&!day.blocked.length&&!day.sections.length&&!day.away.length&&(!query||!day.gaps.length))html+='<div class="mobile-empty"><h2>'+(query?'No matches on this date':person?'No assignment shown':'No assignments yet')+'</h2><p>'+(query?'Try another role, section or person’s name.':person?'No published assignment is recorded for you on this date.':'No filled positions are recorded for this date.')+'</p></div>';
-  if(day.gaps.length)html+='<details class="mobile-card"'+(query?' open':'')+'><summary>Unfilled roles · '+day.gaps.length+'</summary><ul>'+day.gaps.map(g=>'<li class="mobile-row"><span>'+esc(readableRole(g.section))+'</span><strong>'+esc(readableRole(g.label))+'</strong></li>').join('')+'</ul></details>';
-  day.notes.forEach(n=>{html+='<details class="mobile-card"><summary>Week notes · '+esc(n.week)+'</summary>'+n.notes.map(t=>'<p>'+esc(t)+'</p>').join('')+'</details>';});
+  else if(SYNC.lastError)html+='<p class="mobile-status">Connection interrupted — showing the last loaded rota.</p>';
+  html+=days.map(entry=>mobileDayMarkup(entry,person,query)).join('');
+  const noted=new Set();days.forEach(({day})=>day.notes.forEach(n=>{if(noted.has(n.week))return;noted.add(n.week);html+='<details class="mobile-card"><summary>Week notes · '+esc(n.week)+'</summary>'+n.notes.map(t=>'<p>'+esc(t)+'</p>').join('')+'</details>';}));
   if(SYNC.on&&(!PUBLIC_SUMMARY.data||PUBLIC_SUMMARY.error))html+='<p class="mobile-status">'+(!PUBLIC_SUMMARY.data?'Away totals are loading; the holiday view shows their connection status.':'Away information was last loaded before the connection problem.')+'</p>';
   $('#mobileDayBody').innerHTML=html;
   renderSectionJumps();
 }
-function chooseMobileDate(value){if(!mobileDateValue(value))return;MOBILE.date=value;MOBILE.followToday=value===localISO(new Date());MOBILE.fullWeek=false;renderCurrentView();}
-function moveMobileDay(step){const dt=mobileDateValue(MOBILE.date);dt.setDate(dt.getDate()+step);chooseMobileDate(localISO(dt));}
+function chooseMobileDate(value){if(!mobileDateValue(value))return;MOBILE.date=value;MOBILE.followToday=localISO(mondayOf(mobileDateValue(value)))===localISO(mondayOf(new Date()));renderCurrentView();}
+function moveMobileDay(step){const dt=mondayOf(mobileDateValue(MOBILE.date));dt.setDate(dt.getDate()+step*7);chooseMobileDate(localISO(dt));}
 function selectMobilePerson(name){
   MOBILE.person=allStaff().find(n=>nrm(n)===nrm(name))||'';
   MOBILE.audience=MOBILE.person?'me':'everyone';
@@ -2083,11 +2099,8 @@ $('#mobileClearSearch').addEventListener('click',()=>{MOBILE.query='';$('#mobile
 $('#mobileEveryone').addEventListener('click',()=>{MOBILE.audience='everyone';renderMobileDay();});
 $('#mobilePersonal').addEventListener('click',()=>{if(MOBILE.person)openPersonModal(MOBILE.person);});
 $('#mobileDate').addEventListener('change',e=>{chooseMobileDate(e.target.value);$('#mobileCalendar').hidden=true;$('#mobileDayTitle').setAttribute('aria-expanded','false');});
-$('#mobileToday').addEventListener('click',()=>chooseMobileDate(localISO(new Date())));
 $('#mobilePrev').addEventListener('click',()=>moveMobileDay(-1));$('#mobileNext').addEventListener('click',()=>moveMobileDay(1));
 $('#mobileDayBody').addEventListener('click',e=>{const b=e.target.closest('[data-mobile-date]');if(b)chooseMobileDate(b.dataset.mobileDate);});
-$('#mobileFullWeek').addEventListener('click',()=>{MOBILE.fullWeek=true;render();});
-$('#mobileDailyReturn').addEventListener('click',()=>{MOBILE.fullWeek=false;render();});
 window.matchMedia('(max-width:760px)').addEventListener('change',()=>renderCurrentView());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&useMobileDay())renderMobileDay();});
 setInterval(()=>{if(!document.hidden&&useMobileDay()&&MOBILE.followToday&&MOBILE.date!==localISO(new Date()))renderMobileDay();},60000);
@@ -4252,9 +4265,9 @@ function renderSectionJumps(){
   const nav=$('#sectionJumps');
   if(state.view!=="rota"){nav.hidden=true;nav.innerHTML="";return;}
   const mobile=useMobileDay();
-  const headings=[...document.querySelectorAll(mobile?'#mobileDayBody .mobile-card:not(.mobile-away)>h2':'#grid .card .ct .name')];
+  const headings=[...document.querySelectorAll(mobile?'#mobileDayBody .mobile-day-heading':'#grid .card .ct .name')];
   const buttons=headings.map((heading,i)=>{
-    const card=heading.closest(mobile?'.mobile-card':'.card');
+    const card=heading.closest(mobile?'.mobile-week-day':'.card');
     card.dataset.jumpSection=String(i);
     return '<button type="button" data-jump-section="'+i+'">'+esc(titleCase(heading.textContent.trim()))+'</button>';
   });
@@ -6460,13 +6473,6 @@ function personalRangeItems(items,range,today){
 function weekStripDates(iso){
   const start=mondayOf(mobileDateValue(iso));return Array.from({length:7},(_,i)=>new Date(start.getFullYear(),start.getMonth(),start.getDate()+i));
 }
-function renderWeekStrip(){
-  const today=localISO(new Date());
-  $('#mobileWeekStrip').innerHTML=weekStripDates(MOBILE.date).map(dt=>{
-    const iso=localISO(dt),current=iso===today,selected=iso===MOBILE.date;
-    return '<button type="button" data-strip-date="'+iso+'" aria-label="'+esc(dt.toLocaleDateString('en-GB',{dateStyle:'full'}))+'" aria-pressed="'+selected+'"'+(current?' aria-current="date"':'')+'><span>'+DAYLBL[dt.getDay()].slice(0,2)+'</span><b>'+dt.getDate()+'</b>'+(current?'<i aria-hidden="true"></i>':'')+'</button>';
-  }).join('');
-}
 function openPersonPicker(){
   $('#mobilePersonSearch').value='';renderMobilePeople();$('#mobilePersonModal').classList.add('open');requestAnimationFrame(()=>$('#mobilePersonSearch').focus());
 }
@@ -6507,7 +6513,6 @@ $('#desktopClearSearch').addEventListener('click',clearDesktopSearch);
 $('#desktopFilter').addEventListener('click',e=>{if(e.target.closest('[data-clear-rota-search]'))clearDesktopSearch();});
 $('#mobileMine').addEventListener('click',()=>{if(!MOBILE.person){openPersonPicker();return;}MOBILE.audience='me';renderMobileDay();});
 $('#mobileDayTitle').addEventListener('click',()=>{const el=$('#mobileCalendar');el.hidden=!el.hidden;$('#mobileDayTitle').setAttribute('aria-expanded',!el.hidden);if(!el.hidden){const input=$('#mobileDate');input.focus();try{input.showPicker();}catch(_){}}});
-$('#mobileWeekStrip').addEventListener('click',e=>{const b=e.target.closest('[data-strip-date]');if(b)chooseMobileDate(b.dataset.stripDate);});
 
 $('#personModal').addEventListener('click',e=>{const b=e.target.closest('[data-person-range]');if(!b)return;UI22.personalRange=b.dataset.personRange;openPersonModal(UI22.personalName);$('#personModal .dialogbody').scrollTop=0;});
 document.addEventListener('click',e=>{
@@ -6697,7 +6702,7 @@ function legacyCopy(html){
   s.removeAllRanges(); div.remove();
 }
 function copyEmail(){
-  if(useMobileDay()){flash("Open Full week view to copy a week for email");return;}
+  if(useMobileDay()){flash("Use a desktop to copy a week for email");return;}
   if(state.view!=="rota" || state.templateMode){ flash("Switch to the Rota tab to copy a week for email"); return; }
   const w=week();
   if(w && !isPublic(w.id) && !state.editing && !seeHiddenWeeks()){   // staff can't copy what they can't see
@@ -6721,7 +6726,7 @@ function copyEmail(){
 function preparePrint(){
   const w=week();
   let title=w?w.name:"News rota", sub="";
-  if(useMobileDay()){title=mobileDateValue(MOBILE.date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});sub=MOBILE.query?'Daily search: '+MOBILE.query:MOBILE.person&&MOBILE.audience!=='everyone'?'Personal rota — '+MOBILE.person:'Daily rota';}
+  if(useMobileDay()){title='Week commencing '+mondayOf(mobileDateValue(MOBILE.date)).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});sub=MOBILE.query?'Weekly search: '+MOBILE.query:MOBILE.person&&MOBILE.audience!=='everyone'?'Personal rota — '+MOBILE.person:'Weekly rota';}
   else if(state.view==="heat"){ title="Holiday heat map "+summaryYear(); }
   else if(state.view==="office"){ title="Office occupancy "+summaryYear()+" — "+(state.officeSel||""); }
   else if(state.view==="booth"){ title="Booth usage "+summaryYear()+" — "+(state.boothSel||"")+" · "+(state.boothHalf||"")+" shifts"; }
