@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v26.2 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v26.3 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1472,7 +1472,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v26.2</span>
+  <span class="pill">News Rota v26.3</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -6568,7 +6568,8 @@ function emailHeaderText(txt,bg='#36007d'){
   return `<font color="#ffffff" data-ogac="#ffffff" data-ogsc="#ffffff" data-ogsb="${bg}" style="${style}"><span data-ogsc="#ffffff" data-ogsb="${bg}" style="${style}-webkit-text-fill-color:#ffffff">${esc(txt)}</span></font>`;
 }
 function emailHeadTD(txt){
-  return `<td bgcolor="#36007d" data-ogsc="#ffffff" data-ogsb="#36007d" data-ogab="#36007d" style="${EF}font-size:11px;font-weight:bold;${emailHeaderStyle('#36007d')}padding:5px 8px;border:1px solid #36007d">${emailHeaderText(txt)}</td>`;
+  // No fill or fixed white foreground: let email themes handle this plain header.
+  return `<td style="${EF}font-size:11px;font-weight:bold;color:#1B1621;padding:5px 8px;border:1px solid #dddddd">${esc(txt)}</td>`;
 }
 function buildEmailHTML(){
   const w=week(), d=data();
@@ -6651,7 +6652,7 @@ function buildEmailHTML(){
       if(away.some(a=>a.length)){
         out.push(`<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;margin:0 0 14px">`);
         out.push(`<tr><td colspan="${dts.length+1}" bgcolor="#009392" data-ogsc="#ffffff" data-ogsb="#009392" data-ogab="#009392" style="${EF}font-size:12px;font-weight:bold;letter-spacing:1px;${emailHeaderStyle('#009392')}padding:7px 9px;border:1px solid #009392">${emailHeaderText("AWAY THIS WEEK","#009392")}</td></tr>`);
-        out.push(headRow.replace(">Role</span>",">&nbsp;</span>"));
+        out.push(headRow.replace(">Role<",">&nbsp;<"));
         out.push(`<tr>`+emailRoleTD("On holiday")+away.map(a=>
           `<td style="${EF}font-size:12px;padding:5px 8px;border:1px solid #dddddd;color:#1B1621">${a.length?a.map(esc).join("<br>"):"&mdash;"}</td>`).join("")+`</tr>`);
         out.push(`</table>`);
