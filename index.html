@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v26.3 — safe shared editing, accessible responsive UI and all-week public totals. -->
+<!-- News Rota v27 — safe shared editing, accessible responsive UI and all-week public totals. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -676,7 +676,14 @@ body.editing::before{content:"EDIT MODE";position:fixed;top:0;left:50%;transform
 .editadmin.tpl:hover{border-color:var(--mag);color:var(--mag)}
 
 /* ============ ROLES: who sees what ============ */
-/* gated controls are hidden until a role class on <body> reveals them */
+/* gated controls are hidden until a role class on <body class="access-locked">
+<section id="staffPinGate" aria-labelledby="staffPinHeading">
+ <div class="rolecard"><div class="rgey">Bauer Media Audio</div><div class="rgwm">News Rota</div>
+ <h1 id="staffPinHeading">Enter Staff PIN</h1><p>Enter your four-digit team PIN to view the rota.</p>
+ <form id="staffPinForm"><label for="staffPinInput">Staff PIN</label><input id="staffPinInput" type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off" required aria-describedby="staffPinError"><p id="staffPinError" role="status" aria-live="polite"></p><button id="staffPinSubmit" type="submit">View rota</button></form>
+ <button id="staffPinProfiles" type="button">Operations / Editor login</button>
+ </div>
+</section> reveals them */
 #tabs .tab[data-view="admin"],#tabs .tab[data-view="pers"]{display:none}
 body.role-lead #tabs .tab[data-view="admin"],
 body.role-ops #tabs .tab[data-view="admin"],
@@ -1298,9 +1305,37 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 .mobile-week-day .mobile-empty{padding:12px;text-align:left}
 @media print{.mobile-week-day{break-inside:auto}.mobile-day-heading{break-after:avoid}}
 
+
+/* Staff PIN gate starts locked before scripts load, including on phones. */
+#staffPinGate{display:none;min-height:100vh;padding:32px 16px;align-items:center;justify-content:center;background:var(--bg)}
+#staffPinGate .rolecard{max-width:440px;width:100%;margin:auto}
+#staffPinGate h1{font-size:24px}#staffPinGate label{display:block;margin-bottom:8px}
+#staffPinGate input,#accessView input{font:inherit;min-height:48px;border:1px solid var(--line);border-radius:9px;padding:10px;width:100%;box-sizing:border-box}
+#staffPinInput{font-size:24px!important;letter-spacing:12px;text-align:center}
+#staffPinGate button,#accessView button{min-height:44px;padding:10px 16px;border-radius:10px;font:inherit;cursor:pointer}
+#staffPinSubmit,#saveStaffPin{background:var(--ink);color:#fff;border:0;width:100%}
+#staffPinProfiles{margin-top:18px;background:none;color:var(--ink);border:1px solid var(--line);width:100%}
+#staffPinError,#accessMessage{min-height:24px;line-height:1.4;color:var(--ink)}
+#accessView{display:none;max-width:540px;margin:24px auto;padding:20px;background:white;border:1px solid var(--line);border-radius:14px}
+#accessView label{display:block;margin:16px 0 8px}#accessView p{line-height:1.5}
+#tabs .tab[data-view="access"]{display:none}body.role-ops #tabs .tab[data-view="access"]{display:block}
+body.view-access #accessView{display:block}body.view-access>.meta,body.view-access>.wrap,body.view-access>.foot,body.view-access .search{display:none!important}
+body.access-locked>*:not(#staffPinGate):not(#roleGate){display:none!important}
+body.access-locked #staffPinGate{display:flex!important}
+body.access-locked #roleGate:not(.open){display:none!important}
+@media(max-width:760px){#staffPinProfiles{display:none}body.access-locked #roleGate{display:none!important}}
+@media print{body.access-locked #staffPinGate{display:none!important}}
+
 </style>
 </head>
-<body>
+<body class="access-locked">
+<section id="staffPinGate" aria-labelledby="staffPinHeading">
+ <div class="rolecard"><div class="rgey">Bauer Media Audio</div><div class="rgwm">News Rota</div>
+ <h1 id="staffPinHeading">Enter Staff PIN</h1><p>Enter your four-digit team PIN to view the rota.</p>
+ <form id="staffPinForm"><label for="staffPinInput">Staff PIN</label><input id="staffPinInput" type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off" required aria-describedby="staffPinError"><p id="staffPinError" role="status" aria-live="polite"></p><button id="staffPinSubmit" type="submit">View rota</button></form>
+ <button id="staffPinProfiles" type="button">Operations / Editor login</button>
+ </div>
+</section>
 <section id="phoneAccessPending" hidden role="status"><h2>Continue on desktop</h2><p id="phoneAccessMessage">Phone mode is for Staff viewing. Return to desktop to finish your editing session.</p></section>
 
 <header class="bar">
@@ -1318,6 +1353,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
     <button class="tab" data-view="parking">Parking</button>
     <button class="tab" data-view="pers">Personnel</button>
     <button class="tab" data-view="admin">Admin</button>
+    <button class="tab" data-view="access">Access</button>
   </div>
   </div>
   <div class="spacer"></div>
@@ -1382,12 +1418,13 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
     <div class="rgey">Bauer Media Audio</div>
     <div class="rgwm"><span class="tab2"></span>News Rota</div>
     <h2>Change access profile</h2>
-    <p class="rgsub">Staff can view published rotas and daily totals. Enter your team password for Editor or Operations access.</p>
+    <p class="rgsub">Staff access requires the four-digit team PIN. Editor and Operations use their existing passwords.</p>
     <div class="roleopts" id="roleOpts">
-      <button data-role="staff"><b>Staff</b><br><span>Published rota and everyday viewing tools</span></button>
+      <button data-role="staff"><b>Staff</b><br><span>Four-digit PIN required</span></button>
       <button data-role="lead"><b>Editor / senior leadership</b><br><span>Password required</span></button>
       <button data-role="ops"><b>Operations</b><br><span>Password required &mdash; includes editing</span></button>
     </div>
+    <button id="roleLogout" type="button" class="ghostbtn">Sign out</button>
     <div class="rolepass" id="rolePass">
       <h3 id="rolePassTitle">Enter password</h3>
       <p id="rolePassSub">Enter the password for your access level.</p>
@@ -1434,7 +1471,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
   <div class="mobile-person"><div class="audience-switch"><button id="mobileEveryone" type="button">Everyone</button><button id="mobileMine" type="button">My rota</button></div><div class="person-choice"><span id="mobilePersonLabel"></span><button id="mobileWho" type="button" aria-haspopup="dialog">Choose person</button></div></div>
   <div class="mobile-search"><input id="mobileSearch" type="search" placeholder="Find a role or person…" aria-label="Search this week’s roles or people" autocomplete="off"><button id="mobileClearSearch" type="button" hidden>Clear</button></div>
   <div id="mobileDayBody" aria-live="polite"></div>
-  <div class="mobile-actions"><button id="mobilePersonal" type="button" hidden>Full personal rota</button></div>
+  <div class="mobile-actions"><button id="mobilePersonal" type="button" hidden>Full personal rota</button><button id="mobileLogout" type="button">Sign out</button></div>
 </section>
 
 <div class="modal" id="mobilePersonModal"><div class="modalcard sm">
@@ -1449,6 +1486,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 
 <div id="heatView"></div>
 <div id="adminView"></div>
+<div id="accessView"></div>
 
 <div id="officeView">
   <h2 class="heathead">Office occupancy</h2>
@@ -1472,7 +1510,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v26.3</span>
+  <span class="pill">News Rota v27</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1651,7 +1689,7 @@ body.view-parking .meta,body.view-parking .wrap,body.view-parking .foot,body.vie
 </div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
- <div class="setup-intro"><p><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, use the arrows to move between full weeks or tap the W/C heading to choose a week. Scroll down for Monday to Sunday. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Manchester shows the bay diagram when you select a date: the calendar is green when everyone fits, orange when the emergency corner is used, and flashing red when anyone is unable to park. Other offices turn red at seven and flash at eight. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
+ <div class="setup-intro"><p><b>Staff access:</b> enter the four-digit PIN supplied by Operations. Operations can set or change it in the Access tab; changing it signs out existing Staff sessions. Phones remain Staff-only.<br><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, use the arrows to move between full weeks or tap the W/C heading to choose a week. Scroll down for Monday to Sunday. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Manchester shows the bay diagram when you select a date: the calendar is green when everyone fits, orange when the emergency corner is used, and flashing red when anyone is unable to park. Other offices turn red at seven and flash at eight. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
 </div></div>
 <script>
@@ -1670,11 +1708,13 @@ const YEAR = 2027;                     // default template year and fixed rotati
 const LSKEY = "bauer_news_rota_v5";
 
 const clone = o => JSON.parse(JSON.stringify(o));
-function load(){ try{ return JSON.parse(localStorage.getItem(LSKEY)) || {overrides:{}}; }catch(e){ return {overrides:{}}; } }
+function load(){ return {overrides:{}}; } // Live data is loaded only after server-authorised login.
 /* ---- saving (the sync engine is set up further down, once the DOM helpers exist) ---- */
 let saveBroken=false;
 var SYNC=null;
 function persistLocal(quiet){
+  if(!SYNC || !SYNC.accessGranted) return true;
+  if(!SYNC.canEdit) return true; // Staff data is kept in memory, never cached on disk.
   try{ localStorage.setItem(LSKEY, JSON.stringify(store)); saveBroken=false; return true; }
   catch(e){
     if(!saveBroken && !quiet){ saveBroken=true;
@@ -1865,6 +1905,7 @@ function renderCurrentView(){
   syncMobileLayout();
   if(state.view==="heat") renderHeat();
   else if(state.view==="admin") renderAdmin();
+  else if(state.view==="access") renderAccess();
   else if(state.view==="office") renderOfficeModal();
   else if(state.view==="parking") renderParking();
   else if(state.view==="booth") renderBoothModal();
@@ -4288,15 +4329,18 @@ function scrollToToday(sel){
   requestAnimationFrame(()=>{ const t=document.querySelector(sel); if(t&&t.scrollIntoView) try{ t.scrollIntoView({block:"center"}); }catch(_){} });
 }
 function setView(v){
+  if(v==="access" && (!SYNC.accessGranted || SYNC.serverRole!=="ops" || isPhone()))return;
   cancelFillDrag();
   if(state.templateMode){ state.templateMode=false; document.body.classList.remove("template"); }
   state.view=v;
+  if(v==="access")$("#accessView").innerHTML="";
   document.body.classList.toggle("view-heat",v==="heat");
   document.body.classList.toggle("view-admin",v==="admin");
   document.body.classList.toggle("view-office",v==="office");
   document.body.classList.toggle("view-parking",v==="parking");
   document.body.classList.toggle("view-booth",v==="booth");
   document.body.classList.toggle("view-pers",v==="pers");
+  document.body.classList.toggle("view-access",v==="access");
   document.querySelectorAll("#tabs .tab").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
   if(v==="parking" && !state.parkingSel) state.parkingSel=OFFICES[0];
   if(v==="office" && !state.officeSel) state.officeSel=OFFICES[0];
@@ -4743,10 +4787,12 @@ function saveParkingMove(name,target,version){
 function saveParkingArrangement(date,plan){
   PARKING_PLAN.selected=null;PARKING_PLAN.message='';
   if(!SYNC.on){if(plan===null)delete store.parkingPlans[date];else store.parkingPlans[date]=plan;persistLocal();if(state.view==='parking')renderParking();renderParkingPlan();return true;}
-  const epoch=SYNC.epoch;PARKING_PLAN.saving=true;renderParkingPlan();
+  const epoch=SYNC.epoch,generation=SYNC.generation,token=SYNC.authToken;PARKING_PLAN.saving=true;renderParkingPlan();
   gasCall('saveParkingPlan',[date,plan,SYNC.keyRev['settings:parkingPlans']||0,PUBLIC_SUMMARY.rev,epoch],res=>{
+    if(generation!==SYNC.generation||token!==SYNC.authToken)return;
     PARKING_PLAN.saving=false;
     if(epoch!==SYNC.epoch)return;
+    if(res?.error==='access-required'){lockRota('Your session has ended. Enter the current Staff PIN.');return;}
     if(!res?.ok){
       PARKING_PLAN.message=['staff-priority','parking-priority'].includes(res?.error)?'Parking priority is Breakfast first, then other staff, then remaining freelancers. Please choose another swap.':'The parking or rota information changed. Your move was not saved; refresh the plan and try again.';
       if(res?.error==='epoch-mismatch'){handleEpochMismatch(res.epoch);return;}
@@ -4755,7 +4801,7 @@ function saveParkingArrangement(date,plan){
     applyServerData({'settings:parkingPlans':{json:JSON.stringify(res.plans),rev:res.rev}},false);
     persistLocal();PARKING_PLAN.message='Parking saved.';
     if(state.view==='parking')renderParking();renderParkingPlan();pollChanges();refreshPublicSummary();
-  },()=>{PARKING_PLAN.saving=false;PARKING_PLAN.message='Parking could not be saved. Check your connection and make sure upgrade_parking_priority.sql has been installed, then try again.';renderParkingPlan();});
+  },()=>{if(generation!==SYNC.generation||token!==SYNC.authToken)return;PARKING_PLAN.saving=false;PARKING_PLAN.message='Parking could not be saved. Check your connection and ask Operations to check the v27 SQL upgrade.';renderParkingPlan();});
   return true;
 }
 
@@ -5767,7 +5813,7 @@ function loadClientId(){
 }
 
 SYNC = {
-  on:false, canEdit:false, email:"", serverRole:null, authReason:"", authToken:loadAccessToken(), clientId:loadClientId(),
+  on:false, accessGranted:false, canEdit:false, email:"", serverRole:null, authReason:"", authToken:loadAccessToken(), clientId:loadClientId(),
   epoch:Number(store.resetEpoch)||0, rev:0,
   keyRev:{}, shadow:null,          // shadow = last state known to match the server
   saving:false, pending:false, dirty:false, refreshing:false,
@@ -5868,7 +5914,7 @@ function applyServerStatus(res){
   if(res.epoch!==undefined) SYNC.epoch=Number(res.epoch)||0;
   if(res.lease!==undefined) SYNC.lease=res.lease||null;
   // If a stored elevated token has expired or was invalidated by a password
-  // change, drop it immediately. Staff needs no token.
+  // change, drop it immediately. Staff also requires a valid PIN session.
   if(SYNC.authToken && res.authValid===false && (!nr || nr==="staff")){
     SYNC.authToken=""; saveAccessToken("");
   }
@@ -5969,6 +6015,7 @@ function pollChanges(){
     SYNC.polling=false;
     if(!res){ SYNC.lastError="unknown"; }
     else if(!res.ok){
+      if(res.error==="access-required"){lockRota("Your session has ended. Enter the current Staff PIN.");return;}
       if(res.error==="epoch-mismatch"){ handleEpochMismatch(res.epoch); return; }
       if(res.error==="not-editor"){ handlePermanentSaveRejection(res); return; }
       SYNC.lastError=res.error||"unknown";
@@ -6057,8 +6104,11 @@ function hideBackendBanner(){
   if(el) el.style.display="none";
 }
 const RPC_MAP={
-  saveParkingPlan:{name:"rota_save_parking_plan",params:a=>({p_date:a[0],p_plan:a[1],p_base_rev:Number(a[2]),p_summary_rev:Number(a[3]),p_client_epoch:Number(a[4])})},
-  getPublicSummary:{name:"rota_public_summary",params:a=>({p_since_rev:Number(a[0]??-1),p_client_epoch:Number(a[1]??-1)})},
+  saveParkingPlan:{name:"rota_save_parking_plan",params:a=>({p_date:a[0],p_plan:a[1],p_base_rev:Number(a[2]),p_summary_rev:Number(a[3]),p_client_epoch:Number(a[4]),p_token:SYNC.authToken||""})},
+  getPublicSummary:{name:"rota_public_summary",params:a=>({p_since_rev:Number(a[0]??-1),p_client_epoch:Number(a[1]??-1),p_token:SYNC.authToken||""})},
+  getAccessSettings:{name:"rota_access_settings",params:a=>({p_token:a[0]||""})},
+  setStaffPin:{name:"rota_set_staff_pin",params:a=>({p_pin:a[0],p_expected_version:a[1],p_token:a[2]||""})},
+  logout:{name:"rota_logout",params:a=>({p_token:a[0]||""})},
   getBootstrap:{name:"rota_get_bootstrap",params:a=>({p_token:a[0]||""})},
   getChanges:{name:"rota_get_changes",params:a=>({p_since_rev:Number(a[0]||0),p_client_epoch:Number(a[1]||0),p_token:a[2]||""})},
   verifyAccessPassword:{name:"rota_verify_access_password",params:a=>({p_role:a[0]||"",p_password:a[1]||"",p_client_id:a[2]||""})},
@@ -6191,13 +6241,19 @@ window.addEventListener("beforeunload",e=>{
 });
 
 function processBootstrap(res, refresh, message){
+  if(res?.error==='access-required'){lockRota('Enter the Staff PIN, or choose Operations / Editor login.');return;}
+  if(res?.ok && (!res.staffPinRequired || !res.authValid)){
+    lockRota('The Staff PIN database upgrade is required. Ask Operations to run the v27 SQL.');return;
+  }
   if(!res || !res.ok){
     if(res&&res.error==="epoch-mismatch"){ handleEpochMismatch(res.epoch); return; }
-    SYNC.refreshing=false; SYNC.lastError=(res&&res.error)||"offline"; updateSaveUI();
+    SYNC.refreshing=false; SYNC.lastError=(res&&res.error)||"offline";
+    if(!SYNC.accessGranted)$("#staffPinError").textContent="Unable to connect. Check your connection and try again."; updateSaveUI();
     showBackendBanner("Unable to load the live rota. We will retry automatically. Open connection details for support information.");
     SYNC.pollT=setTimeout(()=>refreshBootstrap(message,refresh),15000); return;
   }
-  hideBackendBanner(); SYNC.bootstrapped=true;
+  hideBackendBanner(); SYNC.bootstrapped=true;SYNC.accessGranted=true;
+  document.body.classList.remove("access-locked");
   const serverEpoch=Number(res.epoch)||0;
   if(serverEpoch!==Number(store.resetEpoch||0)){ handleEpochMismatch(serverEpoch); return; }
   applyServerStatus(res);
@@ -6217,7 +6273,9 @@ function processBootstrap(res, refresh, message){
   SYNC.refreshing=false; SYNC.lastError="";
   if(SYNC.serverRole && typeof applyRole==="function") applyRole(); else renderCurrentView();
   refreshPublicSummary();
-  if(publishEmpty) scheduleFlush();
+  // Defaults added during bootstrap are real pending changes for Operations.
+  // Schedule them so a clean login cannot leave sign-out waiting indefinitely.
+  if(SYNC.canEdit && (publishEmpty || syncDiff().length)){SYNC.dirty=true;scheduleFlush();}
   if(message) alert(message);
   updateSaveUI();
   clearTimeout(SYNC.pollT); SYNC.pollT=setTimeout(pollChanges, state.editing?SYNC_POLL_EDIT:SYNC_POLL_VIEW);
@@ -6267,12 +6325,13 @@ function summaryNotice(){
     (SYNC.canEdit&&SYNC.dirty?' Your pending edits will be included after they save.':'')+'</p>';
 }
 function refreshPublicSummary(){
-  if(!SYNC.on||PUBLIC_SUMMARY.loading)return;
+  if(!SYNC.on||!SYNC.accessGranted||PUBLIC_SUMMARY.loading)return;
   PUBLIC_SUMMARY.loading=true;
   const generation=SYNC.generation;
   gasCall('getPublicSummary',[PUBLIC_SUMMARY.data?.namesIncluded&&PUBLIC_SUMMARY.data?.boothsIncluded&&PUBLIC_SUMMARY.data?.parkingIncluded&&PUBLIC_SUMMARY.data?.parkingPlanIncluded&&PUBLIC_SUMMARY.data?.parkingStaffEditing&&PUBLIC_SUMMARY.data?.parkingPriorityVersion===2?PUBLIC_SUMMARY.rev:-1,PUBLIC_SUMMARY.epoch],res=>{
     PUBLIC_SUMMARY.loading=false;
     if(generation!==SYNC.generation)return;
+    if(res?.error==='access-required'){lockRota('Your session has ended. Enter the current Staff PIN.');return;}
     if(!res||!res.ok){PUBLIC_SUMMARY.error='unavailable';refreshSummaryView();return;}
     if(Number(res.epoch)!==Number(SYNC.epoch)){PUBLIC_SUMMARY.data=null;PUBLIC_SUMMARY.rev=-1;PUBLIC_SUMMARY.epoch=-1;PUBLIC_SUMMARY.error='reset';refreshSummaryView();return;}
     if(Number(res.rev)<PUBLIC_SUMMARY.rev)return;
@@ -6296,9 +6355,8 @@ initHistory();
 initSync();
 
 /* ---------- roles: staff / senior leadership / operations ----------
-   In the shared Supabase version, Staff is open and the two elevated views are
-   authorised by a server-verified password token. No user account is required.
-   Standalone copies keep the old local view switch for testing only. */
+   All profiles require server verification: Staff uses the shared four-digit PIN;
+   Editor and Operations retain their passwords. No individual account is required. */
 const ROLEKEY="bauer_news_rota_role";
 const ROLES={staff:"Staff", lead:"Editor / senior leadership", ops:"Operations"};
 let rolePassTarget=null;
@@ -6318,7 +6376,7 @@ function applyRole(){
   const cl=$("#roleChipLbl"); if(cl) cl.textContent = ROLES[r];
   if(r!=="ops" && state.editing){ setEditing(false); releaseLease(); }
   if(r==="staff" && state.view==="admin") setView("rota");
-  if(r!=="ops" && state.view==="pers") setView("rota");
+  if(r!=="ops" && ["pers","access"].includes(state.view)) setView("rota");
   buildWeekSel();
   renderCurrentView();
 }
@@ -6361,20 +6419,11 @@ function showRolePassword(role){
 
 function switchToStaff(){
   if(SYNC.canEdit && (SYNC.dirty||SYNC.saving||syncDiff().length)){
-    flash("Wait for your Operations changes to finish saving before switching access");
-    return;
+    flash("Wait for your Operations changes to finish saving before switching access");return;
   }
-  if(state.editing){ setEditing(false); releaseLease(); }
-  closeRestrictedViews();
-  SYNC.authToken=""; saveAccessToken("");
-  if(SYNC.on){
-    SYNC.serverRole="staff"; SYNC.canEdit=false;
-  }
-  state.role="staff";
-  try{ localStorage.setItem(ROLEKEY,state.role); }catch(_){}
-  closeRoleGate(); applyRole();
-  if(SYNC.on) refreshBootstrap(null,true);
-  flash("Viewing as Staff");
+  const token=SYNC.authToken;
+  lockRota('Enter the four-digit Staff PIN.');
+  if(token&&SYNC.on)gasCall('logout',[token],()=>{},()=>{});
 }
 
 function submitRolePassword(){
@@ -6385,7 +6434,9 @@ function submitRolePassword(){
   if(!pw){ err.textContent="Enter the password."; if(inp) inp.focus(); return; }
   if(!(SYNC&&SYNC.on)){ err.textContent="Password checking is only available in the shared rota."; return; }
   btn.disabled=true; err.textContent="Checking…";
+  clearTimeout(SYNC.pollT);SYNC.refreshing=false;const loginGeneration=++SYNC.generation;
   gasCall("verifyAccessPassword",[role,pw,SYNC.clientId],res=>{
+    if(loginGeneration!==SYNC.generation)return;
     btn.disabled=false;
     if(isPhone()){closeRoleGate();enforcePhoneStaff();return;}
     if(!res || !res.ok || !res.token){
@@ -6397,6 +6448,7 @@ function submitRolePassword(){
       if(inp){ inp.select(); inp.focus(); }
       return;
     }
+    if(!res.staffPinRequired){err.textContent="Install the v27 Staff PIN SQL upgrade before logging in.";return;}
     // If leaving an active Operations editing session, release its lease using
     // the OLD token before replacing it with the newly authorised role.
     if(SYNC.canEdit && (SYNC.dirty||SYNC.saving||syncDiff().length)){
@@ -6435,6 +6487,7 @@ $("#roleChip").addEventListener("click",()=>openRoleGate());
 document.addEventListener('keydown',e=>{if(document.body.classList.contains('phone-access-pending')){e.preventDefault();e.stopImmediatePropagation();}},true);
 var phoneAccessBusy=false;
 function enforcePhoneStaff(){
+  if(!requireRotaAccess())return false;
   const panel=$('#phoneAccessPending');
   if(!isPhone()){document.body.classList.remove('phone-access-pending');if(panel)panel.hidden=true;return true;}
   if(!SYNC.bootstrapped&&!SYNC.authToken){state.role='staff';SYNC.serverRole='staff';SYNC.canEdit=false;state.editing=false;}
@@ -6461,6 +6514,85 @@ function enforcePhoneStaff(){
     return false;
   }finally{phoneAccessBusy=false;}
 }
+
+
+function requireRotaAccess(){return !!(SYNC && SYNC.accessGranted);}
+function lockRota(message){
+  document.body.classList.add('access-locked');document.body.classList.remove('phone-access-pending');
+  if(!SYNC)return;
+  // Keep unsaved Operations work in its existing local recovery cache before clearing memory.
+  if(SYNC.canEdit && (SYNC.dirty||SYNC.saving))persistLocal(true);
+  clearSyncTimers();SYNC.generation++;SYNC.accessGranted=false;SYNC.authToken='';saveAccessToken('');
+  SYNC.serverRole='staff';SYNC.canEdit=false;SYNC.bootstrapped=false;SYNC.refreshing=false;SYNC.polling=false;
+  SYNC.saving=false;SYNC.pending=false;SYNC.dirty=false;SYNC.conflict=false;
+  state.role='staff';state.editing=false;state.templateMode=false;state.view='rota';
+  closeRestrictedViews();closeRoleGate();cancelParkingDrag();PARKING_PLAN.saving=false;PARKING_PLAN.date=null;
+  document.querySelectorAll('.modal.open').forEach(el=>el.classList.remove('open'));
+  resetStoreForServer(SYNC.epoch);ensureStoreDefaults();clearRoleCache();SYNC.keyRev={};SYNC.shadow={};initHistory();
+  if(typeof PUBLIC_SUMMARY!=='undefined'&&PUBLIC_SUMMARY){PUBLIC_SUMMARY.data=null;PUBLIC_SUMMARY.rev=-1;PUBLIC_SUMMARY.epoch=-1;PUBLIC_SUMMARY.loading=false;}
+  ['#grid','#mobileDayBody','#heatView','#adminView','#accessView','#officeBody','#boothBody','#parkingBody','#personBody','#staffList','#staffCount','#staffOptions','#roleOptions','#mobilePersonList','#fixedList','#ruleList','#rotList'].forEach(sel=>{const el=$(sel);if(el)el.innerHTML='';});
+  ['#pEditName','#pEditAllow','#staffAddInput','#search','#mobileSearch'].forEach(sel=>{const el=$(sel);if(el)el.value='';});state.q='';MOBILE.query='';
+  document.body.classList.remove('role-ops','role-lead','view-access','view-heat','view-admin','view-office','view-booth','view-parking','view-pers','editing','template');document.body.classList.add('role-staff');
+  $('#staffPinInput').value='';$('#staffPinSubmit').disabled=false;$('#staffPinError').textContent=message||'';
+  requestAnimationFrame(()=>$('#staffPinInput').focus());
+}
+function submitStaffPin(e){
+  e.preventDefault();const input=$('#staffPinInput'),pin=input.value,err=$('#staffPinError'),button=$('#staffPinSubmit');
+  if(!/^[0-9]{4}$/.test(pin)){err.textContent='Enter exactly four digits.';input.focus();return;}
+  if(!SYNC.on){err.textContent='The shared rota is unavailable. Try again when the connection returns.';return;}
+  // Cancel outstanding bootstrap responses before starting a new login.
+  clearTimeout(SYNC.pollT);SYNC.refreshing=false;const generation=++SYNC.generation;
+  button.disabled=true;err.textContent='Checking…';
+  gasCall('verifyAccessPassword',['staff',pin,SYNC.clientId],res=>{
+    if(generation!==SYNC.generation)return;
+    button.disabled=false;input.value='';
+    if(!res?.ok||!res.token){
+      err.textContent=res?.error==='pin-not-set'?'Staff access is not set up yet. Ask Operations to set the PIN in Access.':res?.error==='wrong-pin'?'That PIN is not correct.':res?.error==='rate-limited'?'Too many incorrect attempts. Try again in 15 minutes, or ask Operations to reset Staff access.':'Unable to check the PIN. Ask Operations to check the v27 database upgrade.';input.focus();return;
+    }
+    if(!res.staffPinRequired||res.role!=='staff'){err.textContent='The Staff PIN database upgrade is required.';return;}
+    SYNC.authToken=res.token;saveAccessToken(res.token);applyServerStatus(res);err.textContent='Loading rota…';refreshBootstrap(null,true);
+  },()=>{if(generation!==SYNC.generation)return;button.disabled=false;input.value='';err.textContent='Unable to connect. Please try again.';});
+}
+function signOutRota(){
+  if(SYNC.canEdit&&(SYNC.dirty||SYNC.saving||syncDiff().length)){flash('Wait for your changes to finish saving before signing out.');return;}
+  const token=SYNC.authToken;lockRota('You have signed out.');if(token&&SYNC.on)gasCall('logout',[token],()=>{},()=>{});
+}
+function renderAccess(){
+  if(!SYNC.accessGranted||SYNC.serverRole!=='ops'||isPhone())return;
+  const root=$('#accessView');if(root.querySelector('#staffPinSettings'))return;
+  root.innerHTML='<h1>Access</h1><p>Manage the shared four-digit Staff PIN. Editor and Operations passwords stay the same.</p><p id="staffPinStatus">Loading access settings…</p><form id="staffPinSettings"><label for="newStaffPin">New Staff PIN</label><input id="newStaffPin" type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="new-password" required><label for="confirmStaffPin">Confirm PIN</label><input id="confirmStaffPin" type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="new-password" required><p>Changing the PIN signs out all Staff sessions and clears failed-attempt limits. Give the new PIN to your team.</p><button id="saveStaffPin" type="submit" disabled>Save Staff PIN</button><p id="accessMessage" role="status" aria-live="polite"></p></form>';
+  root.querySelector('form').addEventListener('submit',saveStaffPin);
+  loadAccessSettings();
+}
+function loadAccessSettings(){
+  const token=SYNC.authToken,generation=SYNC.generation;
+  gasCall('getAccessSettings',[token],res=>{
+    if(token!==SYNC.authToken||generation!==SYNC.generation)return;
+    if(!res?.ok){$('#accessMessage').textContent='Unable to load Access. Check the v27 SQL upgrade and your Operations session.';return;}
+    $('#staffPinSettings').dataset.version=res.version||'';
+    $('#staffPinStatus').textContent=res.pinSet?'Staff PIN is set. You can replace it below.':'No Staff PIN is set. Staff cannot open the rota until you set one.';
+    $('#saveStaffPin').disabled=false;
+  },()=>{if(token===SYNC.authToken&&generation===SYNC.generation)$('#accessMessage').textContent='Unable to connect. Reopen Access to retry.';});
+}
+function saveStaffPin(e){
+  e.preventDefault();if(SYNC.serverRole!=='ops'||!SYNC.accessGranted)return;
+  const pin=$('#newStaffPin').value,confirmation=$('#confirmStaffPin').value,message=$('#accessMessage'),button=$('#saveStaffPin');
+  if(!/^[0-9]{4}$/.test(pin)){message.textContent='Enter exactly four digits.';return;}
+  if(pin!==confirmation){message.textContent='The two PINs do not match.';return;}
+  const token=SYNC.authToken,generation=SYNC.generation,version=$('#staffPinSettings').dataset.version;
+  button.disabled=true;message.textContent='Saving…';
+  gasCall('setStaffPin',[pin,version,token],res=>{
+    if(token!==SYNC.authToken||generation!==SYNC.generation)return;
+    $('#newStaffPin').value='';$('#confirmStaffPin').value='';button.disabled=false;
+    if(!res?.ok){message.textContent=res?.error==='conflict'?'Another Operations user changed the PIN. Settings refreshed; enter your new PIN again.':'PIN not saved. Check your Operations session and connection.';loadAccessSettings();return;}
+    $('#staffPinSettings').dataset.version=res.version;$('#staffPinStatus').textContent='Staff PIN is set.';
+    message.textContent='Staff PIN saved. Existing Staff sessions have ended.';
+  },()=>{if(token!==SYNC.authToken||generation!==SYNC.generation)return;button.disabled=false;$('#newStaffPin').value='';$('#confirmStaffPin').value='';message.textContent='Could not confirm the save. Reloading Access status before you try again.';loadAccessSettings();});
+}
+$('#staffPinForm').addEventListener('submit',submitStaffPin);
+$('#staffPinProfiles').addEventListener('click',()=>openRoleGate());
+$('#roleLogout').addEventListener('click',signOutRota);
+$('#mobileLogout').addEventListener('click',signOutRota);
 
 function isPhone(){return window.matchMedia('(max-width:760px)').matches;}
 function readableRole(text){
@@ -6533,7 +6665,7 @@ window.addEventListener('resize',updateSectionPosition,{passive:true});
 // starting. Until the server validates a password token, render as Staff.
 state.role="staff";
 applyRole();
-// The profile dialog opens only when the user selects the top-right access button.
+// The Staff PIN gate is shown until a server-verified login completes.
 
 /* ---- Copy for email ----
    Builds the current week as an email-safe table (plain <table>, every style
