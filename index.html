@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v28 — monthly personal cards on mobile, with published weekend duties. -->
+<!-- News Rota v29 — mobile Who’s on with group and role browsing. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1353,11 +1353,37 @@ body.access-locked #roleGate:not(.open){display:none!important}
 @media(max-width:760px){
  body:not(.editing) .bar .rota-nav,body:not(.editing) .bar .tabs{display:none!important}
  body:not(.editing) .bar{min-height:60px}.mobile-toolbar{position:sticky;top:var(--mobile-bar-height,60px);z-index:45}
- #mobileAppNav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;z-index:65;background:var(--ink);padding:7px 10px calc(7px + env(safe-area-inset-bottom));gap:6px;border-top:1px solid var(--chrome-line)}
+ #mobileAppNav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;z-index:65;background:var(--ink);padding:7px 10px calc(7px + env(safe-area-inset-bottom));gap:6px;border-top:1px solid var(--chrome-line)}
  #mobileAppNav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:50px;border:0;border-radius:10px;background:transparent;color:#fff;font-family:inherit;font-size:11px;font-weight:600;padding:6px}#mobileAppNav button[aria-current="page"]{background:var(--ink-3);box-shadow:inset 0 -3px 0 var(--onchrome)}
  body:not(.role-staff) #mobileAppNav{display:none}#mobileWorkplaceModal{align-items:flex-end;padding:0}#mobileWorkplaceModal .modalcard{width:100%;max-width:100%;border-radius:20px 20px 0 0;padding-bottom:env(safe-area-inset-bottom)}
 }
 @media print{#mobileAppNav,.mobile-toolbar{display:none!important}.mobile-person-week{break-inside:auto}.mobile-person-week h2{break-after:avoid}.mobile-person-day{break-inside:avoid}}
+/* Who's on is a local phone view; it never changes the selected personal month. */
+#mobileRolesView{display:none;max-width:760px;margin:0 auto;padding:16px 14px calc(92px + env(safe-area-inset-bottom))}
+#mobileRolesView[hidden],#mobileRolesView [hidden],body.access-locked #mobileRolesView{display:none!important}
+#mobileRolesView h1{font-size:26px;line-height:1.2;margin:0 0 5px;color:var(--text)}
+.mobile-roles-intro{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 16px}
+.mobile-roles-date{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px;align-items:center}
+#mobileRolesView button{min-height:44px;font:inherit;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);padding:9px 12px}
+#mobileRolesView button:focus-visible,#mobileRolesView input:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+#mobileRolesView .mobile-role-arrow{font-size:26px;padding:0}
+#mobileRolesView #mobileRolesDate{width:100%;min-width:0;min-height:44px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--text);padding:8px;font:inherit;font-size:16px;text-align:center}
+.mobile-roles-dayline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:7px 0 14px;font-size:13px;color:var(--muted)}
+#mobileRolesView #mobileRolesToday{border:0;background:var(--mag-wash);min-height:44px;font-weight:650}
+#mobileRolesToday[aria-pressed="true"]{background:var(--teal-wash)!important;color:var(--teal)!important}
+.mobile-roles-search{display:flex;gap:8px;margin:0 0 16px}
+#mobileRolesSearch{min-width:0;width:100%;font:inherit;font-size:16px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.mobile-role-breadcrumbs{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 14px;align-items:center}
+#mobileRolesView .mobile-role-breadcrumbs button{font-size:13px;text-align:left;overflow-wrap:anywhere;border:0;background:var(--mag-wash);padding:8px 10px}
+#mobileRolesView h2{font-size:18px;color:var(--text);margin:4px 0 12px;overflow-wrap:anywhere}
+.mobile-role-choices{display:grid;gap:10px}
+#mobileRolesView .mobile-role-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:15px;min-height:72px;width:100%}
+.mobile-role-choice>span:first-child{min-width:0;overflow-wrap:anywhere}.mobile-role-choice strong{display:block;font-size:16px;font-weight:650}.mobile-role-choice small{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.mobile-role-chevron{font-size:24px;flex-shrink:0}.mobile-role-result{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:15px;margin-bottom:12px;overflow-wrap:anywhere}
+.mobile-role-result h3{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;color:var(--text);font-size:16px;margin:0;font-weight:650}
+.mobile-role-team{color:var(--muted);font-size:12px;margin:4px 0 12px}.mobile-role-people{list-style:none;margin:0;padding:0}.mobile-role-people li{padding:11px 9px;border-radius:8px;margin:5px 0 0}.mobile-role-people strong{display:block;font-size:18px;line-height:1.35}.mobile-role-people small{display:block;font-size:12px;color:inherit;opacity:.8;margin-top:3px}.mobile-role-note{font-size:13px;white-space:pre-wrap;margin:6px 0 0}.mobile-role-gap{padding:10px;border-radius:8px;background:#fee2e2;color:#842929;font-size:13px;margin:8px 0 0}.mobile-role-status{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px;margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.5}.mobile-role-status strong{display:block;color:var(--text);margin-bottom:3px}
+@media(max-width:760px){#mobileRolesView:not([hidden]){display:block}}
+@media print{#mobileRolesView{display:none!important}}
 </style>
 </head>
 <body class="access-locked">
@@ -1506,7 +1532,15 @@ body.access-locked #roleGate:not(.open){display:none!important}
   <div class="mobile-search"><input id="mobileSearch" type="search" placeholder="Find a role or person…" aria-label="Search this week’s roles or people" autocomplete="off"><button id="mobileClearSearch" type="button" hidden>Clear</button></div>
   <div id="mobileDayBody" aria-live="polite"></div>
 </section>
-<nav id="mobileAppNav" aria-label="Main navigation" hidden><button type="button" data-mobile-view="rota"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Rota</span></button><button type="button" data-mobile-view="heat"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4m0 9 3 3 5-5"/></svg><span>Time off</span></button><button type="button" id="mobileWorkplace" aria-haspopup="dialog"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h1m4 0h1m-6 4h1m4 0h1m-5 10v-6h4v6"/></svg><span>Workplace</span></button></nav>
+<section id="mobileRolesView" aria-labelledby="mobileRolesHeading" hidden>
+  <h1 id="mobileRolesHeading">Who’s on?</h1>
+  <p class="mobile-roles-intro">Choose a group, then a role — or search all published roles.</p>
+  <div class="mobile-roles-date"><button class="mobile-role-arrow" type="button" id="mobileRolesPrev" aria-label="Previous day">‹</button><input type="date" id="mobileRolesDate" aria-label="Choose a day to find who is on"><button class="mobile-role-arrow" type="button" id="mobileRolesNext" aria-label="Next day">›</button></div>
+  <div class="mobile-roles-dayline"><span id="mobileRolesDayLabel"></span><button type="button" id="mobileRolesToday" aria-pressed="true">Today</button></div>
+  <div class="mobile-roles-search"><input id="mobileRolesSearch" type="search" placeholder="Search all roles or groups…" aria-label="Search all published roles or groups" autocomplete="off"><button id="mobileRolesClear" type="button" hidden>Clear</button></div>
+  <div id="mobileRolesBody" aria-live="polite"></div>
+</section>
+<nav id="mobileAppNav" aria-label="Main navigation" hidden><button type="button" data-mobile-view="rota"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Rota</span></button><button type="button" data-mobile-view="roles"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Who’s on?</span></button><button type="button" data-mobile-view="heat"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4m0 9 3 3 5-5"/></svg><span>Time off</span></button><button type="button" id="mobileWorkplace" aria-haspopup="dialog"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h1m4 0h1m-6 4h1m4 0h1m-5 10v-6h4v6"/></svg><span>Workplace</span></button></nav>
 <div class="modal" id="mobileWorkplaceModal"><div class="modalcard sm"><div class="modalhead"><h3>Workplace</h3><button class="x" data-close-overlay="mobileWorkplaceModal" aria-label="Close workplace menu">×</button></div><div class="mobile-workplace-links"><button type="button" data-mobile-view="office"><strong>Office occupancy</strong><span>See who’s in each office</span></button><button type="button" data-mobile-view="parking"><strong>Parking</strong><span>Drivers and Manchester parking spaces</span></button><button type="button" data-mobile-view="booth"><strong>Booth usage</strong><span>See which booths are in use</span></button></div><div class="modalfoot"><button type="button" class="ghostbtn" id="mobileLogout">Sign out</button></div></div></div>
 
 <div class="modal" id="mobilePersonModal"><div class="modalcard sm">
@@ -1545,7 +1579,7 @@ body.access-locked #roleGate:not(.open){display:none!important}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v28</span>
+  <span class="pill">News Rota v29</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -2058,6 +2092,7 @@ $("#confirmModal").addEventListener("click",e=>{ if(e.target.id==="confirmModal"
 function loadMobilePerson(){try{return localStorage.getItem('news_rota_my_person')||'';}catch(_){return '';}}
 var UI22={personalRange:'upcoming',personalName:'',summaryMonth:{},yearOverview:false};
 var MOBILE={date:localISO(new Date()),followToday:true,person:loadMobilePerson(),query:'',fullWeek:false};
+var MOBILE_ROLES={date:localISO(new Date()),followToday:true,group:'',role:'',query:''};
 MOBILE.audience=MOBILE.person?'me':'everyone';
 function mobileDateValue(value){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(value||''))return null;
@@ -2066,9 +2101,11 @@ function mobileDateValue(value){
 }
 function useMobileDay(){return window.matchMedia('(max-width:760px)').matches&&state.view==='rota'&&!state.editing&&!state.templateMode;}
 function syncMobileLayout(){
-  const daily=useMobileDay();document.body.classList.toggle('mobile-daily',daily);$('#mobileView').hidden=!daily;
+  const daily=useMobileDay(),roles=daily&&MOBILE.page==='roles';document.body.classList.toggle('mobile-daily',daily);$('#mobileView').hidden=!daily||roles;
+  $('#mobileRolesView').hidden=!roles;
   $('#mobileAppNav').hidden=!isPhone()||!SYNC.accessGranted;
-  document.querySelectorAll('#mobileAppNav button').forEach(b=>b.setAttribute('aria-current',(b.dataset.mobileView===state.view||b.id==='mobileWorkplace'&&['office','parking','booth'].includes(state.view))?'page':'false'));
+  const current=roles?'roles':state.view;
+  document.querySelectorAll('#mobileAppNav button').forEach(b=>b.setAttribute('aria-current',(b.dataset.mobileView===current||b.id==='mobileWorkplace'&&['office','parking','booth'].includes(state.view))?'page':'false'));
   return daily;
 }
 function mobileDayData(iso,person='',publicOnly=false){
@@ -2114,6 +2151,66 @@ function filterMobileDay(day,query){
   return {...day,sections:day.sections.map(sec=>({...sec,rows:sec.rows.filter(r=>match(sec.title,r.label,r.name))})).filter(sec=>sec.rows.length),
     away:day.away.filter(n=>match('Away holiday',n)),gaps:day.gaps.filter(g=>match(g.section,g.label,'unfilled')),notes:[]};
 }
+// Build the role browser from the selected day's public rows and unfilled cells.
+// Never use the selected person's filter or the editable template role catalogue.
+function mobileRoleGroups(day){
+  const groups=new Map();
+  const add=(title,label,row)=>{
+    title=String(title||'Other').trim()||'Other';label=String(label||'Role').trim()||'Role';
+    const key=nrm(title);if(!groups.has(key))groups.set(key,{key,title,roles:[]});
+    const group=groups.get(key),roleKey=nrm(label);let role=group.roles.find(r=>r.key===roleKey);
+    if(!role){role={key:roleKey,label,people:[],gaps:0};group.roles.push(role);}
+    if(row)role.people.push(row);else role.gaps++;
+  };
+  day.sections.forEach(section=>section.rows.forEach(row=>add(section.title,row.label,row)));
+  day.gaps.forEach(gap=>add(gap.section,gap.label,null));
+  return [...groups.values()];
+}
+function mobileRoleResult(group,role){
+  const match=/\s*\((AM|PM)\)\s*$/i.exec(role.label),label=match?role.label.slice(0,match.index):role.label;
+  return '<article class="mobile-role-result"><h3><span>'+esc(readableRole(label))+'</span>'+(match?'<span class="mobile-shift-tag">'+esc(match[1].toUpperCase())+'</span>':'')+'</h3><p class="mobile-role-team">'+esc(readableRole(group.title))+'</p><ul class="mobile-role-people">'+role.people.map(row=>'<li'+cellStyle(row.key)+'><strong>'+esc(row.name)+'</strong>'+(row.cover?'<small>Cover</small>':'')+(row.note?'<p class="mobile-role-note">'+esc(row.note)+'</p>':'')+'</li>').join('')+'</ul>'+(role.gaps?'<p class="mobile-role-gap">'+(role.gaps===1?'1 unfilled position':role.gaps+' unfilled positions')+'</p>':'')+'</article>';
+}
+function renderMobileRoles(){
+  if(!enforcePhoneStaff())return;
+  if(MOBILE_ROLES.followToday)MOBILE_ROLES.date=localISO(new Date());
+  const date=mobileDateValue(MOBILE_ROLES.date)||new Date(),iso=localISO(date),today=iso===localISO(new Date());MOBILE_ROLES.date=iso;
+  $('#generationInfoBtn').hidden=true;
+  if(document.activeElement!==$('#mobileRolesDate'))$('#mobileRolesDate').value=iso;
+  $('#mobileRolesDayLabel').textContent=(today?'Today · ':'')+date.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short',year:'numeric'});
+  $('#mobileRolesToday').setAttribute('aria-pressed',String(today));
+  $('#mobileRolesClear').hidden=!MOBILE_ROLES.query;
+  if(document.activeElement!==$('#mobileRolesSearch'))$('#mobileRolesSearch').value=MOBILE_ROLES.query;
+  const body=$('#mobileRolesBody');
+  if(SYNC.on&&!SYNC.bootstrapped){body.innerHTML='<p class="mobile-role-status">'+(SYNC.lastError?'Unable to refresh the rota. Reconnecting…':'Loading the latest rota…')+'</p>';return;}
+  const day=mobileDayData(iso,'',true),groups=mobileRoleGroups(day),query=nrm(MOBILE_ROLES.query);
+  const status=(title,message)=>'<div class="mobile-role-status"><strong>'+esc(title)+'</strong>'+esc(message)+'</div>';
+  let html=SYNC.lastError?status('Connection interrupted','Showing the last loaded rota. Assignments may have changed.'):'';
+  if(day.hidden.length)html+=status('Rota coming soon',day.hidden.join(' · ')+' — assignments appear when published.');
+  if(day.blocked.length)html+=status('Separate rota','This date is covered by a separate rota. Check with Operations.');
+  if(!day.weeks.length)html+=status('No rota scheduled',date.getFullYear()===2026&&date.getMonth()===11&&date.getDate()>24?'The Christmas period uses a separate rota.':'Choose another date to look up roles.');
+  if(query){
+    const matches=groups.flatMap(group=>group.roles.filter(role=>nrm(group.title+' '+role.label).includes(query)).map(role=>({group,role})));
+    html+='<h2>Search results · '+matches.length+'</h2><p class="mobile-roles-intro">All groups · '+esc(MOBILE_ROLES.query.trim())+'</p>';
+    html+=matches.map(({group,role})=>mobileRoleResult(group,role)).join('')||status('No matching published roles','Try another role or group name, or choose a different day.');
+  }else if(MOBILE_ROLES.group){
+    const group=groups.find(g=>g.key===MOBILE_ROLES.group),role=group?.roles.find(r=>r.key===MOBILE_ROLES.role);
+    html+='<nav class="mobile-role-breadcrumbs" aria-label="Role groups"><button type="button" data-role-home>‹ All groups</button>'+(MOBILE_ROLES.role&&group?'<button type="button" data-role-group="'+esc(group.key)+'">‹ '+esc(readableRole(group.title))+'</button>':'')+'</nav>';
+    if(!group)html+=status('No published roles in this group for this day','Choose another day or return to all groups.');
+    else if(MOBILE_ROLES.role){html+='<h2>'+esc(readableRole(group.title))+'</h2>'+(role?mobileRoleResult(group,role):status('This role is not listed for this day','Choose another role or date.'));}
+    else{
+      html+='<h2>'+esc(readableRole(group.title))+'</h2><p class="mobile-roles-intro">Choose a role</p><div class="mobile-role-choices">'+group.roles.map(r=>'<button type="button" class="mobile-role-choice" data-role-key="'+esc(r.key)+'"><span><strong>'+esc(readableRole(r.label))+'</strong><small>'+r.people.length+' assigned'+(r.gaps?' · '+r.gaps+' unfilled':'')+'</small></span><span class="mobile-role-chevron" aria-hidden="true">›</span></button>').join('')+'</div>';
+    }
+  }else{
+    html+='<h2>Choose a group</h2><div class="mobile-role-choices">'+groups.map(g=>'<button type="button" class="mobile-role-choice" data-role-group="'+esc(g.key)+'"><span><strong>'+esc(readableRole(g.title))+'</strong><small>'+g.roles.length+' '+(g.roles.length===1?'role':'roles')+'</small></span><span class="mobile-role-chevron" aria-hidden="true">›</span></button>').join('')+'</div>';
+    if(!groups.length&&day.weeks.length&&!day.hidden.length&&!day.blocked.length)html+=status('No roles scheduled for this day','Choose another date to see who is on.');
+  }
+  body.innerHTML=html;renderSectionJumps();
+}
+function chooseMobileRolesDate(value){
+  if(!mobileDateValue(value))return;
+  MOBILE_ROLES.date=value;MOBILE_ROLES.followToday=value===localISO(new Date());renderMobileRoles();
+}
+function moveMobileRolesDate(step){const date=mobileDateValue(MOBILE_ROLES.date)||new Date();date.setDate(date.getDate()+step);chooseMobileRolesDate(localISO(date));}
 function mobileWeekData(iso,person='',query=''){
   return weekStripDates(iso).map(date=>({date,iso:localISO(date),day:filterMobileDay(mobileDayData(localISO(date),person),query)}));
 }
@@ -2172,6 +2269,7 @@ function mobileDayMarkup(entry,person,query){
 }
 function renderMobileDay(){
   if(!enforcePhoneStaff())return;
+  if(MOBILE.page==='roles'){renderMobileRoles();return;}
   if(MOBILE.followToday)MOBILE.date=localISO(new Date());
   const dt=mobileDateValue(MOBILE.date)||new Date();MOBILE.date=localISO(dt);
   const start=mondayOf(dt),known=allStaff().find(n=>nrm(n)===nrm(MOBILE.person));
@@ -2232,14 +2330,34 @@ $('#mobileSearch').addEventListener('input',e=>{MOBILE.query=e.target.value;rend
 $('#mobileClearSearch').addEventListener('click',()=>{MOBILE.query='';$('#mobileSearch').value='';renderMobileDay();$('#mobileSearch').focus();});
 $('#mobileMonth').addEventListener('change',e=>chooseMobileMonth(e.target.value));
 $('#mobileWorkplace').addEventListener('click',()=>$('#mobileWorkplaceModal').classList.add('open'));
-document.addEventListener('click',e=>{const b=e.target.closest('[data-mobile-view]');if(!b)return;$('#mobileWorkplaceModal').classList.remove('open');setView(b.dataset.mobileView);});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-mobile-view]');if(!b)return;
+  if(useMobileDay()&&MOBILE.page!=='roles')MOBILE.rotaScroll=window.scrollY;
+  const roles=b.dataset.mobileView==='roles';MOBILE.page=roles?'roles':'rota';
+  $('#mobileWorkplaceModal').classList.remove('open');setView(roles?'rota':b.dataset.mobileView);
+  if(roles)window.scrollTo({top:0,behavior:'instant'});
+  else if(b.dataset.mobileView==='rota')requestAnimationFrame(()=>window.scrollTo({top:MOBILE.rotaScroll||0,behavior:'instant'}));
+});
+$('#mobileRolesDate').addEventListener('change',e=>chooseMobileRolesDate(e.target.value));
+$('#mobileRolesPrev').addEventListener('click',()=>moveMobileRolesDate(-1));$('#mobileRolesNext').addEventListener('click',()=>moveMobileRolesDate(1));
+$('#mobileRolesToday').addEventListener('click',()=>chooseMobileRolesDate(localISO(new Date())));
+$('#mobileRolesSearch').addEventListener('input',e=>{MOBILE_ROLES.query=e.target.value;MOBILE_ROLES.group='';MOBILE_ROLES.role='';renderMobileRoles();});
+$('#mobileRolesClear').addEventListener('click',()=>{MOBILE_ROLES.query='';$('#mobileRolesSearch').value='';renderMobileRoles();$('#mobileRolesSearch').focus();});
+$('#mobileRolesBody').addEventListener('click',e=>{
+  const button=e.target.closest('button');if(!button)return;
+  if(button.hasAttribute('data-role-home')){MOBILE_ROLES.group='';MOBILE_ROLES.role='';}
+  else if(button.hasAttribute('data-role-group')){MOBILE_ROLES.group=button.dataset.roleGroup;MOBILE_ROLES.role='';}
+  else if(button.hasAttribute('data-role-key'))MOBILE_ROLES.role=button.dataset.roleKey;
+  else return;
+  renderMobileRoles();const heading=$('#mobileRolesBody h2')||$('#mobileRolesBody');heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});
+});
 $('#mobileDate').addEventListener('change',e=>{chooseMobileDate(e.target.value);$('#mobileCalendar').hidden=true;$('#mobileDayTitle').setAttribute('aria-expanded','false');});
 $('#mobilePrev').addEventListener('click',()=>moveMobileDay(-1));$('#mobileNext').addEventListener('click',()=>moveMobileDay(1));
 $('#mobileDayBody').addEventListener('click',e=>{const b=e.target.closest('[data-mobile-date]');if(b)chooseMobileDate(b.dataset.mobileDate);});
 window.matchMedia('(max-width:760px)').addEventListener('change',()=>renderCurrentView());
 if(typeof ResizeObserver!=='undefined'){new ResizeObserver(entries=>{const height=entries[0]?.target.getBoundingClientRect().height;if(height)document.documentElement.style.setProperty('--mobile-bar-height',height+'px');}).observe(document.querySelector('.bar'));}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&useMobileDay())renderMobileDay();});
-setInterval(()=>{if(!document.hidden&&useMobileDay()&&MOBILE.followToday&&MOBILE.date!==localISO(new Date()))renderMobileDay();},60000);
+setInterval(()=>{if(!document.hidden&&useMobileDay()){const current=MOBILE.page==='roles'?MOBILE_ROLES:MOBILE;if(current.followToday&&current.date!==localISO(new Date()))renderMobileDay();}},60000);
 
 /* ---------- render ---------- */
 function render(){
@@ -6626,8 +6744,9 @@ function lockRota(message){
   document.querySelectorAll('.modal.open').forEach(el=>el.classList.remove('open'));
   resetStoreForServer(SYNC.epoch);ensureStoreDefaults();clearRoleCache();SYNC.keyRev={};SYNC.shadow={};initHistory();
   if(typeof PUBLIC_SUMMARY!=='undefined'&&PUBLIC_SUMMARY){PUBLIC_SUMMARY.data=null;PUBLIC_SUMMARY.rev=-1;PUBLIC_SUMMARY.epoch=-1;PUBLIC_SUMMARY.loading=false;}
-  ['#grid','#mobileDayBody','#heatView','#adminView','#accessView','#officeBody','#boothBody','#parkingBody','#personBody','#staffList','#staffCount','#staffOptions','#roleOptions','#mobilePersonList','#fixedList','#ruleList','#rotList'].forEach(sel=>{const el=$(sel);if(el)el.innerHTML='';});
-  ['#pEditName','#pEditAllow','#staffAddInput','#search','#mobileSearch'].forEach(sel=>{const el=$(sel);if(el)el.value='';});state.q='';MOBILE.query='';
+  ['#grid','#mobileDayBody','#mobileRolesBody','#heatView','#adminView','#accessView','#officeBody','#boothBody','#parkingBody','#personBody','#staffList','#staffCount','#staffOptions','#roleOptions','#mobilePersonList','#fixedList','#ruleList','#rotList'].forEach(sel=>{const el=$(sel);if(el)el.innerHTML='';});
+  ['#pEditName','#pEditAllow','#staffAddInput','#search','#mobileSearch','#mobileRolesSearch'].forEach(sel=>{const el=$(sel);if(el)el.value='';});state.q='';MOBILE.query='';MOBILE.page='rota';
+  Object.assign(MOBILE_ROLES,{date:localISO(new Date()),followToday:true,group:'',role:'',query:''});$('#mobileRolesView').hidden=true;
   document.body.classList.remove('role-ops','role-lead','view-access','view-heat','view-admin','view-office','view-booth','view-parking','view-pers','editing','template');document.body.classList.add('role-staff');
   $('#staffPinInput').value='';$('#staffPinSubmit').disabled=false;$('#staffPinError').textContent=message||'';
   requestAnimationFrame(()=>$('#staffPinInput').focus());
