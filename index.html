@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v29 — mobile Who’s on with group and role browsing. -->
+<!-- News Rota v29.1 — compact, non-overlapping mobile role date navigation. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1363,12 +1363,17 @@ body.access-locked #roleGate:not(.open){display:none!important}
 #mobileRolesView[hidden],#mobileRolesView [hidden],body.access-locked #mobileRolesView{display:none!important}
 #mobileRolesView h1{font-size:26px;line-height:1.2;margin:0 0 5px;color:var(--text)}
 .mobile-roles-intro{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 16px}
-.mobile-roles-date{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px;align-items:center}
+.mobile-roles-date{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;align-items:center;max-width:100%;margin:18px 0 8px}
 #mobileRolesView button{min-height:44px;font:inherit;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);padding:9px 12px}
 #mobileRolesView button:focus-visible,#mobileRolesView input:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-#mobileRolesView .mobile-role-arrow{font-size:26px;padding:0}
-#mobileRolesView #mobileRolesDate{width:100%;min-width:0;min-height:44px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--text);padding:8px;font:inherit;font-size:16px;text-align:center}
-.mobile-roles-dayline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:7px 0 14px;font-size:13px;color:var(--muted)}
+#mobileRolesView .mobile-role-arrow{display:flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;padding:0;border:0;background:transparent;font-size:28px;line-height:1;box-sizing:border-box}
+#mobileRolesView #mobileRolesDateToggle{min-width:0;width:100%;padding:8px 2px;border:0;background:transparent;text-align:center;box-sizing:border-box;color:var(--ink)}
+#mobileRolesDayLabel{display:block;font-size:17px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
+.mobile-roles-date-hint{display:block;font-size:11px;color:var(--muted);margin-top:3px;font-weight:400}
+#mobileRolesCalendar{padding:12px;margin:4px 0 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);min-width:0;box-sizing:border-box}
+#mobileRolesCalendar label{display:block;font-size:13px;color:var(--muted)}
+#mobileRolesView #mobileRolesDate{display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:44px;margin-top:6px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--text);padding:8px;font:inherit;font-size:16px;text-align:center}
+.mobile-roles-dayline{display:flex;justify-content:center;align-items:center;gap:8px;margin:6px 0 18px;font-size:13px;color:var(--muted)}
 #mobileRolesView #mobileRolesToday{border:0;background:var(--mag-wash);min-height:44px;font-weight:650}
 #mobileRolesToday[aria-pressed="true"]{background:var(--teal-wash)!important;color:var(--teal)!important}
 .mobile-roles-search{display:flex;gap:8px;margin:0 0 16px}
@@ -1535,8 +1540,9 @@ body.access-locked #roleGate:not(.open){display:none!important}
 <section id="mobileRolesView" aria-labelledby="mobileRolesHeading" hidden>
   <h1 id="mobileRolesHeading">Who’s on?</h1>
   <p class="mobile-roles-intro">Choose a group, then a role — or search all published roles.</p>
-  <div class="mobile-roles-date"><button class="mobile-role-arrow" type="button" id="mobileRolesPrev" aria-label="Previous day">‹</button><input type="date" id="mobileRolesDate" aria-label="Choose a day to find who is on"><button class="mobile-role-arrow" type="button" id="mobileRolesNext" aria-label="Next day">›</button></div>
-  <div class="mobile-roles-dayline"><span id="mobileRolesDayLabel"></span><button type="button" id="mobileRolesToday" aria-pressed="true">Today</button></div>
+  <div class="mobile-roles-date"><button class="mobile-role-arrow" type="button" id="mobileRolesPrev" aria-label="Previous day">‹</button><button type="button" id="mobileRolesDateToggle" aria-expanded="false" aria-controls="mobileRolesCalendar"><span id="mobileRolesDayLabel"></span><span class="mobile-roles-date-hint">Tap to choose a date</span></button><button class="mobile-role-arrow" type="button" id="mobileRolesNext" aria-label="Next day">›</button></div>
+  <div id="mobileRolesCalendar" hidden><label>Choose a date<input type="date" id="mobileRolesDate" aria-label="Choose a day to find who is on"></label></div>
+  <div class="mobile-roles-dayline"><button type="button" id="mobileRolesToday" aria-pressed="true">Today</button></div>
   <div class="mobile-roles-search"><input id="mobileRolesSearch" type="search" placeholder="Search all roles or groups…" aria-label="Search all published roles or groups" autocomplete="off"><button id="mobileRolesClear" type="button" hidden>Clear</button></div>
   <div id="mobileRolesBody" aria-live="polite"></div>
 </section>
@@ -1579,7 +1585,7 @@ body.access-locked #roleGate:not(.open){display:none!important}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v29</span>
+  <span class="pill">News Rota v29.1</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -2176,7 +2182,7 @@ function renderMobileRoles(){
   const date=mobileDateValue(MOBILE_ROLES.date)||new Date(),iso=localISO(date),today=iso===localISO(new Date());MOBILE_ROLES.date=iso;
   $('#generationInfoBtn').hidden=true;
   if(document.activeElement!==$('#mobileRolesDate'))$('#mobileRolesDate').value=iso;
-  $('#mobileRolesDayLabel').textContent=(today?'Today · ':'')+date.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short',year:'numeric'});
+  $('#mobileRolesDayLabel').textContent=date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
   $('#mobileRolesToday').setAttribute('aria-pressed',String(today));
   $('#mobileRolesClear').hidden=!MOBILE_ROLES.query;
   if(document.activeElement!==$('#mobileRolesSearch'))$('#mobileRolesSearch').value=MOBILE_ROLES.query;
@@ -2208,6 +2214,7 @@ function renderMobileRoles(){
 }
 function chooseMobileRolesDate(value){
   if(!mobileDateValue(value))return;
+  $('#mobileRolesCalendar').hidden=true;$('#mobileRolesDateToggle').setAttribute('aria-expanded','false');
   MOBILE_ROLES.date=value;MOBILE_ROLES.followToday=value===localISO(new Date());renderMobileRoles();
 }
 function moveMobileRolesDate(step){const date=mobileDateValue(MOBILE_ROLES.date)||new Date();date.setDate(date.getDate()+step);chooseMobileRolesDate(localISO(date));}
@@ -2338,7 +2345,13 @@ document.addEventListener('click',e=>{
   if(roles)window.scrollTo({top:0,behavior:'instant'});
   else if(b.dataset.mobileView==='rota')requestAnimationFrame(()=>window.scrollTo({top:MOBILE.rotaScroll||0,behavior:'instant'}));
 });
-$('#mobileRolesDate').addEventListener('change',e=>chooseMobileRolesDate(e.target.value));
+$('#mobileRolesDateToggle').addEventListener('click',()=>{
+  const calendar=$('#mobileRolesCalendar');calendar.hidden=!calendar.hidden;
+  $('#mobileRolesDateToggle').setAttribute('aria-expanded',String(!calendar.hidden));
+  if(!calendar.hidden)$('#mobileRolesDate').focus();
+});
+$('#mobileRolesDate').addEventListener('change',e=>{chooseMobileRolesDate(e.target.value);$('#mobileRolesDateToggle').focus({preventScroll:true});});
+$('#mobileRolesCalendar').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();$('#mobileRolesCalendar').hidden=true;$('#mobileRolesDateToggle').setAttribute('aria-expanded','false');$('#mobileRolesDateToggle').focus({preventScroll:true});}});
 $('#mobileRolesPrev').addEventListener('click',()=>moveMobileRolesDate(-1));$('#mobileRolesNext').addEventListener('click',()=>moveMobileRolesDate(1));
 $('#mobileRolesToday').addEventListener('click',()=>chooseMobileRolesDate(localISO(new Date())));
 $('#mobileRolesSearch').addEventListener('input',e=>{MOBILE_ROLES.query=e.target.value;MOBILE_ROLES.group='';MOBILE_ROLES.role='';renderMobileRoles();});
@@ -6746,7 +6759,7 @@ function lockRota(message){
   if(typeof PUBLIC_SUMMARY!=='undefined'&&PUBLIC_SUMMARY){PUBLIC_SUMMARY.data=null;PUBLIC_SUMMARY.rev=-1;PUBLIC_SUMMARY.epoch=-1;PUBLIC_SUMMARY.loading=false;}
   ['#grid','#mobileDayBody','#mobileRolesBody','#heatView','#adminView','#accessView','#officeBody','#boothBody','#parkingBody','#personBody','#staffList','#staffCount','#staffOptions','#roleOptions','#mobilePersonList','#fixedList','#ruleList','#rotList'].forEach(sel=>{const el=$(sel);if(el)el.innerHTML='';});
   ['#pEditName','#pEditAllow','#staffAddInput','#search','#mobileSearch','#mobileRolesSearch'].forEach(sel=>{const el=$(sel);if(el)el.value='';});state.q='';MOBILE.query='';MOBILE.page='rota';
-  Object.assign(MOBILE_ROLES,{date:localISO(new Date()),followToday:true,group:'',role:'',query:''});$('#mobileRolesView').hidden=true;
+  Object.assign(MOBILE_ROLES,{date:localISO(new Date()),followToday:true,group:'',role:'',query:''});$('#mobileRolesView').hidden=true;$('#mobileRolesCalendar').hidden=true;$('#mobileRolesDateToggle').setAttribute('aria-expanded','false');
   document.body.classList.remove('role-ops','role-lead','view-access','view-heat','view-admin','view-office','view-booth','view-parking','view-pers','editing','template');document.body.classList.add('role-staff');
   $('#staffPinInput').value='';$('#staffPinSubmit').disabled=false;$('#staffPinError').textContent=message||'';
   requestAnimationFrame(()=>$('#staffPinInput').focus());
