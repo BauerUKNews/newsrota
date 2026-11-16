@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v31 — Operations gap checks by date range or month. -->
+<!-- News Rota v32 — Operations gap checks by date range or month. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -1423,6 +1423,11 @@ body:not(.role-ops) [data-act="recovery"]{display:none}
 .gap-check-skipped ul{padding-left:20px}
 #grid .gap-check-target{outline:3px solid var(--ink);outline-offset:-3px;box-shadow:inset 0 0 0 5px #fff}
 body:not(.role-ops) [data-act="gapcheck"]{display:none}
+body:not(.role-ops) [data-act="backupviewer"]{display:none}
+#backupViewerModal .modalcard{max-width:1500px;height:calc(100dvh - 32px)}
+#backupViewerHost{flex:1;min-height:0;overflow:hidden}
+#backupViewerHost iframe{display:block;width:100%;height:100%;border:0;background:var(--bg)}
+@media(max-width:760px){#backupViewerModal .modalcard{height:calc(100dvh - 16px)}}
 @media(max-width:640px){.gap-check-row{grid-template-columns:minmax(0,1fr) auto;gap:8px}.gap-check-row .gap-check-section{grid-column:1 / -1}.gap-check-form label{flex:1 1 140px}.gap-check-form button{width:100%}}
 </style>
 </head>
@@ -1504,6 +1509,7 @@ body:not(.role-ops) [data-act="gapcheck"]{display:none}
       <div class="sep editonly"></div>
       <div class="lbl">Data</div>
       <button data-act="export" role="menuitem">&#8681;&nbsp; Export all edits (JSON)</button>
+      <button data-act="backupviewer" role="menuitem">View an old backup…</button>
       <button data-act="recovery" role="menuitem">Recover unsaved work…</button>
       <button data-act="import" role="menuitem">&#8679;&nbsp; Import edits (JSON)</button>
       <input type="file" id="importFile" accept="application/json" hidden>
@@ -1624,7 +1630,7 @@ body:not(.role-ops) [data-act="gapcheck"]{display:none}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v31</span>
+  <span class="pill">News Rota v32</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1801,6 +1807,11 @@ body:not(.role-ops) [data-act="gapcheck"]{display:none}
  <li><button data-setup="visibility"><b>6. Publish and allowances</b><span>Choose which weeks are visible and check holiday totals.</span></button></li>
  </ol><div class="modalfoot"><button class="ghostbtn" data-close-overlay="setupModal">Close</button></div>
 </div></div>
+<div class="modal" id="backupViewerModal"><div class="modalcard">
+ <div class="modalhead"><h3>Backup viewer</h3><span class="sub">Read only · live rota unchanged</span><button class="x" id="backupViewerClose" type="button" aria-label="Close backup viewer and return to the live rota">×</button></div>
+ <div class="dialogbody" id="backupViewerHost"></div>
+</div></div>
+
 <div class="modal" id="gapCheckModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Run gap check</h3><button class="x" data-close-overlay="gapCheckModal" aria-label="Close gap check">×</button></div>
  <form id="gapCheckForm" class="gap-check-form">
@@ -1822,6 +1833,7 @@ body:not(.role-ops) [data-act="gapcheck"]{display:none}
 </div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
+ <p class="rulehint"><b>Old backups:</b> Operations → More options → View an old backup opens an empty, read-only viewer. Choose an exported JSON backup, browse its saved weeks and search within a week. It never restores or saves to the live rota. Close the viewer to return; loaded files are discarded when it closes.</p>
  <p class="rulehint"><b>Gap check:</b> in Operations, choose More options → Run gap check. Select a whole month or inclusive date range to list unfilled roles across published and unpublished weeks. Open rota takes you to the relevant cell; Edit mode is not required to run the check.</p>
  <div class="setup-intro"><p><b>Staff access:</b> enter the four-digit PIN supplied by Operations. Operations can set or change it in the Access tab; changing it signs out existing Staff sessions. Phones remain Staff-only.<br><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, use the arrows to move between full weeks or tap the W/C heading to choose a week. Scroll down for Monday to Sunday. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Manchester shows the bay diagram when you select a date: the calendar is green when everyone fits, orange when the emergency corner is used, and flashing red when anyone is unable to park. Other offices turn red at seven and flash at eight. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
@@ -1839,6 +1851,13 @@ window.NEWS_ROTA_CONFIG = {
 <script>
 const RAW = {"weekdayTemplate":{"type":"weekday","sections":[{"title":"HOLIDAY","holiday":true,"rows":[{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]},{"type":"role","area":"","slot":"","assign":["","","","",""]}]},{"title":"FOCUS ONE","rows":[{"type":"role","area":"","slot":"NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"SOUTH COAST & KENT","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"SOUTH WALES & BRISTOL","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"GREATER MANCHESTER & MERSEYSIDE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"SOUTH COAST","assign":["","","","",""]},{"type":"role","area":"","slot":"KENT","assign":["","","","",""]},{"type":"role","area":"","slot":"SOUTH WALES","assign":["","","","",""]},{"type":"role","area":"","slot":"BRISTOL","assign":["","","","",""]},{"type":"role","area":"","slot":"GREATER MANCHESTER","assign":["","","","",""]},{"type":"role","area":"","slot":"MERSEYSIDE","assign":["","","","",""]}]},{"title":"FOCUS TWO","rows":[{"type":"role","area":"","slot":"NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"BIRMINGHAM & WEST MIDLANDS & EAST MIDLANDS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"WEST YORKSHIRE & SOUTH YORKSHIRE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"NORTH EAST & TEESSIDE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"BIRMINGHAM & WEST MIDLANDS","assign":["","","","",""]},{"type":"role","area":"","slot":"EAST MIDLANDS","assign":["","","","",""]},{"type":"role","area":"","slot":"WEST YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"SOUTH YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTH EAST","assign":["","","","",""]},{"type":"role","area":"","slot":"TEESSIDE","assign":["","","","",""]}]},{"title":"NATIONALS & LONDON","rows":[{"type":"role","area":"KISS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"ABSOLUTE","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"UK 60","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"UK 120","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"LONDON","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"BEHIND THE HEADLINES","slot":"","assign":["","","","",""]}]},{"title":"HUB","rows":[{"type":"role","area":"NEWS EDITOR","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]}]},{"title":"HUB SOUTH & EAST","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"BUCKINGHAMSHIRE, BEDFORDSHIRE & HERTFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"CAMBRIDGESHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORFOLK","assign":["","","","",""]},{"type":"role","area":"","slot":"SUFFOLK","assign":["","","","",""]},{"type":"role","area":"","slot":"SUSSEX","assign":["","","","",""]},{"type":"role","area":"","slot":"SURREY","assign":["","","","",""]},{"type":"role","area":"","slot":"OXFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTHAMPTONSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"BERKSHIRE & NORTH HAMPSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"ESSEX","assign":["","","","",""]}]},{"title":"HUB SOUTH & WEST","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"SWINDON","assign":["","","","",""]},{"type":"role","area":"","slot":"GLOUCESTER","assign":["","","","",""]},{"type":"role","area":"","slot":"SOMERSET","assign":["","","","",""]},{"type":"role","area":"","slot":"DEVON","assign":["","","","",""]},{"type":"role","area":"","slot":"CORNWALL","assign":["","","","",""]},{"type":"role","area":"","slot":"DORSET","assign":["","","","",""]},{"type":"role","area":"","slot":"WILTSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"COVENTRY & WARWICKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"HEREFORD & WORCESTERSHIRE","assign":["","","","",""]}]},{"title":"HUB NORTH","rows":[{"type":"role","area":"","slot":"NEWSGATHERING EDITOR","assign":["","","","",""]},{"type":"role","area":"DELIVERY","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"CREATION","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"role","area":"AWARENESS","slot":"AM","assign":["","","","",""]},{"type":"role","area":"","slot":"PM","assign":["","","","",""]},{"type":"subhead","label":"REPORTERS"},{"type":"role","area":"","slot":"CUMBRIA","assign":["","","","",""]},{"type":"role","area":"","slot":"NORTH YORKSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"LANCASHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"STAFFORDSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"EAST YORKSHIRE & NORTHERN LINCOLNSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"LINCOLNSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"BLACK COUNTRY & SHROPSHIRE","assign":["","","","",""]},{"type":"role","area":"","slot":"PETERBOROUGH, STAMFORD & RUTLAND","assign":["","","","",""]}]},{"title":"OTHER","rows":[{"type":"role","area":"","slot":"OPERATIONS MANAGER","assign":["","","","",""]},{"type":"role","area":"","slot":"DIGITAL NEWS EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"BREAKFAST CONTENT EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"DRIVE CONTENT EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"SENIOR CORRESPONDENT","assign":["","","","",""]},{"type":"role","area":"","slot":"POLITICAL EDITOR","assign":["","","","",""]},{"type":"role","area":"","slot":"REGIONAL CORRESPONDENT","assign":["","","","",""]},{"type":"role","area":"","slot":"HEAD OF NEWS AND SPORT","assign":["","","","",""]},{"type":"role","area":"","slot":"DEPUTY HEAD OF NEWS AND SPORT","assign":["","","","",""]}]}],"notes":[]},"weekendTemplate":{"type":"weekend","rows":[{"role":"Weekend Ops Manager","sat":"","sun":""},{"role":"Weekend Duty Editor","sat":"","sun":""},{"role":"AbsSport B60 B120 London","sat":"","sun":""},{"role":"Liverpool Manchester","sat":"","sun":""},{"role":"W Midlands E Midlands","sat":"","sun":""},{"role":"Hub North","sat":"","sun":""},{"role":"Hub South & East","sat":"","sun":""},{"role":"Hub South & West","sat":"","sun":""},{"role":"Awareness","sat":"","sun":""},{"role":"Creation","sat":"","sun":""},{"role":"Reporter","sat":"","sun":""},{"role":"BAUER 120 PM","sat":"","sun":""}],"codes":["BCS","NYO","CUM","PSR","EYL","SYO","BBH","LAN","S&C","BER","LIN","TEE","CAM","NEA","WYO","ESX","KEN","NOH","NOR","B&B","H&W","OXF","COR","SOM","SOC","C&W","SWI","SUF","DEV","WAL","SUR","DOR","WST","SUS","GLO","WIL"],"notes":[],"satHeader":"SATURDAY 3 JANUARY","sunHeader":"SUNDAY 4 JANUARY"},"weeks":[{"id":"trial-2026-11-01","name":"1 November 2026","kind":"weekend"},{"id":"trial-2026-11-02","name":"2-6 November 2026","kind":"weekday"},{"id":"trial-2026-11-07","name":"WE 7&8 Nov 2026","kind":"weekend"},{"id":"trial-2026-11-09","name":"9-13 November 2026","kind":"weekday"},{"id":"trial-2026-11-14","name":"WE 14&15 Nov 2026","kind":"weekend"},{"id":"trial-2026-11-16","name":"16-20 November 2026","kind":"weekday"},{"id":"trial-2026-11-21","name":"WE 21&22 Nov 2026","kind":"weekend"},{"id":"trial-2026-11-23","name":"23-27 November 2026","kind":"weekday"},{"id":"trial-2026-11-28","name":"WE 28&29 Nov 2026","kind":"weekend"},{"id":"trial-2026-11-30","name":"30 November - 4 December 2026","kind":"weekday"},{"id":"trial-2026-12-05","name":"WE 5&6 Dec 2026","kind":"weekend"},{"id":"trial-2026-12-07","name":"7-11 December 2026","kind":"weekday"},{"id":"trial-2026-12-12","name":"WE 12&13 Dec 2026","kind":"weekend"},{"id":"trial-2026-12-14","name":"14-18 December 2026","kind":"weekday"},{"id":"trial-2026-12-19","name":"WE 19&20 Dec 2026","kind":"weekend"},{"id":"trial-2026-12-21","name":"21-24 December 2026","kind":"weekday"},{"id":"WE 1 2 3 Jan","name":"WE 1 2 3 Jan","kind":"weekend"},{"id":"4-8 January","name":"4-8 January","kind":"weekday"},{"id":"WE 9&10 Jan","name":"WE 9&10 Jan","kind":"weekend"},{"id":"11-15 January","name":"11-15 January","kind":"weekday"},{"id":"WE 16&17 Jan","name":"WE 16&17 Jan","kind":"weekend"},{"id":"18-22 January","name":"18-22 January","kind":"weekday"},{"id":"WE 23&24 Jan","name":"WE 23&24 Jan","kind":"weekend"},{"id":"25-29 January","name":"25-29 January","kind":"weekday"},{"id":"WE 30&31 Jan","name":"WE 30&31 Jan","kind":"weekend"},{"id":"1-5 February","name":"1-5 February","kind":"weekday"},{"id":"WE 6&7 Feb","name":"WE 6&7 Feb","kind":"weekend"},{"id":"8-12 February","name":"8-12 February","kind":"weekday"},{"id":"WE 13&14 Feb","name":"WE 13&14 Feb","kind":"weekend"},{"id":"15-19 February","name":"15-19 February","kind":"weekday"},{"id":"WE 20&21 Feb","name":"WE 20&21 Feb","kind":"weekend"},{"id":"22-26 February","name":"22-26 February","kind":"weekday"},{"id":"WE 27&28 Feb","name":"WE 27&28 Feb","kind":"weekend"},{"id":"1-5 March","name":"1-5 March","kind":"weekday"},{"id":"WE 6&7 Mar","name":"WE 6&7 Mar","kind":"weekend"},{"id":"8-12 March","name":"8-12 March","kind":"weekday"},{"id":"WE 13&14 Mar","name":"WE 13&14 Mar","kind":"weekend"},{"id":"15-19 March","name":"15-19 March","kind":"weekday"},{"id":"WE 20&21 Mar","name":"WE 20&21 Mar","kind":"weekend"},{"id":"22-26 March","name":"22-26 March","kind":"weekday"},{"id":"WE 27&28 Mar","name":"WE 27&28 Mar","kind":"weekend"},{"id":"29 March - 2 April","name":"29 March - 2 April","kind":"weekday"},{"id":"WE 3&4 Apr","name":"WE 3&4 Apr","kind":"weekend"},{"id":"5-9 April","name":"5-9 April","kind":"weekday"},{"id":"WE 10&11 Apr","name":"WE 10&11 Apr","kind":"weekend"},{"id":"12-16 April","name":"12-16 April","kind":"weekday"},{"id":"WE 17&18 Apr","name":"WE 17&18 Apr","kind":"weekend"},{"id":"19-23 April","name":"19-23 April","kind":"weekday"},{"id":"WE 24&25 Apr","name":"WE 24&25 Apr","kind":"weekend"},{"id":"26-30 April","name":"26-30 April","kind":"weekday"},{"id":"WE 1&2 May","name":"WE 1&2 May","kind":"weekend"},{"id":"3-7 May","name":"3-7 May","kind":"weekday"},{"id":"WE 8&9 May","name":"WE 8&9 May","kind":"weekend"},{"id":"10-14 May","name":"10-14 May","kind":"weekday"},{"id":"WE 15&16 May","name":"WE 15&16 May","kind":"weekend"},{"id":"17-21 May","name":"17-21 May","kind":"weekday"},{"id":"WE 22&23 May","name":"WE 22&23 May","kind":"weekend"},{"id":"24-28 May","name":"24-28 May","kind":"weekday"},{"id":"WE 29&30 May","name":"WE 29&30 May","kind":"weekend"},{"id":"31 May - 4 June","name":"31 May - 4 June","kind":"weekday"},{"id":"WE 5&6 Jun","name":"WE 5&6 Jun","kind":"weekend"},{"id":"7-11 June","name":"7-11 June","kind":"weekday"},{"id":"WE 12&13 Jun","name":"WE 12&13 Jun","kind":"weekend"},{"id":"14-18 June","name":"14-18 June","kind":"weekday"},{"id":"WE 19&20 Jun","name":"WE 19&20 Jun","kind":"weekend"},{"id":"21-25 June","name":"21-25 June","kind":"weekday"},{"id":"WE 26&27 Jun","name":"WE 26&27 Jun","kind":"weekend"},{"id":"28 June - 2 July","name":"28 June - 2 July","kind":"weekday"},{"id":"WE 3&4 Jul","name":"WE 3&4 Jul","kind":"weekend"},{"id":"5-9 July","name":"5-9 July","kind":"weekday"},{"id":"WE 10&11 Jul","name":"WE 10&11 Jul","kind":"weekend"},{"id":"12-16 July","name":"12-16 July","kind":"weekday"},{"id":"WE 17&18 Jul","name":"WE 17&18 Jul","kind":"weekend"},{"id":"19-23 July","name":"19-23 July","kind":"weekday"},{"id":"WE 24&25 Jul","name":"WE 24&25 Jul","kind":"weekend"},{"id":"26-30 July","name":"26-30 July","kind":"weekday"},{"id":"WE 31 Jul 1 Aug","name":"WE 31 Jul 1 Aug","kind":"weekend"},{"id":"2-6 August","name":"2-6 August","kind":"weekday"},{"id":"WE 7&8 Aug","name":"WE 7&8 Aug","kind":"weekend"},{"id":"9-13 August","name":"9-13 August","kind":"weekday"},{"id":"WE 14&15 Aug","name":"WE 14&15 Aug","kind":"weekend"},{"id":"16-20 August","name":"16-20 August","kind":"weekday"},{"id":"WE 21&22 Aug","name":"WE 21&22 Aug","kind":"weekend"},{"id":"23-27 August","name":"23-27 August","kind":"weekday"},{"id":"WE 28&29 Aug","name":"WE 28&29 Aug","kind":"weekend"},{"id":"30 August - 3 September","name":"30 August - 3 September","kind":"weekday"},{"id":"WE 4&5 Sep","name":"WE 4&5 Sep","kind":"weekend"},{"id":"6-10 September","name":"6-10 September","kind":"weekday"},{"id":"WE 11&12 Sep","name":"WE 11&12 Sep","kind":"weekend"},{"id":"13-17 September","name":"13-17 September","kind":"weekday"},{"id":"WE 18&19 Sep","name":"WE 18&19 Sep","kind":"weekend"},{"id":"20-24 September","name":"20-24 September","kind":"weekday"},{"id":"WE 25&26 Sep","name":"WE 25&26 Sep","kind":"weekend"},{"id":"27 September - 1 October","name":"27 September - 1 October","kind":"weekday"},{"id":"WE 2&3 Oct","name":"WE 2&3 Oct","kind":"weekend"},{"id":"4-8 October","name":"4-8 October","kind":"weekday"},{"id":"WE 9&10 Oct","name":"WE 9&10 Oct","kind":"weekend"},{"id":"11-15 October","name":"11-15 October","kind":"weekday"},{"id":"WE 16&17 Oct","name":"WE 16&17 Oct","kind":"weekend"},{"id":"18-22 October","name":"18-22 October","kind":"weekday"},{"id":"WE 23&24 Oct","name":"WE 23&24 Oct","kind":"weekend"},{"id":"25-29 October","name":"25-29 October","kind":"weekday"},{"id":"WE 30&31 Oct","name":"WE 30&31 Oct","kind":"weekend"},{"id":"1-5 November","name":"1-5 November","kind":"weekday"},{"id":"WE 6&7 Nov","name":"WE 6&7 Nov","kind":"weekend"},{"id":"8-12 November","name":"8-12 November","kind":"weekday"},{"id":"WE 13&14 Nov","name":"WE 13&14 Nov","kind":"weekend"},{"id":"15-19 November","name":"15-19 November","kind":"weekday"},{"id":"WE 20&21 Nov","name":"WE 20&21 Nov","kind":"weekend"},{"id":"22-26 November","name":"22-26 November","kind":"weekday"},{"id":"WE 27&28 Nov","name":"WE 27&28 Nov","kind":"weekend"},{"id":"29 November - 3 December","name":"29 November - 3 December","kind":"weekday"},{"id":"WE 4&5 Dec","name":"WE 4&5 Dec","kind":"weekend"},{"id":"6-10 December","name":"6-10 December","kind":"weekday"},{"id":"WE 11&12 Dec","name":"WE 11&12 Dec","kind":"weekend"},{"id":"13-17 December","name":"13-17 December","kind":"weekday"},{"id":"WE 18&19 Dec","name":"WE 18&19 Dec","kind":"weekend"},{"id":"20-24 December","name":"20-24 December","kind":"weekday"},{"id":"WE 25&26 Dec","name":"WE 25&26 Dec","kind":"weekend"},{"id":"27-31 December","name":"27-31 December","kind":"weekday"}],"weeksData":{"WE 1 2 3 Jan":{"type":"weekend","rows":[{"role":"Weekend Ops Manager","sat":"","sun":"","fri":""},{"role":"Weekend Duty Editor","sat":"","sun":"","fri":""},{"role":"AbsSport B60 B120 London","sat":"","sun":"","fri":""},{"role":"Liverpool Manchester","sat":"","sun":"","fri":""},{"role":"W Midlands E Midlands","sat":"","sun":"","fri":""},{"role":"Hub North","sat":"","sun":"","fri":""},{"role":"Hub South & East","sat":"","sun":"","fri":""},{"role":"Hub South & West","sat":"","sun":"","fri":""},{"role":"Awareness","sat":"","sun":"","fri":""},{"role":"Creation","sat":"","sun":"","fri":""},{"role":"Reporter","sat":"","sun":"","fri":""},{"role":"BAUER 120 PM","sat":"","sun":"","fri":""}],"codes":["BCS","NYO","CUM","PSR","EYL","SYO","BBH","LAN","S&C","BER","LIN","TEE","CAM","NEA","WYO","ESX","KEN","NOH","NOR","B&B","H&W","OXF","COR","SOM","SOC","C&W","SWI","SUF","DEV","WAL","SUR","DOR","WST","SUS","GLO","WIL"],"notes":[],"satHeader":"SATURDAY 2 JANUARY","sunHeader":"SUNDAY 3 JANUARY","y":2027,"blocked":"See Christmas rota","friHeader":"FRIDAY 1 JANUARY"},"trial-2026-11-01":{"type":"weekend","rows":[{"role":"Weekend Ops Manager","vals":{"sun":""}},{"role":"Weekend Duty Editor","vals":{"sun":""}},{"role":"AbsSport B60 B120 London","vals":{"sun":""}},{"role":"Liverpool Manchester","vals":{"sun":""}},{"role":"W Midlands E Midlands","vals":{"sun":""}},{"role":"Hub North","vals":{"sun":""}},{"role":"Hub South & East","vals":{"sun":""}},{"role":"Hub South & West","vals":{"sun":""}},{"role":"Awareness","vals":{"sun":""}},{"role":"Creation","vals":{"sun":""}},{"role":"Reporter","vals":{"sun":""}},{"role":"BAUER 120 PM","vals":{"sun":""}}],"codes":["BCS","NYO","CUM","PSR","EYL","SYO","BBH","LAN","S&C","BER","LIN","TEE","CAM","NEA","WYO","ESX","KEN","NOH","NOR","B&B","H&W","OXF","COR","SOM","SOC","C&W","SWI","SUF","DEV","WAL","SUR","DOR","WST","SUS","GLO","WIL"],"notes":[],"y":2026,"special":true,"trial":true,"cols":[{"key":"sun","lbl":"Sun","sub":"1 Nov"}]}},"rosterDefaults":[],"aliases":{},"weekMeta":{"4-8 January":{"cols":[{"y":2027,"m":0,"d":4},{"y":2027,"m":0,"d":5},{"y":2027,"m":0,"d":6},{"y":2027,"m":0,"d":7},{"y":2027,"m":0,"d":8}]},"WE 9&10 Jan":{"satHeader":"SATURDAY 9 JANUARY","sunHeader":"SUNDAY 10 JANUARY","y":2027},"11-15 January":{"cols":[{"y":2027,"m":0,"d":11},{"y":2027,"m":0,"d":12},{"y":2027,"m":0,"d":13},{"y":2027,"m":0,"d":14},{"y":2027,"m":0,"d":15}]},"WE 16&17 Jan":{"satHeader":"SATURDAY 16 JANUARY","sunHeader":"SUNDAY 17 JANUARY","y":2027},"18-22 January":{"cols":[{"y":2027,"m":0,"d":18},{"y":2027,"m":0,"d":19},{"y":2027,"m":0,"d":20},{"y":2027,"m":0,"d":21},{"y":2027,"m":0,"d":22}]},"WE 23&24 Jan":{"satHeader":"SATURDAY 23 JANUARY","sunHeader":"SUNDAY 24 JANUARY","y":2027},"25-29 January":{"cols":[{"y":2027,"m":0,"d":25},{"y":2027,"m":0,"d":26},{"y":2027,"m":0,"d":27},{"y":2027,"m":0,"d":28},{"y":2027,"m":0,"d":29}]},"WE 30&31 Jan":{"satHeader":"SATURDAY 30 JANUARY","sunHeader":"SUNDAY 31 JANUARY","y":2027},"1-5 February":{"cols":[{"y":2027,"m":1,"d":1},{"y":2027,"m":1,"d":2},{"y":2027,"m":1,"d":3},{"y":2027,"m":1,"d":4},{"y":2027,"m":1,"d":5}]},"WE 6&7 Feb":{"satHeader":"SATURDAY 6 FEBRUARY","sunHeader":"SUNDAY 7 FEBRUARY","y":2027},"8-12 February":{"cols":[{"y":2027,"m":1,"d":8},{"y":2027,"m":1,"d":9},{"y":2027,"m":1,"d":10},{"y":2027,"m":1,"d":11},{"y":2027,"m":1,"d":12}]},"WE 13&14 Feb":{"satHeader":"SATURDAY 13 FEBRUARY","sunHeader":"SUNDAY 14 FEBRUARY","y":2027},"15-19 February":{"cols":[{"y":2027,"m":1,"d":15},{"y":2027,"m":1,"d":16},{"y":2027,"m":1,"d":17},{"y":2027,"m":1,"d":18},{"y":2027,"m":1,"d":19}]},"WE 20&21 Feb":{"satHeader":"SATURDAY 20 FEBRUARY","sunHeader":"SUNDAY 21 FEBRUARY","y":2027},"22-26 February":{"cols":[{"y":2027,"m":1,"d":22},{"y":2027,"m":1,"d":23},{"y":2027,"m":1,"d":24},{"y":2027,"m":1,"d":25},{"y":2027,"m":1,"d":26}]},"WE 27&28 Feb":{"satHeader":"SATURDAY 27 FEBRUARY","sunHeader":"SUNDAY 28 FEBRUARY","y":2027},"1-5 March":{"cols":[{"y":2027,"m":2,"d":1},{"y":2027,"m":2,"d":2},{"y":2027,"m":2,"d":3},{"y":2027,"m":2,"d":4},{"y":2027,"m":2,"d":5}]},"WE 6&7 Mar":{"satHeader":"SATURDAY 6 MARCH","sunHeader":"SUNDAY 7 MARCH","y":2027},"8-12 March":{"cols":[{"y":2027,"m":2,"d":8},{"y":2027,"m":2,"d":9},{"y":2027,"m":2,"d":10},{"y":2027,"m":2,"d":11},{"y":2027,"m":2,"d":12}]},"WE 13&14 Mar":{"satHeader":"SATURDAY 13 MARCH","sunHeader":"SUNDAY 14 MARCH","y":2027},"15-19 March":{"cols":[{"y":2027,"m":2,"d":15},{"y":2027,"m":2,"d":16},{"y":2027,"m":2,"d":17},{"y":2027,"m":2,"d":18},{"y":2027,"m":2,"d":19}]},"WE 20&21 Mar":{"satHeader":"SATURDAY 20 MARCH","sunHeader":"SUNDAY 21 MARCH","y":2027},"22-26 March":{"cols":[{"y":2027,"m":2,"d":22},{"y":2027,"m":2,"d":23},{"y":2027,"m":2,"d":24},{"y":2027,"m":2,"d":25},{"y":2027,"m":2,"d":26}]},"WE 27&28 Mar":{"satHeader":"SATURDAY 27 MARCH","sunHeader":"SUNDAY 28 MARCH","y":2027},"29 March - 2 April":{"cols":[{"y":2027,"m":2,"d":29},{"y":2027,"m":2,"d":30},{"y":2027,"m":2,"d":31},{"y":2027,"m":3,"d":1},{"y":2027,"m":3,"d":2}]},"WE 3&4 Apr":{"satHeader":"SATURDAY 3 APRIL","sunHeader":"SUNDAY 4 APRIL","y":2027},"5-9 April":{"cols":[{"y":2027,"m":3,"d":5},{"y":2027,"m":3,"d":6},{"y":2027,"m":3,"d":7},{"y":2027,"m":3,"d":8},{"y":2027,"m":3,"d":9}]},"WE 10&11 Apr":{"satHeader":"SATURDAY 10 APRIL","sunHeader":"SUNDAY 11 APRIL","y":2027},"12-16 April":{"cols":[{"y":2027,"m":3,"d":12},{"y":2027,"m":3,"d":13},{"y":2027,"m":3,"d":14},{"y":2027,"m":3,"d":15},{"y":2027,"m":3,"d":16}]},"WE 17&18 Apr":{"satHeader":"SATURDAY 17 APRIL","sunHeader":"SUNDAY 18 APRIL","y":2027},"19-23 April":{"cols":[{"y":2027,"m":3,"d":19},{"y":2027,"m":3,"d":20},{"y":2027,"m":3,"d":21},{"y":2027,"m":3,"d":22},{"y":2027,"m":3,"d":23}]},"WE 24&25 Apr":{"satHeader":"SATURDAY 24 APRIL","sunHeader":"SUNDAY 25 APRIL","y":2027},"26-30 April":{"cols":[{"y":2027,"m":3,"d":26},{"y":2027,"m":3,"d":27},{"y":2027,"m":3,"d":28},{"y":2027,"m":3,"d":29},{"y":2027,"m":3,"d":30}]},"WE 1&2 May":{"satHeader":"SATURDAY 1 MAY","sunHeader":"SUNDAY 2 MAY","y":2027},"3-7 May":{"cols":[{"y":2027,"m":4,"d":3},{"y":2027,"m":4,"d":4},{"y":2027,"m":4,"d":5},{"y":2027,"m":4,"d":6},{"y":2027,"m":4,"d":7}]},"WE 8&9 May":{"satHeader":"SATURDAY 8 MAY","sunHeader":"SUNDAY 9 MAY","y":2027},"10-14 May":{"cols":[{"y":2027,"m":4,"d":10},{"y":2027,"m":4,"d":11},{"y":2027,"m":4,"d":12},{"y":2027,"m":4,"d":13},{"y":2027,"m":4,"d":14}]},"WE 15&16 May":{"satHeader":"SATURDAY 15 MAY","sunHeader":"SUNDAY 16 MAY","y":2027},"17-21 May":{"cols":[{"y":2027,"m":4,"d":17},{"y":2027,"m":4,"d":18},{"y":2027,"m":4,"d":19},{"y":2027,"m":4,"d":20},{"y":2027,"m":4,"d":21}]},"WE 22&23 May":{"satHeader":"SATURDAY 22 MAY","sunHeader":"SUNDAY 23 MAY","y":2027},"24-28 May":{"cols":[{"y":2027,"m":4,"d":24},{"y":2027,"m":4,"d":25},{"y":2027,"m":4,"d":26},{"y":2027,"m":4,"d":27},{"y":2027,"m":4,"d":28}]},"WE 29&30 May":{"satHeader":"SATURDAY 29 MAY","sunHeader":"SUNDAY 30 MAY","y":2027},"31 May - 4 June":{"cols":[{"y":2027,"m":4,"d":31},{"y":2027,"m":5,"d":1},{"y":2027,"m":5,"d":2},{"y":2027,"m":5,"d":3},{"y":2027,"m":5,"d":4}]},"WE 5&6 Jun":{"satHeader":"SATURDAY 5 JUNE","sunHeader":"SUNDAY 6 JUNE","y":2027},"7-11 June":{"cols":[{"y":2027,"m":5,"d":7},{"y":2027,"m":5,"d":8},{"y":2027,"m":5,"d":9},{"y":2027,"m":5,"d":10},{"y":2027,"m":5,"d":11}]},"WE 12&13 Jun":{"satHeader":"SATURDAY 12 JUNE","sunHeader":"SUNDAY 13 JUNE","y":2027},"14-18 June":{"cols":[{"y":2027,"m":5,"d":14},{"y":2027,"m":5,"d":15},{"y":2027,"m":5,"d":16},{"y":2027,"m":5,"d":17},{"y":2027,"m":5,"d":18}]},"WE 19&20 Jun":{"satHeader":"SATURDAY 19 JUNE","sunHeader":"SUNDAY 20 JUNE","y":2027},"21-25 June":{"cols":[{"y":2027,"m":5,"d":21},{"y":2027,"m":5,"d":22},{"y":2027,"m":5,"d":23},{"y":2027,"m":5,"d":24},{"y":2027,"m":5,"d":25}]},"WE 26&27 Jun":{"satHeader":"SATURDAY 26 JUNE","sunHeader":"SUNDAY 27 JUNE","y":2027},"28 June - 2 July":{"cols":[{"y":2027,"m":5,"d":28},{"y":2027,"m":5,"d":29},{"y":2027,"m":5,"d":30},{"y":2027,"m":6,"d":1},{"y":2027,"m":6,"d":2}]},"WE 3&4 Jul":{"satHeader":"SATURDAY 3 JULY","sunHeader":"SUNDAY 4 JULY","y":2027},"5-9 July":{"cols":[{"y":2027,"m":6,"d":5},{"y":2027,"m":6,"d":6},{"y":2027,"m":6,"d":7},{"y":2027,"m":6,"d":8},{"y":2027,"m":6,"d":9}]},"WE 10&11 Jul":{"satHeader":"SATURDAY 10 JULY","sunHeader":"SUNDAY 11 JULY","y":2027},"12-16 July":{"cols":[{"y":2027,"m":6,"d":12},{"y":2027,"m":6,"d":13},{"y":2027,"m":6,"d":14},{"y":2027,"m":6,"d":15},{"y":2027,"m":6,"d":16}]},"WE 17&18 Jul":{"satHeader":"SATURDAY 17 JULY","sunHeader":"SUNDAY 18 JULY","y":2027},"19-23 July":{"cols":[{"y":2027,"m":6,"d":19},{"y":2027,"m":6,"d":20},{"y":2027,"m":6,"d":21},{"y":2027,"m":6,"d":22},{"y":2027,"m":6,"d":23}]},"WE 24&25 Jul":{"satHeader":"SATURDAY 24 JULY","sunHeader":"SUNDAY 25 JULY","y":2027},"26-30 July":{"cols":[{"y":2027,"m":6,"d":26},{"y":2027,"m":6,"d":27},{"y":2027,"m":6,"d":28},{"y":2027,"m":6,"d":29},{"y":2027,"m":6,"d":30}]},"WE 31 Jul 1 Aug":{"satHeader":"SATURDAY 31 JULY","sunHeader":"SUNDAY 1 AUGUST","y":2027},"2-6 August":{"cols":[{"y":2027,"m":7,"d":2},{"y":2027,"m":7,"d":3},{"y":2027,"m":7,"d":4},{"y":2027,"m":7,"d":5},{"y":2027,"m":7,"d":6}]},"WE 7&8 Aug":{"satHeader":"SATURDAY 7 AUGUST","sunHeader":"SUNDAY 8 AUGUST","y":2027},"9-13 August":{"cols":[{"y":2027,"m":7,"d":9},{"y":2027,"m":7,"d":10},{"y":2027,"m":7,"d":11},{"y":2027,"m":7,"d":12},{"y":2027,"m":7,"d":13}]},"WE 14&15 Aug":{"satHeader":"SATURDAY 14 AUGUST","sunHeader":"SUNDAY 15 AUGUST","y":2027},"16-20 August":{"cols":[{"y":2027,"m":7,"d":16},{"y":2027,"m":7,"d":17},{"y":2027,"m":7,"d":18},{"y":2027,"m":7,"d":19},{"y":2027,"m":7,"d":20}]},"WE 21&22 Aug":{"satHeader":"SATURDAY 21 AUGUST","sunHeader":"SUNDAY 22 AUGUST","y":2027},"23-27 August":{"cols":[{"y":2027,"m":7,"d":23},{"y":2027,"m":7,"d":24},{"y":2027,"m":7,"d":25},{"y":2027,"m":7,"d":26},{"y":2027,"m":7,"d":27}]},"WE 28&29 Aug":{"satHeader":"SATURDAY 28 AUGUST","sunHeader":"SUNDAY 29 AUGUST","y":2027},"30 August - 3 September":{"cols":[{"y":2027,"m":7,"d":30},{"y":2027,"m":7,"d":31},{"y":2027,"m":8,"d":1},{"y":2027,"m":8,"d":2},{"y":2027,"m":8,"d":3}]},"WE 4&5 Sep":{"satHeader":"SATURDAY 4 SEPTEMBER","sunHeader":"SUNDAY 5 SEPTEMBER","y":2027},"6-10 September":{"cols":[{"y":2027,"m":8,"d":6},{"y":2027,"m":8,"d":7},{"y":2027,"m":8,"d":8},{"y":2027,"m":8,"d":9},{"y":2027,"m":8,"d":10}]},"WE 11&12 Sep":{"satHeader":"SATURDAY 11 SEPTEMBER","sunHeader":"SUNDAY 12 SEPTEMBER","y":2027},"13-17 September":{"cols":[{"y":2027,"m":8,"d":13},{"y":2027,"m":8,"d":14},{"y":2027,"m":8,"d":15},{"y":2027,"m":8,"d":16},{"y":2027,"m":8,"d":17}]},"WE 18&19 Sep":{"satHeader":"SATURDAY 18 SEPTEMBER","sunHeader":"SUNDAY 19 SEPTEMBER","y":2027},"20-24 September":{"cols":[{"y":2027,"m":8,"d":20},{"y":2027,"m":8,"d":21},{"y":2027,"m":8,"d":22},{"y":2027,"m":8,"d":23},{"y":2027,"m":8,"d":24}]},"WE 25&26 Sep":{"satHeader":"SATURDAY 25 SEPTEMBER","sunHeader":"SUNDAY 26 SEPTEMBER","y":2027},"27 September - 1 October":{"cols":[{"y":2027,"m":8,"d":27},{"y":2027,"m":8,"d":28},{"y":2027,"m":8,"d":29},{"y":2027,"m":8,"d":30},{"y":2027,"m":9,"d":1}]},"WE 2&3 Oct":{"satHeader":"SATURDAY 2 OCTOBER","sunHeader":"SUNDAY 3 OCTOBER","y":2027},"4-8 October":{"cols":[{"y":2027,"m":9,"d":4},{"y":2027,"m":9,"d":5},{"y":2027,"m":9,"d":6},{"y":2027,"m":9,"d":7},{"y":2027,"m":9,"d":8}]},"WE 9&10 Oct":{"satHeader":"SATURDAY 9 OCTOBER","sunHeader":"SUNDAY 10 OCTOBER","y":2027},"11-15 October":{"cols":[{"y":2027,"m":9,"d":11},{"y":2027,"m":9,"d":12},{"y":2027,"m":9,"d":13},{"y":2027,"m":9,"d":14},{"y":2027,"m":9,"d":15}]},"WE 16&17 Oct":{"satHeader":"SATURDAY 16 OCTOBER","sunHeader":"SUNDAY 17 OCTOBER","y":2027},"18-22 October":{"cols":[{"y":2027,"m":9,"d":18},{"y":2027,"m":9,"d":19},{"y":2027,"m":9,"d":20},{"y":2027,"m":9,"d":21},{"y":2027,"m":9,"d":22}]},"WE 23&24 Oct":{"satHeader":"SATURDAY 23 OCTOBER","sunHeader":"SUNDAY 24 OCTOBER","y":2027},"25-29 October":{"cols":[{"y":2027,"m":9,"d":25},{"y":2027,"m":9,"d":26},{"y":2027,"m":9,"d":27},{"y":2027,"m":9,"d":28},{"y":2027,"m":9,"d":29}]},"WE 30&31 Oct":{"satHeader":"SATURDAY 30 OCTOBER","sunHeader":"SUNDAY 31 OCTOBER","y":2027},"1-5 November":{"cols":[{"y":2027,"m":10,"d":1},{"y":2027,"m":10,"d":2},{"y":2027,"m":10,"d":3},{"y":2027,"m":10,"d":4},{"y":2027,"m":10,"d":5}]},"WE 6&7 Nov":{"satHeader":"SATURDAY 6 NOVEMBER","sunHeader":"SUNDAY 7 NOVEMBER","y":2027},"8-12 November":{"cols":[{"y":2027,"m":10,"d":8},{"y":2027,"m":10,"d":9},{"y":2027,"m":10,"d":10},{"y":2027,"m":10,"d":11},{"y":2027,"m":10,"d":12}]},"WE 13&14 Nov":{"satHeader":"SATURDAY 13 NOVEMBER","sunHeader":"SUNDAY 14 NOVEMBER","y":2027},"15-19 November":{"cols":[{"y":2027,"m":10,"d":15},{"y":2027,"m":10,"d":16},{"y":2027,"m":10,"d":17},{"y":2027,"m":10,"d":18},{"y":2027,"m":10,"d":19}]},"WE 20&21 Nov":{"satHeader":"SATURDAY 20 NOVEMBER","sunHeader":"SUNDAY 21 NOVEMBER","y":2027},"22-26 November":{"cols":[{"y":2027,"m":10,"d":22},{"y":2027,"m":10,"d":23},{"y":2027,"m":10,"d":24},{"y":2027,"m":10,"d":25},{"y":2027,"m":10,"d":26}]},"WE 27&28 Nov":{"satHeader":"SATURDAY 27 NOVEMBER","sunHeader":"SUNDAY 28 NOVEMBER","y":2027},"29 November - 3 December":{"cols":[{"y":2027,"m":10,"d":29},{"y":2027,"m":10,"d":30},{"y":2027,"m":11,"d":1},{"y":2027,"m":11,"d":2},{"y":2027,"m":11,"d":3}]},"WE 4&5 Dec":{"satHeader":"SATURDAY 4 DECEMBER","sunHeader":"SUNDAY 5 DECEMBER","y":2027},"6-10 December":{"cols":[{"y":2027,"m":11,"d":6},{"y":2027,"m":11,"d":7},{"y":2027,"m":11,"d":8},{"y":2027,"m":11,"d":9},{"y":2027,"m":11,"d":10}]},"WE 11&12 Dec":{"satHeader":"SATURDAY 11 DECEMBER","sunHeader":"SUNDAY 12 DECEMBER","y":2027},"13-17 December":{"cols":[{"y":2027,"m":11,"d":13},{"y":2027,"m":11,"d":14},{"y":2027,"m":11,"d":15},{"y":2027,"m":11,"d":16},{"y":2027,"m":11,"d":17}]},"WE 18&19 Dec":{"satHeader":"SATURDAY 18 DECEMBER","sunHeader":"SUNDAY 19 DECEMBER","y":2027},"20-24 December":{"cols":[{"y":2027,"m":11,"d":20},{"y":2027,"m":11,"d":21},{"y":2027,"m":11,"d":22},{"y":2027,"m":11,"d":23},{"y":2027,"m":11,"d":24}]},"WE 25&26 Dec":{"blocked":"See Christmas rota","satHeader":"SATURDAY 25 DECEMBER","sunHeader":"SUNDAY 26 DECEMBER","y":2027},"27-31 December":{"cols":[{"y":2027,"m":11,"d":27},{"y":2027,"m":11,"d":28},{"y":2027,"m":11,"d":29},{"y":2027,"m":11,"d":30},{"y":2027,"m":11,"d":31}],"blocked":"See Christmas rota"},"trial-2026-11-02":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":2},{"y":2026,"m":10,"d":3},{"y":2026,"m":10,"d":4},{"y":2026,"m":10,"d":5},{"y":2026,"m":10,"d":6}]},"trial-2026-11-07":{"y":2026,"trial":true,"satHeader":"SATURDAY 7 NOVEMBER","sunHeader":"SUNDAY 8 NOVEMBER"},"trial-2026-11-09":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":9},{"y":2026,"m":10,"d":10},{"y":2026,"m":10,"d":11},{"y":2026,"m":10,"d":12},{"y":2026,"m":10,"d":13}]},"trial-2026-11-14":{"y":2026,"trial":true,"satHeader":"SATURDAY 14 NOVEMBER","sunHeader":"SUNDAY 15 NOVEMBER"},"trial-2026-11-16":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":16},{"y":2026,"m":10,"d":17},{"y":2026,"m":10,"d":18},{"y":2026,"m":10,"d":19},{"y":2026,"m":10,"d":20}]},"trial-2026-11-21":{"y":2026,"trial":true,"satHeader":"SATURDAY 21 NOVEMBER","sunHeader":"SUNDAY 22 NOVEMBER"},"trial-2026-11-23":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":23},{"y":2026,"m":10,"d":24},{"y":2026,"m":10,"d":25},{"y":2026,"m":10,"d":26},{"y":2026,"m":10,"d":27}]},"trial-2026-11-28":{"y":2026,"trial":true,"satHeader":"SATURDAY 28 NOVEMBER","sunHeader":"SUNDAY 29 NOVEMBER"},"trial-2026-11-30":{"y":2026,"trial":true,"cols":[{"y":2026,"m":10,"d":30},{"y":2026,"m":11,"d":1},{"y":2026,"m":11,"d":2},{"y":2026,"m":11,"d":3},{"y":2026,"m":11,"d":4}]},"trial-2026-12-05":{"y":2026,"trial":true,"satHeader":"SATURDAY 5 DECEMBER","sunHeader":"SUNDAY 6 DECEMBER"},"trial-2026-12-07":{"y":2026,"trial":true,"cols":[{"y":2026,"m":11,"d":7},{"y":2026,"m":11,"d":8},{"y":2026,"m":11,"d":9},{"y":2026,"m":11,"d":10},{"y":2026,"m":11,"d":11}]},"trial-2026-12-12":{"y":2026,"trial":true,"satHeader":"SATURDAY 12 DECEMBER","sunHeader":"SUNDAY 13 DECEMBER"},"trial-2026-12-14":{"y":2026,"trial":true,"cols":[{"y":2026,"m":11,"d":14},{"y":2026,"m":11,"d":15},{"y":2026,"m":11,"d":16},{"y":2026,"m":11,"d":17},{"y":2026,"m":11,"d":18}]},"trial-2026-12-19":{"y":2026,"trial":true,"satHeader":"SATURDAY 19 DECEMBER","sunHeader":"SUNDAY 20 DECEMBER"},"trial-2026-12-21":{"y":2026,"trial":true,"cols":[{"y":2026,"m":11,"d":21},{"y":2026,"m":11,"d":22},{"y":2026,"m":11,"d":23},{"y":2026,"m":11,"d":24}]}}};
 const YEAR = 2027;                     // default template year and fixed rotation anchor; views support both years
+// Calendar labels only: captured from shipped definitions before any live data is loaded.
+// The archive never receives the live store, templates, personnel or access tokens.
+const BACKUP_CATALOG = JSON.parse(JSON.stringify({year:YEAR,weeks:RAW.weeks.map(w=>{
+  const base=RAW.weekMeta?.[w.id]||RAW.weeksData?.[w.id]||{};
+  const meta={};for(const key of ['cols','y','satHeader','sunHeader','friHeader','monHeader','special','blocked'])if(base[key]!==undefined)meta[key]=base[key];
+  return {id:w.id,name:w.name,kind:w.kind,meta};
+})}));
 const LSKEY = "bauer_news_rota_v5";
 
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -2109,7 +2128,7 @@ $("#undoBtn").addEventListener("click",undo);
 $("#redoBtn").addEventListener("click",redo);
 $("#editBtn").addEventListener("click",()=>toggleEdit());
 document.addEventListener("keydown",e=>{
-  if(!state.editing) return;
+  if(!state.editing||BACKUP_VIEWER_FRAME) return;
   const mod=e.ctrlKey||e.metaKey; if(!mod) return;
   const ae=document.activeElement, inCell = ae && ae.getAttribute && ae.getAttribute("contenteditable")==="true";
   const tag=(ae&&ae.tagName)||"";
@@ -3443,6 +3462,7 @@ document.addEventListener("click",e=>{
   if(act==="export"){ doExport(); return; }
   if(act==="recovery"){ closeMenu(); openRecovery(false); return; }
   if(act==="gapcheck"){ closeMenu(); openGapCheck(); return; }
+  if(act==="backupviewer"){ closeMenu(); openBackupViewer(); return; }
   if(act==="import"){ if(requireEdit()) $("#importFile").click(); return; }
   if(act==="editkey"){ if(!requireEdit()) return; closeMenu(); openKeyModal(); return; }
   if(act==="keyadd"){ if(requireEdit()) keyAdd(); return; }
@@ -3976,6 +3996,239 @@ function leaverConfirm(){
       flash("Removed "+name+" from "+res.cells+" assignment"+(res.cells===1?"":"s")+" after "+fmtDate(dt));
     });
 }
+
+/* ---------- isolated historical backup viewer ---------- */
+var BACKUP_VIEWER_FRAME=null;
+function canOpenBackupViewer(){return !!(SYNC?.accessGranted&&SYNC.bootstrapped&&SYNC.canEdit&&SYNC.serverRole==='ops'&&state.role==='ops'&&!isPhone());}
+function backupViewerDocument(){
+  const nonce='n'+Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('');
+  const calendar=JSON.stringify({...BACKUP_CATALOG,bankHolidays:BANKHOLS}).replace(/</g,'\\u003c');
+  const policy="default-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; script-src 'nonce-"+nonce+"'; style-src 'unsafe-inline'; img-src data:; font-src data:";
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+policy+'"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1"><title>News Rota — Backup viewer</title></head><body><script nonce="'+nonce+'">('+backupViewerRuntime.toString()+')('+calendar+');</scr'+'ipt></body></html>';
+}
+function openBackupViewer(){
+  if(!canOpenBackupViewer()){flash('Use Operations on desktop to view an old backup.');return;}
+  closeBackupViewer();
+  const frame=document.createElement('iframe');
+  frame.setAttribute('sandbox','allow-scripts');
+  frame.setAttribute('referrerpolicy','no-referrer');
+  frame.setAttribute('title','Historical rota backup — read only');
+  frame.setAttribute('tabindex','0');
+  frame.srcdoc=backupViewerDocument();
+  BACKUP_VIEWER_FRAME=frame;
+  $('#backupViewerHost').replaceChildren(frame);
+  $('#backupViewerModal').classList.add('open');
+}
+function closeBackupViewer(){
+  BACKUP_VIEWER_FRAME=null;
+  $('#backupViewerHost').replaceChildren(); // Destroy the document, pending file reads and all uploaded data.
+  $('#backupViewerModal').classList.remove('open');
+}
+window.addEventListener('message',event=>{
+  if(BACKUP_VIEWER_FRAME&&event.source===BACKUP_VIEWER_FRAME.contentWindow&&event.data?.type==='news-rota-close-backup-viewer')closeBackupViewer();
+});
+window.addEventListener('resize',()=>{if(BACKUP_VIEWER_FRAME&&!canOpenBackupViewer())closeBackupViewer();});
+$('#backupViewerClose').addEventListener('click',closeBackupViewer);
+$('#backupViewerModal').addEventListener('click',event=>{if(event.target.id==='backupViewerModal')closeBackupViewer();});
+
+/* BACKUP_VIEWER_RUNTIME_START */
+// Self-contained: this function runs only inside an opaque, network-disabled iframe.
+function backupViewerRuntime(catalog){
+  'use strict';
+  const $=s=>document.querySelector(s), MAX_BYTES=25*1024*1024;
+  const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+  const obj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const norm=v=>String(v||'').trim().toLowerCase();
+  const months=['january','february','march','april','may','june','july','august','september','october','november','december'];
+  let archive=null,pages=[],index=0,query='',readVersion=0,fileName='';
+  const style=document.createElement('style');
+  style.textContent=`
+  :root{color-scheme:light;--purple:#4700a3;--mint:#1fd1bd;--bg:#f5f4f8;--line:#e5e1ef;--text:#1b1621;--muted:#6e6880}
+  *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,'Segoe UI',sans-serif}
+  button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.4}button,input,select{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff;color:var(--purple)}
+  :focus-visible{outline:3px solid var(--mint);outline-offset:3px}button.primary,.file-button{background:var(--purple);color:#fff;border-color:var(--purple);font-weight:650}
+  [hidden]{display:none!important}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;background:var(--purple);color:#fff}.brand{font-weight:800;font-size:19px}.badge{display:inline-block;color:var(--mint);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-left:10px}.top p{margin:2px 0 0;font-size:12px;color:#eee6ff}.top button{background:transparent;color:#fff;border-color:#ffffff55}
+  main{max-width:1420px;margin:auto;padding:22px}.empty{max-width:610px;margin:7vh auto;padding:40px;text-align:center;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 30px #4700a30a}.empty-icon{margin:0 auto 20px;background:#e1dcff;border-radius:18px;width:62px;height:62px;display:grid;place-items:center;font-size:30px;color:var(--purple)}h1{font-size:26px;margin:0 0 10px;line-height:1.2}h2{margin:0;font-size:22px;line-height:1.25}p{margin:10px 0}.muted{color:var(--muted)}.empty .primary{margin:16px 0 10px;min-width:180px}.small{font-size:12px}
+  .filebar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.filename{font-weight:650;overflow-wrap:anywhere}.file-actions{display:flex;gap:8px;flex-shrink:0}.summary{margin:4px 0 0;font-size:12px;color:var(--muted)}.error{color:#8c2525;background:#fff0ed;border:1px solid #f0cecb;padding:12px 16px;border-radius:10px;margin:0 0 16px;white-space:pre-wrap}.error:empty{display:none}
+  .controls{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:18px}.week-controls{display:flex;align-items:center;gap:8px;max-width:100%}.week-controls>button{font-size:23px;line-height:1;padding:9px 14px}.week-controls label{display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.week-controls select{min-width:270px;max-width:100%;font-weight:700;font-size:15px;letter-spacing:0;text-transform:none}.search{display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;min-width:230px}.search input{color:var(--text);letter-spacing:0;text-transform:none;width:100%}
+  .week-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:20px 0 14px}.status{font-size:11px;white-space:nowrap;background:#e1dcff;color:var(--purple);border-radius:20px;padding:5px 10px}.jump{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}.jump button{font-size:12px;padding:7px 10px}.notice{background:#fff;border:1px solid var(--line);border-radius:12px;padding:26px;margin:16px 0}.notice h3{margin:0 0 6px}.notice p:last-child{margin-bottom:0}.hint{color:var(--muted);font-size:12px;margin:10px 0}.issues{margin:14px 0;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:#fff}.issues summary{cursor:pointer;font-weight:600}.issues ul{padding-left:22px}
+  .card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;margin:0 0 20px;scroll-margin-top:16px}.card h3{margin:0;padding:12px 16px;background:var(--purple);color:#fff;font-size:13px;font-weight:750;letter-spacing:.025em}.table-scroll{overflow-x:auto}table{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;min-width:640px}th,td{overflow-wrap:anywhere;vertical-align:middle;padding:11px 12px;border-right:1px solid #f0edf6;border-bottom:1px solid #f0edf6}thead th{background:#f0ecf8;color:var(--purple);font-size:12px;text-align:center}thead th:first-child{width:24%;text-align:left}thead small{display:block;font-weight:400;margin-top:2px}tbody th{text-align:left;font-size:12px;background:#fff;font-weight:600}td{text-align:center;font-size:13px}tr:last-child>*{border-bottom:0}tr>*:last-child{border-right:0}.subhead th{background:#f6f4fa;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}.shift{font-weight:700;font-size:10px;border-radius:4px;background:#e1dcff;color:var(--purple);padding:2px 5px;display:inline-block;margin-left:5px}.shift.pm{background:#d8f4ef;color:#007a70}
+  td.gap{background:#fcebec;color:#a66b72}td.void{background:repeating-linear-gradient(135deg,#f0edf3,#f0edf3 5px,#faf9fb 5px,#faf9fb 10px);color:#8e8799;font-size:11px}td.blocked{background:#f0edf3;color:#777;font-size:11px}td.free{background:#e5ddff}td.cover{background:#e3f8f4}td.free.cover{box-shadow:inset 0 -4px #b9a6f3}.cell-note{display:block;font-size:11px;color:inherit;opacity:.75;white-space:pre-wrap;margin-top:5px}.match{box-shadow:inset 0 0 0 2px #009392!important}.notes{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}.notes h3{font-size:14px;margin:0 0 10px}.notes li{white-space:pre-wrap;margin:7px 0}.foot{color:var(--muted);font-size:11px;text-align:center;margin:24px 0 4px}
+  @media(max-width:780px){main{padding:14px}.top{padding:14px;align-items:flex-start}.brand{font-size:16px}.badge{display:block;margin-left:0;margin-top:3px}.top button{font-size:12px}.empty{padding:26px 20px;margin:5vh auto}.filebar{align-items:flex-start;flex-direction:column}.controls{flex-direction:column;align-items:stretch;gap:12px}.week-controls label{flex:1;min-width:0}.week-controls select{min-width:0;width:100%}.search{min-width:0}.week-title{align-items:flex-start;flex-direction:column}h2{font-size:20px}table{min-width:610px}.file-actions{flex-wrap:wrap}}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+  `;
+  document.head.append(style);
+  document.body.innerHTML=`<header class="top"><div><div class="brand">News Rota <span class="badge">Backup viewer · Read only</span></div><p>Live rota is unchanged</p></div><button id="archiveExit" type="button">Back to live rota</button></header>
+  <main><div id="archiveError" class="error" role="alert"></div><input type="file" id="archiveFile" accept=".json,application/json" hidden>
+  <section id="archiveEmpty" class="empty"><div class="empty-icon" aria-hidden="true">↶</div><h1>Look back at an old rota</h1><p class="muted">Choose a News Rota JSON backup to browse the saved weeks. Your live rota stays exactly where it is.</p><button id="archiveChoose" class="primary" type="button">Choose backup</button><p class="small muted">Files are viewed only here and discarded when you close this viewer.</p></section>
+  <div id="archiveLoaded" hidden><div class="filebar"><div><div id="archiveFileName" class="filename"></div><p id="archiveSummary" class="summary"></p></div><div class="file-actions"><button id="archiveReplace" type="button">Choose another backup</button><button id="archiveClear" type="button">Clear</button></div></div>
+  <div class="controls"><div class="week-controls"><button id="archivePrev" type="button" aria-label="Previous rota">‹</button><label>Week / weekend<select id="archiveWeek" aria-label="Choose a week or weekend"></select></label><button id="archiveNext" type="button" aria-label="Next rota">›</button></div><label class="search">Search this week<input id="archiveSearch" type="search" placeholder="Person, role or section…" autocomplete="off"></label></div>
+  <div id="archiveIssues"></div><div id="archivePage"></div><p class="foot">Read-only copy from your file · No live connection · Nothing is saved</p></div></main>`;
+
+  function validateBackup(value){
+    if(!obj(value)||!obj(value.overrides))throw Error('Choose a News Rota JSON export with saved week data. Recovery drafts and database files cannot be viewed here.');
+    if(value.schema!==undefined&&(!Number.isInteger(value.schema)||value.schema<0||value.schema>10))throw Error('This backup version is not supported by this viewer.');
+    const pending=[[value,0]];let total=0;
+    while(pending.length){const [v,depth]=pending.pop();if(++total>700000||depth>60)throw Error('This file is too complex to view safely.');if(v&&typeof v==='object')for(const k of Object.keys(v)){if(['__proto__','prototype','constructor'].includes(k))throw Error('This file contains unsupported data keys.');pending.push([v[k],depth+1]);}}
+    if(Object.keys(value.overrides).length>2000)throw Error('This backup has too many saved rota pages.');
+    if(value.extraWeeks!==undefined&&(!Array.isArray(value.extraWeeks)||value.extraWeeks.length>2000||value.extraWeeks.some(w=>!obj(w)||typeof w.id!=='string'||typeof w.name!=='string'||!['weekday','weekend'].includes(w.kind))))throw Error('The backup has an unreadable list of extra weeks.');
+    if(value.deletedWeeks!==undefined&&(!Array.isArray(value.deletedWeeks)||!value.deletedWeeks.every(x=>typeof x==='string')))throw Error('The backup has an unreadable list of removed weeks.');
+    for(const k of ['cellNotes','cellColors','cellCover','cellVoid','public','freelance'])if(value[k]!==undefined&&!obj(value[k]))throw Error('The backup has unreadable '+k+' data.');
+    for(const k of ['cellNotes','cellColors'])if(value[k]&&!Object.values(value[k]).every(x=>typeof x==='string'))throw Error('The backup has unreadable '+k+' values.');
+    for(const k of ['cellCover','cellVoid','public','freelance'])if(value[k]&&!Object.values(value[k]).every(x=>typeof x==='boolean'))throw Error('The backup has unreadable '+k+' values.');
+    if(value.key!==undefined&&(!Array.isArray(value.key)||value.key.some(k=>!obj(k)||typeof k.id!=='string'||typeof k.label!=='string'||typeof k.color!=='string')))throw Error('The backup has an unreadable colour key.');
+    return value;
+  }
+  function validatePage(d){
+    if(!obj(d))throw Error('This saved page is not a rota.');
+    for(const k of ['satHeader','sunHeader','friHeader','monHeader','blocked'])if(d[k]!=null&&typeof d[k]!=='string')throw Error('Invalid date or page label.');
+    if(d.y!==undefined&&(!Number.isInteger(d.y)||d.y<1900||d.y>2199))throw Error('Invalid year.');
+    if(d.notes!==undefined&&(!Array.isArray(d.notes)||!d.notes.every(n=>typeof n==='string')))throw Error('Invalid notes.');
+    if(d.cols!==undefined&&(!Array.isArray(d.cols)||d.cols.length>31||d.cols.some(c=>!obj(c)||['key','lbl','sub'].some(k=>c[k]!=null&&typeof c[k]!=='string')||['y','m','d'].some(k=>c[k]!==undefined&&!Number.isInteger(c[k])))))throw Error('Invalid date columns.');
+    if(d.sections!==undefined){
+      if(!Array.isArray(d.sections)||d.sections.length>100)throw Error('Invalid sections.');
+      for(const sec of d.sections){if(!obj(sec)||typeof sec.title!=='string'||!Array.isArray(sec.rows)||sec.rows.length>1000)throw Error('Invalid section rows.');for(const row of sec.rows){if(!obj(row)||!['role','subhead'].includes(row.type)||['area','slot','label'].some(k=>row[k]!==undefined&&typeof row[k]!=='string'))throw Error('Invalid role label.');if(row.type==='role'&&(!Array.isArray(row.assign)||row.assign.length>31||!row.assign.every(x=>typeof x==='string')))throw Error('Invalid assignments.');}}
+    }else{
+      if(!Array.isArray(d.rows)||d.rows.length>1000)throw Error('This page has no readable rows.');
+      if(d.awayRows!==undefined&&(!Array.isArray(d.awayRows)||d.awayRows.length>1000))throw Error('Invalid Away rows.');
+      for(const row of [...d.rows,...(d.awayRows||[])]){if(!obj(row)||['role','fri','sat','sun','mon'].some(k=>row[k]!==undefined&&typeof row[k]!=='string')||(row.vals!==undefined&&(!obj(row.vals)||!Object.values(row.vals).every(v=>typeof v==='string'))))throw Error('Invalid weekend assignments.');}
+      if(d.special&&(!Array.isArray(d.cols)||d.cols.some(c=>typeof c.key!=='string'||!c.key)))throw Error('Special rota date keys are missing.');
+    }
+    return d;
+  }
+  function actualDate(y,m,d){if(!Number.isInteger(y)||!Number.isInteger(m)||!Number.isInteger(d))return null;const dt=new Date(y,m,d);return dt.getFullYear()===y&&dt.getMonth()===m&&dt.getDate()===d?dt:null;}
+  function headerDate(text,year){const m=String(text||'').match(/\b(\d{1,2})\s+([a-z]+)(?:\s+(\d{4}))?/i);if(!m)return null;const month=months.findIndex(x=>x.startsWith(m[2].toLowerCase()));return month<0?null:actualDate(m[3]?+m[3]:year,month,+m[1]);}
+  function dateLabel(date){return date?date.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'Date unavailable';}
+  function bankHoliday(date){return date&&catalog.bankHolidays?.[date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate()]||'';}
+  function pageDays(p){
+    const d=p.data||{},meta=p.meta||{},known=p.known;
+    const namedYear=String(p.name+' '+p.id).match(/\b((?:19|20|21)\d{2})\b/);
+    const year=d.y??meta.y??(namedYear?+namedYear[1]:known?catalog.year:undefined);
+    const cols=d.cols!==undefined?d.cols:(meta.cols||[]);
+    if(Array.isArray(d.sections)||p.kind==='weekday'){
+      const count=Math.max(cols.length,...(d.sections||[]).flatMap(s=>s.rows.filter(r=>r.type==='role').map(r=>r.assign.length)),0);
+      return Array.from({length:count},(_,i)=>{const c=cols[i]||{},dt=actualDate(c.y??year,c.m,c.d);return {key:i,date:dt,label:dt?dt.toLocaleDateString('en-GB',{weekday:'short'}):c.lbl||'Day '+(i+1),sub:dt?dateLabel(dt):c.sub||'Date unavailable'};});
+    }
+    if(d.special||(!p.data&&meta.special))return cols.map((c,i)=>{const dt=actualDate(c.y??year,c.m,c.d)||headerDate(c.sub,year);return {key:c.key??String(i),date:dt,label:c.lbl||String(c.key||'Day '+(i+1)),sub:dt?dateLabel(dt):c.sub||'Date unavailable'};});
+    const allRows=[...(d.rows||[]),...(d.awayRows||[])],days=[];
+    for(const [key,label] of [['fri','Fri'],['sat','Sat'],['sun','Sun'],['mon','Mon']]){
+      const header=d[key+'Header']??meta[key+'Header'];
+      const anchor=key==='fri'?'sat':'sun',base=headerDate(d[anchor+'Header']??meta[anchor+'Header'],year);
+      const adjacent=base?new Date(base):null;if(adjacent)adjacent.setDate(adjacent.getDate()+(key==='fri'?-1:1));
+      if(key==='sat'||key==='sun'||header||allRows.some(r=>own(r,key))||((key==='fri'||key==='mon')&&bankHoliday(adjacent))){
+        let dt=headerDate(header,year);
+        if(!dt&&(key==='fri'||key==='mon'))dt=adjacent;
+        days.push({key,date:dt,label,sub:dt?dateLabel(dt):'Date unavailable'});
+      }
+    }
+    return days;
+  }
+  function makePages(value){
+    const all=new Map(),removed=new Set(value.deletedWeeks||[]);
+    for(const w of catalog.weeks||[])all.set(w.id,{...w,known:true});
+    for(const w of value.extraWeeks||[])all.set(w.id,{...w,meta:all.get(w.id)?.meta||{},known:all.has(w.id)});
+    for(const id of Object.keys(value.overrides))if(!all.has(id))all.set(id,{id,name:id,kind:Array.isArray(value.overrides[id]?.sections)?'weekday':'weekend',meta:{},known:false});
+    const list=[];
+    for(const p of all.values()){
+      if(removed.has(p.id))continue;
+      p.saved=own(value.overrides,p.id);p.data=p.saved?value.overrides[p.id]:null;
+      try{if(p.saved)validatePage(p.data);p.days=pageDays(p);}catch(e){p.error=e.message;p.days=[];}
+      p.time=p.days?.find(d=>d.date)?.date.getTime()??Infinity;
+      list.push(p);
+    }
+    return list.sort((a,b)=>a.time-b.time||a.name.localeCompare(b.name));
+  }
+  function cell(p,sec,row,key,value,away){
+    const marker=p.id+'|'+sec+'|'+row+'|'+key;
+    const voided=archive.cellVoid?.[marker]===true,holiday=Array.isArray(p.data.sections)&&bankHoliday(p.days.find(day=>day.key===key)?.date);
+    const blocked=(p.data.blocked||holiday)&&!away;
+    let cls=voided?'void':blocked?'blocked':!value.trim()&&!away?'gap':'';
+    if(archive.cellCover?.[marker])cls+=' cover';
+    if(Object.entries(archive.freelance||{}).some(([name,flag])=>flag&&norm(name)===norm(value)))cls+=' free';
+    if(query&&norm(value).includes(query))cls+=' match';
+    let colour=archive.cellColors?.[marker],ink='';
+    if(!/^#[0-9a-f]{6}$/i.test(colour||''))colour=(archive.key||[]).find(k=>k.id===colour)?.color;
+    if(/^#[0-9a-f]{6}$/i.test(colour||'')&&!voided&&!blocked){const n=parseInt(colour.slice(1),16);ink=(.299*(n>>16)+.587*((n>>8)&255)+.114*(n&255))<150?'#ffffff':'#1b1621';}else colour='';
+    const text=voided?'Not needed':blocked?(p.data.blocked||'Bank holiday · see weekend rota'):value||'—',note=archive.cellNotes?.[marker];
+    return '<td class="'+cls+'"'+(colour?' style="background:'+colour+';color:'+ink+'"':'')+'>'+esc(text)+(note?'<small class="cell-note">'+esc(note)+'</small>':'')+'</td>';
+  }
+  function table(p,title,rows,sectionKey,away){
+    const matches=rows.filter(r=>r.subhead||!query||norm([title,r.label,...r.values].join(' ')).includes(query));
+    if(!matches.some(r=>!r.subhead))return '';
+    let html='<section class="card" id="archive-section-'+sectionKey+'"><h3>'+esc(title)+'</h3><div class="table-scroll"><table><thead><tr><th scope="col">'+(away?'Away':'Role')+'</th>';
+    for(const day of p.days)html+='<th scope="col">'+esc(day.label)+'<small>'+esc(day.sub)+'</small></th>';
+    html+='</tr></thead><tbody>';
+    for(const row of matches){if(row.subhead){html+='<tr class="subhead"><th colspan="'+(p.days.length+1)+'">'+esc(row.label)+'</th></tr>';continue;}
+      html+='<tr><th scope="row">'+esc(row.label)+(row.shift?'<span class="shift '+row.shift.toLowerCase()+'">'+esc(row.shift)+'</span>':'')+'</th>';
+      p.days.forEach((day,i)=>{html+=cell(p,row.section,row.row,day.key,row.values[i]||'',away);});html+='</tr>';
+    }
+    return html+'</tbody></table></div></section>';
+  }
+  function pageContent(p){
+    if(!p.saved)return '<section class="notice"><h3>No saved rota in this backup</h3><p class="muted">This file does not contain a saved copy of this week. No current template or live assignments are used to fill it.</p></section>';
+    if(p.error)return '<section class="notice"><h3>This saved page could not be displayed</h3><p>'+esc(p.error)+'</p><p class="muted">Other readable weeks are still available. The backup file has not been changed.</p></section>';
+    const d=p.data,sections=[];
+    if(d.sections){d.sections.forEach((s,si)=>{let area='';const rows=s.rows.map((r,ri)=>{
+      if(r.type==='subhead'){area='';return {subhead:true,label:r.label||''};}
+      if(r.area)area=r.area;
+      const shift=/^(AM|PM)$/i.test(r.slot||'')?r.slot.toUpperCase():'';
+      return {section:si,row:ri,label:s.holiday?'Away '+(ri+1):shift?(r.area||area||r.slot):[r.area,r.slot].filter(Boolean).join(' · ')||'Unnamed role',shift,values:p.days.map((_,i)=>r.assign[i]||'')};
+    });sections.push({title:s.title||'Untitled section',key:String(si),rows,away:!!s.holiday});});}
+    else{
+      const val=(r,key)=>d.special?r.vals?.[key]||'':r[key]||'';
+      sections.push({title:'Holiday / Away',key:'wa',away:true,rows:(d.awayRows||[]).map((r,i)=>({section:'wa',row:i,label:'Away '+(i+1),values:p.days.map(day=>val(r,day.key))}))});
+      const blocks=[['Ops & Duty Editor',['weekend ops manager','weekend duty editor']],['Nationals & London',['abssport b60 b120 london','bauer 120 pm']],['Focus',['liverpool manchester','w midlands e midlands']],['Hubs',['hub south & east','hub south & west','hub north']],['Awareness, Creation & Reporter',['awareness','creation','reporter']]];
+      const rows=d.rows.map((r,i)=>({section:'we',row:i,label:r.role||'Unnamed role',values:p.days.map(day=>val(r,day.key))}));const used=new Set();
+      blocks.forEach(([title,names],i)=>{const chosen=rows.filter(r=>names.includes(norm(r.label)));chosen.forEach(r=>used.add(r.row));sections.push({title,key:'we'+i,rows:chosen});});
+      sections.push({title:'Other',key:'other',rows:rows.filter(r=>!used.has(r.row))});
+    }
+    let content='',jumps='';
+    for(const sec of sections){const html=table(p,sec.title,sec.rows,sec.key,sec.away);if(html){content+=html;jumps+='<button type="button" data-archive-jump="'+sec.key+'">'+esc(sec.title)+'</button>';}}
+    if(!content)content='<section class="notice">'+(query?'No matching people, roles or sections in this week.':'This saved page has no role rows.')+'</section>';
+    let notes='';if(d.notes?.length)notes='<section class="notes"><h3>Notes &amp; cover</h3><ul>'+d.notes.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul></section>';
+    return '<nav class="jump" aria-label="Jump to a saved section">'+jumps+'</nav>'+(!p.days.length||p.days.some(d=>!d.date)?'<p class="hint">Some dates were not saved in this file. Their columns are shown without an assumed date.</p>':'')+content+notes;
+  }
+  function renderPage(){
+    const p=pages[index];$('#archivePrev').disabled=index<=0;$('#archiveNext').disabled=index>=pages.length-1;$('#archiveWeek').value=String(index);
+    $('#archiveSearch').disabled=!p?.saved||!!p?.error;
+    if(!p){$('#archivePage').innerHTML='<section class="notice">No rota pages are available in this backup.</section>';return;}
+    const published=own(archive.public||{},p.id)?(archive.public[p.id]?'Published in backup':'Unpublished in backup'):'Publication not recorded';
+    $('#archivePage').innerHTML='<div class="week-title"><h2 tabindex="-1" id="archiveWeekTitle">'+esc(p.name)+'</h2><span class="status">'+(p.saved?esc(published):'No saved copy')+'</span></div>'+pageContent(p);
+  }
+  function showBackup(value,name){
+    const candidate=validateBackup(value),next=makePages(candidate);
+    archive=candidate;pages=next;fileName=name;index=Math.max(0,pages.findIndex(p=>p.saved&&!p.error));query='';
+    $('#archiveSearch').value='';$('#archiveFileName').textContent=fileName;
+    const saved=pages.filter(p=>p.saved),bad=saved.filter(p=>p.error);
+    $('#archiveSummary').textContent=saved.length+' saved '+(saved.length===1?'page':'pages')+' · '+(pages.length-saved.length)+' without a saved copy · File export date not recorded';
+    $('#archiveWeek').innerHTML=pages.map((p,i)=>'<option value="'+i+'">'+esc(p.name)+(p.error?' — unreadable':!p.saved?' — no saved copy':'')+'</option>').join('');
+    $('#archiveIssues').innerHTML=bad.length?'<details class="issues"><summary>'+bad.length+' saved '+(bad.length===1?'page needs':'pages need')+' attention</summary><ul>'+bad.map(p=>'<li>'+esc(p.name)+': '+esc(p.error)+'</li>').join('')+'</ul></details>':'';
+    $('#archiveEmpty').hidden=true;$('#archiveLoaded').hidden=false;$('#archiveError').textContent='';renderPage();
+  }
+  async function loadFile(file){
+    const version=++readVersion;if(!file)return;
+    if(file.size>MAX_BYTES){$('#archiveError').textContent='Choose a JSON backup smaller than 25 MB. The currently displayed backup is unchanged.';return;}
+    $('#archiveError').textContent='';
+    try{const text=await file.text();if(version!==readVersion)return;if(text.length>MAX_BYTES)throw Error('This file is too large.');showBackup(JSON.parse(text.replace(/^\uFEFF/,'')),file.name||'Rota backup.json');}
+    catch(error){if(version===readVersion)$('#archiveError').textContent='Backup not opened. '+(error instanceof SyntaxError?'The file is not valid JSON.':error.message||'The file could not be read.')+(archive?' Your current backup is unchanged.':'');}
+  }
+  function clearBackup(){++readVersion;archive=null;pages=[];index=0;query='';fileName='';$('#archiveFile').value='';$('#archiveEmpty').hidden=false;$('#archiveLoaded').hidden=true;$('#archivePage').replaceChildren();$('#archiveWeek').replaceChildren();$('#archiveIssues').replaceChildren();$('#archiveFileName').textContent='';$('#archiveSummary').textContent='';$('#archiveSearch').value='';$('#archiveError').textContent='';$('#archiveChoose').focus();}
+  const choose=()=>$('#archiveFile').click();
+  $('#archiveChoose').addEventListener('click',choose);$('#archiveReplace').addEventListener('click',choose);
+  $('#archiveFile').addEventListener('change',e=>{const file=e.target.files[0];e.target.value='';if(file)loadFile(file);});
+  $('#archiveClear').addEventListener('click',clearBackup);
+  function move(next){if(next<0||next>=pages.length)return;index=next;renderPage();$('#archiveWeekTitle')?.focus({preventScroll:true});window.scrollTo(0,0);}
+  $('#archivePrev').addEventListener('click',()=>move(index-1));$('#archiveNext').addEventListener('click',()=>move(index+1));
+  $('#archiveWeek').addEventListener('change',e=>move(Number(e.target.value)));
+  $('#archiveSearch').addEventListener('input',e=>{query=norm(e.target.value);renderPage();});
+  $('#archivePage').addEventListener('click',e=>{const b=e.target.closest('[data-archive-jump]');if(!b)return;const target=document.getElementById('archive-section-'+b.dataset.archiveJump);if(target){target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({block:'start'});}});
+  const exit=()=>parent.postMessage({type:'news-rota-close-backup-viewer'},'*');
+  $('#archiveExit').addEventListener('click',exit);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();exit();}});
+}
+
+/* BACKUP_VIEWER_RUNTIME_END */
 
 /* ---------- reset / export / import ---------- */
 function resetWeek(){
@@ -5354,6 +5607,7 @@ $('#parkingPlanReset').addEventListener('click',()=>{if(!parkingPlanEditable())r
 // FOCUS sections, everything under NATIONALS & LONDON (Behind the Headlines is
 // not an AM/PM role so it falls out naturally), and DELIVERY in the hubs.
 // News editors, newsgathering editors, creation, awareness and reporters don't.
+// Weekends: Nationals & London, Focus and Hubs use AM; BAUER 120 PM uses PM.
 const BOOTH_NOT=/behind the headlines/i;
 function boothRoleRows(d, half){
   const out=[];
@@ -5379,13 +5633,36 @@ function boothRoleRows(d, half){
   });
   return out;
 }
+function weekendBoothHalf(role){
+  const name=nrm(role);
+  if(name==='bauer 120 pm')return 'PM';
+  return ['abssport b60 b120 london','liverpool manchester','w midlands e midlands','hub south & east','hub south & west','hub north'].includes(name)?'AM':null;
+}
+function boothWeekendDays(w,d){
+  if(d.special){const dates=specialDates(w,d);return (d.cols||[]).map((c,i)=>({key:c.key,date:dates[i]}));}
+  const sat=parseWeDate(d.satHeader,d.y),sun=parseWeDate(d.sunHeader,d.y),days=[{key:'sat',date:sat},{key:'sun',date:sun}];
+  if(sat){const fri=new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1);if(isBankHol(fri))days.push({key:'fri',date:fri});}
+  if(sun){const mon=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+1);if(isBankHol(mon))days.push({key:'mon',date:mon});}
+  return days;
+}
 function boothByDay(half){                 // { dateKey: Set(names) } — one booth per person
   const map={};
   RAW.weeks.forEach(w=>{
     if(!canViewWeek(w)) return;
-    if(w.kind!=="weekday") return;
     const d=(store.overrides&&store.overrides[w.id])||template(w);
     if(!d || d.blocked) return;
+    if(w.kind==='weekend'||d.special){
+      boothWeekendDays(w,d).forEach(({key,date})=>{
+        if(!date)return;
+        const dayKey=date.getFullYear()+'-'+date.getMonth()+'-'+date.getDate();
+        (d.rows||[]).forEach((row,ri)=>{
+          if(weekendBoothHalf(row.role)!==half||store.cellVoid[w.id+'|we|'+ri+'|'+key])return;
+          const name=String(d.special?row.vals?.[key]||'':row[key]||'').trim();
+          if(name){const names=map[dayKey]||(map[dayKey]=new Set());if(![...names].some(n=>nrm(n)===nrm(name)))names.add(name);}
+        });
+      });
+      return;
+    }
     const rows=boothRoleRows(d,half);
     if(!rows.length) return;
     const dts=colDates(d,w);
@@ -6705,6 +6982,7 @@ function applyServerStatus(res){
     else if(res.serverSavedAt===null)SYNC.lastSaved=null;
   }
   const oldRole=SYNC.serverRole, oldCan=SYNC.canEdit;
+  if(res.authValid===false||res.canEdit===false)closeBackupViewer();
   if((oldRole==="ops"&&res.role&&res.role!=="ops") || (oldRole==="lead"&&res.role==="staff")) closeRestrictedViews();
   if(res.email!==undefined) SYNC.email=res.email||"";
   if(res.authReason!==undefined) SYNC.authReason=res.authReason||"";
@@ -6727,6 +7005,7 @@ function applyServerStatus(res){
           downgraded:(oldRole==="ops"&&SYNC.serverRole!=="ops") || (oldRole==="lead"&&SYNC.serverRole==="staff")};
 }
 function handleEpochMismatch(epoch){
+  closeBackupViewer();
   const ep=Number(epoch)||0;
   clearSyncTimers(); SYNC.saving=false; SYNC.pending=false; SYNC.refreshing=false;
   try{ localStorage.setItem(LSKEY, JSON.stringify({schema:SCHEMA,resetEpoch:ep,overrides:{}})); }catch(_){}
@@ -7159,6 +7438,7 @@ function seeHiddenWeeks(){
 function applyRole(){
   if(SYNC&&SYNC.on&&SYNC.serverRole) state.role=SYNC.serverRole;
   const r=ROLES[state.role]?state.role:"staff";
+  if(!canOpenBackupViewer())closeBackupViewer();
   document.body.classList.remove("role-staff","role-lead","role-ops");
   document.body.classList.add("role-"+r);
   const at=document.querySelector('#tabs .tab[data-view="admin"]');
@@ -7704,6 +7984,7 @@ document.addEventListener("keydown",e=>{
 
 // Keep sensitive overlays consistent with the current access and data.
 function closeRestrictedViews(){
+  closeBackupViewer();
   closeGapCheck();
   clearRecoveryReview();
   if(typeof SUMMARY_DAY_STATE!=='undefined')SUMMARY_DAY_STATE=null;
@@ -7808,6 +8089,7 @@ function initAccessibleUI(){
     }
     if(top&&e.key==='Escape'){
       const id=top.id;
+      if(id==='backupViewerModal')closeBackupViewer();
       if(id==='setupModal'||id==='helpModal'||id==='mobilePersonModal'||id==='mobileWorkplaceModal'||id==='recoveryModal'||id==='gapCheckModal')top.classList.remove('open');
       if(id==='roleGate')closeRoleGate();
       if(id==='parkingPlanModal'){cancelParkingDrag();top.classList.remove('open');}
