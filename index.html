@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v29.1 — compact, non-overlapping mobile role date navigation. -->
+<!-- News Rota v31 — Operations gap checks by date range or month. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -268,7 +268,6 @@ body.editing .chday .colctl{display:flex;gap:3px;position:absolute;top:3px;right
 body.editing .chday .colctl-l{left:3px;right:auto}
 .chday .colctl button{width:16px;height:16px;line-height:14px;text-align:center;padding:0;border:none;border-radius:4px;
   font-size:12px;font-weight:800;cursor:pointer;background:rgba(255,255,255,.2);color:#fff}
-.chday .colctl button[data-act^="colins"]:hover{background:var(--onchrome);color:var(--mag)}
 .chday .colctl button[data-act="coldel"]:hover{background:#d05c5d;color:#fff}
 
 /* bank holidays: greyed on weekdays, tagged on the weekend rota */
@@ -794,7 +793,7 @@ body.template .tplbanner{display:flex}
 .offtab:hover{border-color:var(--mag);color:var(--mag)}
 .offtab.on{background:var(--mag);border-color:var(--mag);color:#fff}
 .opop{position:fixed;z-index:340;display:none;background:#fff;border:1px solid var(--line);border-radius:12px;
-  box-shadow:0 16px 40px rgba(0,0,0,.26);padding:11px 13px;max-width:250px;max-height:50vh;overflow:auto}
+  box-shadow:0 16px 40px rgba(0,0,0,.26);padding:11px 13px;box-sizing:border-box;max-width:min(250px,calc(100vw - 16px));max-height:50vh;overflow:auto;overflow-wrap:anywhere;overscroll-behavior:contain}
 .opop.open{display:block}
 .opop h4{margin:0 0 7px;font-family:"BauerMedia Sans",sans-serif;font-size:12.5px;font-weight:800}
 .opop .opnames{display:flex;flex-direction:column;gap:3px}
@@ -1213,7 +1212,7 @@ body.mobile-daily>.meta,body.mobile-daily>.wrap{display:none!important}
 .summary-month-controls{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center;margin:14px 0;text-align:center}
 .summary-month-controls .summary-overview{grid-column:1/-1;justify-self:center}.summary-month-controls button:disabled{opacity:.4;cursor:default}
 .heatmonth h4 button{font:inherit;color:inherit;border:0;background:transparent;padding:4px;cursor:pointer}
-.summary-day-body{padding:0 20px 16px}.summary-day-body .day-total{font-size:18px;font-weight:700;color:var(--ink)}
+.summary-day-body{padding:0 20px 16px;min-height:0;overflow:auto;overscroll-behavior:contain;overflow-wrap:anywhere}.summary-day-body .day-total{font-size:18px;font-weight:700;color:var(--ink)}
 .summary-day-body ul{list-style:none;padding:0;margin:0}.summary-day-body li{padding:12px 0;border-bottom:1px solid var(--line);font-size:16px}
 #mobileView .mobile-heading h1{margin:0}#mobileView #mobileDayTitle{font:inherit;font-size:23px;font-weight:700;border:0;padding:0;background:transparent;text-align:left;min-height:38px}
 #mobileDayTitle::after{content:' ▾';font-size:14px;color:var(--muted)}
@@ -1389,6 +1388,42 @@ body.access-locked #roleGate:not(.open){display:none!important}
 .mobile-role-team{color:var(--muted);font-size:12px;margin:4px 0 12px}.mobile-role-people{list-style:none;margin:0;padding:0}.mobile-role-people li{padding:11px 9px;border-radius:8px;margin:5px 0 0}.mobile-role-people strong{display:block;font-size:18px;line-height:1.35}.mobile-role-people small{display:block;font-size:12px;color:inherit;opacity:.8;margin-top:3px}.mobile-role-note{font-size:13px;white-space:pre-wrap;margin:6px 0 0}.mobile-role-gap{padding:10px;border-radius:8px;background:#fee2e2;color:#842929;font-size:13px;margin:8px 0 0}.mobile-role-status{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px;margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.5}.mobile-role-status strong{display:block;color:var(--text);margin-bottom:3px}
 @media(max-width:760px){#mobileRolesView:not([hidden]){display:block}}
 @media print{#mobileRolesView{display:none!important}}
+#recoveryModal .modalcard{max-width:820px}
+#recoveryBody{overflow:auto;min-height:0;padding:18px}
+.recovery-intro{color:var(--muted);margin:0 0 16px;line-height:1.5}
+.recovery-item{border:1px solid var(--line-2);border-radius:12px;padding:14px;margin:12px 0}
+.recovery-item h4{margin:0 0 10px;font-size:14px}
+.recovery-values{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.recovery-values small{display:block;color:var(--muted);margin-bottom:5px}
+.recovery-values pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto;margin:0;font:inherit}
+.recovery-conflict{color:#9b3300;font-size:13px;margin:8px 0}
+.recovery-item select,#recoveryDraftSelect{max-width:100%;padding:9px;border:1px solid var(--line-2);border-radius:8px;background:#fff;color:var(--ink);font:inherit}
+#recoveryMessage{margin:0 18px 12px;color:var(--muted);line-height:1.4}
+body:not(.role-ops) [data-act="recovery"]{display:none}
+@media(max-width:540px){.recovery-values{grid-template-columns:1fr}}
+#gapCheckModal .modalcard{max-width:940px}
+.gap-check-form{display:flex;flex-wrap:wrap;align-items:end;gap:12px;padding:18px;border-bottom:1px solid var(--line-2)}
+.gap-check-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.gap-check-form input,.gap-check-form select{min-height:42px;max-width:100%;min-width:0;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--text);font:inherit}
+.gap-check-form [hidden]{display:none!important}
+.gap-check-note{padding:12px 18px 0;margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+#gapCheckError{margin:0;padding:10px 18px 0;color:#9b3300;line-height:1.4}
+#gapCheckError:empty{display:none}
+#gapCheckResults{padding:16px 18px}
+.gap-check-total{font-size:16px;margin:0 0 12px;color:var(--text);font-weight:700}
+.gap-check-empty{padding:18px 0;line-height:1.5;color:var(--muted)}
+.gap-check-day{border:1px solid var(--line-2);border-radius:12px;overflow:hidden;margin:0 0 16px}
+.gap-check-day h4{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:var(--ink);color:#fff;padding:11px 14px;margin:0;font-size:14px}
+.gap-check-day h4 span{font-size:12px;font-weight:500}
+.gap-check-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) auto;gap:14px;align-items:center;padding:12px 14px;border-top:1px solid var(--line-2)}
+.gap-check-row>div{min-width:0;overflow-wrap:anywhere}.gap-check-row strong{display:block;font-size:14px}.gap-check-row small{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.gap-check-row button{white-space:nowrap;min-height:38px}
+.gap-check-skipped{margin:0 0 16px;color:var(--muted);font-size:13px;line-height:1.5}
+.gap-check-skipped summary{cursor:pointer;font-weight:600;color:var(--text)}
+.gap-check-skipped ul{padding-left:20px}
+#grid .gap-check-target{outline:3px solid var(--ink);outline-offset:-3px;box-shadow:inset 0 0 0 5px #fff}
+body:not(.role-ops) [data-act="gapcheck"]{display:none}
+@media(max-width:640px){.gap-check-row{grid-template-columns:minmax(0,1fr) auto;gap:8px}.gap-check-row .gap-check-section{grid-column:1 / -1}.gap-check-form label{flex:1 1 140px}.gap-check-form button{width:100%}}
 </style>
 </head>
 <body class="access-locked">
@@ -1450,6 +1485,9 @@ body.access-locked #roleGate:not(.open){display:none!important}
   <div class="menuwrap">
     <button class="iconbtn" id="menuBtn" aria-label="More options" aria-haspopup="true">&#8942;</button>
     <div class="menu" id="menu" role="menu">
+      <div class="lbl">Rota checks</div>
+      <button data-act="gapcheck" role="menuitem">Run gap check…</button>
+      <div class="sep"></div>
       <div class="lbl">This week</div>
       <button data-act="reset" class="danger" role="menuitem">&#8635;&nbsp; Reset to original</button>
       <div class="sep"></div>
@@ -1466,6 +1504,7 @@ body.access-locked #roleGate:not(.open){display:none!important}
       <div class="sep editonly"></div>
       <div class="lbl">Data</div>
       <button data-act="export" role="menuitem">&#8681;&nbsp; Export all edits (JSON)</button>
+      <button data-act="recovery" role="menuitem">Recover unsaved work…</button>
       <button data-act="import" role="menuitem">&#8679;&nbsp; Import edits (JSON)</button>
       <input type="file" id="importFile" accept="application/json" hidden>
     </div>
@@ -1585,7 +1624,7 @@ body.access-locked #roleGate:not(.open){display:none!important}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v29.1</span>
+  <span class="pill">News Rota v31</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -1762,8 +1801,28 @@ body.access-locked #roleGate:not(.open){display:none!important}
  <li><button data-setup="visibility"><b>6. Publish and allowances</b><span>Choose which weeks are visible and check holiday totals.</span></button></li>
  </ol><div class="modalfoot"><button class="ghostbtn" data-close-overlay="setupModal">Close</button></div>
 </div></div>
+<div class="modal" id="gapCheckModal"><div class="modalcard wide">
+ <div class="modalhead"><h3>Run gap check</h3><button class="x" data-close-overlay="gapCheckModal" aria-label="Close gap check">×</button></div>
+ <form id="gapCheckForm" class="gap-check-form">
+  <label>Check<select id="gapCheckPeriod"><option value="month">Whole month</option><option value="range">Date range</option></select></label>
+  <label id="gapCheckMonthField">Month<select id="gapCheckMonth"></select></label>
+  <label id="gapCheckStartField" hidden>From<input id="gapCheckStart" type="date"></label>
+  <label id="gapCheckEndField" hidden>To<input id="gapCheckEnd" type="date"></label>
+  <button type="submit" class="primary">Run gap check</button>
+ </form>
+ <p class="gap-check-note">Checks published and unpublished rotas, including weekends and weeks still using their default outline. Away rows and cells marked “not needed” are excluded.</p>
+ <p id="gapCheckNotice" class="gap-check-note" role="status" aria-live="polite"></p>
+ <p id="gapCheckError" role="alert"></p><div id="gapCheckResults"></div>
+ <div class="modalfoot"><button class="ghostbtn" data-close-overlay="gapCheckModal">Done</button></div>
+</div></div>
+<div class="modal" id="recoveryModal" role="dialog" aria-modal="true" aria-labelledby="recoveryTitle"><div class="modalcard wide">
+ <div class="modalhead"><h3 id="recoveryTitle">Unsaved work found</h3><button class="x" data-close-overlay="recoveryModal" aria-label="Close recovery">×</button></div>
+ <div id="recoveryBody"></div><p id="recoveryMessage" role="status" aria-live="polite"></p>
+ <div class="modalfoot"><button class="ghostbtn" id="recoveryExport">Download backup</button><button class="ghostbtn" id="recoveryDiscard">Discard this backup</button><button class="ghostbtn" data-close-overlay="recoveryModal">Later</button><button class="primary" id="recoveryApply">Recover selected edits</button></div>
+</div></div>
 <div class="modal" id="helpModal"><div class="modalcard wide">
  <div class="modalhead"><h3>Using News Rota</h3><button class="x" data-close-overlay="helpModal" aria-label="Close help">×</button></div>
+ <p class="rulehint"><b>Gap check:</b> in Operations, choose More options → Run gap check. Select a whole month or inclusive date range to list unfilled roles across published and unpublished weeks. Open rota takes you to the relevant cell; Edit mode is not required to run the check.</p>
  <div class="setup-intro"><p><b>Staff access:</b> enter the four-digit PIN supplied by Operations. Operations can set or change it in the Access tab; changing it signs out existing Staff sessions. Phones remain Staff-only.<br><b>Find your rota:</b> click the large date heading to open the week calendar, or use the arrows to move between weeks. Search for a person to open their personal rota, or search for a role or section. Phone mode is Staff-only; use a desktop for Editor or Operations access and editing. On a phone, use the arrows to move between full weeks or tap the W/C heading to choose a week. Scroll down for Monday to Sunday. Everyone shows the team; My rota uses your saved name.</p><p><b>Phone navigation:</b> the bottom bar opens Rota, Holidays, Offices and Booths. Summary calendars start with one month; use Year overview to see the available year, then tap a month or a day. Personal rotas start with Upcoming; All dates includes previous weeks.</p><p><b>Daily totals:</b> holiday, office and booth names and counts include unpublished weeks. Click a date to see who is off or working. Full rota pages are available after publication.</p><p><b>Editing:</b> select Operations, enter the team password, then turn on Edit. Setup guides you through templates, staffing and rules. Check the status at the top before closing the page.</p><p><b>Parking:</b> Operations can switch on Commutes by car in a person’s details. The Parking tab shows expected drivers per office, including unpublished weeks. Manchester shows the bay diagram when you select a date: the calendar is green when everyone fits, orange when the emergency corner is used, and flashing red when anyone is unable to park. Other offices turn red at seven and flash at eight. Tap a date for names. People on holiday are excluded.</p><p><b>Weekend defaults:</b> in Operations Edit mode, open More options → Weekend defaults. Create a blank default or copy the weekend you are viewing, save it with a name, then preview and apply it to another weekend. Dates and Away entries stay in place; anyone on holiday is skipped.</p><p><b>Cell colours:</b> right-click a cell while editing to pick a colour. This changes its appearance only. Choose Automatic colour to restore the usual freelance or cover shading.</p><p><b>Keyboard:</b> Tab moves between controls. Use arrow keys in a viewing cell to move through assignments; Enter opens that person's schedule. Escape closes a dialog.</p><p><b>Connection or saving problem:</b> open the status indicator at the top for connection details. Keep the page open while changes are pending.</p></div>
  <div class="modalfoot"><button class="ghostbtn" data-close-overlay="helpModal">Close</button></div>
 </div></div>
@@ -1790,7 +1849,7 @@ var SYNC=null;
 function persistLocal(quiet){
   if(!SYNC || !SYNC.accessGranted) return true;
   if(!SYNC.canEdit) return true; // Staff data is kept in memory, never cached on disk.
-  try{ localStorage.setItem(LSKEY, JSON.stringify(store)); saveBroken=false; return true; }
+  try{ localStorage.setItem(LSKEY, JSON.stringify(store)); persistRecoveryDraft(); saveBroken=false; return true; }
   catch(e){
     if(!saveBroken && !quiet){ saveBroken=true;
       try{ alert("Your changes could NOT be saved to this browser.\n\nStorage is full or blocked (private/incognito windows block it).\n\nUse the \u22EE menu \u2192 Export all edits (JSON) to keep your work before closing this tab."); }catch(_){}
@@ -3382,6 +3441,8 @@ document.addEventListener("click",e=>{
   if(act==="copyemail"){ $("#exportMenu").classList.remove("open"); copyEmail(); return; }
   if(act==="exportpdf"){ $("#exportMenu").classList.remove("open"); exportPDF(); return; }
   if(act==="export"){ doExport(); return; }
+  if(act==="recovery"){ closeMenu(); openRecovery(false); return; }
+  if(act==="gapcheck"){ closeMenu(); openGapCheck(); return; }
   if(act==="import"){ if(requireEdit()) $("#importFile").click(); return; }
   if(act==="editkey"){ if(!requireEdit()) return; closeMenu(); openKeyModal(); return; }
   if(act==="keyadd"){ if(requireEdit()) keyAdd(); return; }
@@ -3412,8 +3473,6 @@ document.addEventListener("click",e=>{
   if(act==="confirmno"){ closeConfirm(); return; }
   if(act==="confirmyes"){ const fn=pendingConfirm; closeConfirm(); if(fn) fn(); return; }
   if(act==="editmode"){ toggleEdit(); return; }
-  if(act==="colins"){ if(requireEdit()) addCol(+btn.dataset.col); return; }
-  if(act==="colins-before"){ if(requireEdit()) addColBefore(+btn.dataset.col); return; }
   if(act==="coldel"){ if(requireEdit()) delCol(+btn.dataset.col); return; }
   if(act==="weekenddefaults"){if(!requireEdit())return;closeMenu();openWeekendDefaults();return;}
   if(act==="tplmanage"){ if(!requireEdit()) return; closeMenu(); openTplModal(); return; }
@@ -3526,6 +3585,132 @@ $('#searchPop').addEventListener('click',e=>{
 document.addEventListener("click",e=>{ if(!e.target.closest(".search")) $("#searchPop").classList.remove("open"); });
 
 // ---------- personal rota ----------
+var GAP_CHECK={report:null,range:null,fingerprint:'',generation:null,checkedAt:null,notice:'',highlight:null};
+function canRunGapCheck(){return !!(SYNC?.accessGranted&&SYNC.bootstrapped&&SYNC.canEdit&&SYNC.serverRole==='ops'&&state.role==='ops'&&!isPhone());}
+function gapCheckCalendarDates(){
+  const days=new Map();
+  RAW.weeks.forEach(w=>{if((store.deletedWeeks||[]).includes(w.id))return;try{weekDatesOf(w).forEach(d=>{if(d instanceof Date&&!Number.isNaN(d.getTime()))days.set(localISO(d),d);});}catch(_){}});
+  return [...days.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+}
+function gapCheckFormMode(){
+  const month=$('#gapCheckPeriod').value==='month';
+  $('#gapCheckMonthField').hidden=!month;$('#gapCheckStartField').hidden=month;$('#gapCheckEndField').hidden=month;
+  $('#gapCheckMonth').disabled=!month;$('#gapCheckStart').disabled=month;$('#gapCheckEnd').disabled=month;
+  $('#gapCheckMonth').required=month;$('#gapCheckStart').required=!month;$('#gapCheckEnd').required=!month;
+}
+function clearGapCheckReport(message='Choose dates and run the check.'){
+  GAP_CHECK.report=null;GAP_CHECK.range=null;GAP_CHECK.fingerprint='';GAP_CHECK.generation=null;GAP_CHECK.checkedAt=null;GAP_CHECK.notice='';
+  $('#gapCheckResults').innerHTML='<p class="gap-check-empty">'+esc(message)+'</p>';$('#gapCheckError').textContent='';$('#gapCheckNotice').textContent='';
+}
+function closeGapCheck(){
+  $('#gapCheckModal').classList.remove('open');clearGapCheckReport();
+  if(GAP_CHECK.highlight){GAP_CHECK.highlight.classList.remove('gap-check-target');GAP_CHECK.highlight=null;}
+}
+function openGapCheck(){
+  if(!canRunGapCheck())return;
+  if(SYNC.refreshing){flash('Wait for the rota to finish loading, then run the gap check.');return;}
+  const days=gapCheckCalendarDates(),months=[...new Set(days.map(([iso])=>iso.slice(0,7)))];
+  const selected=week(),selectedDays=selected&&!state.templateMode?weekDatesOf(selected).filter(Boolean).sort((a,b)=>a-b):[];
+  const start=selectedDays[0]||days[0]?.[1]||new Date(),end=selectedDays.at(-1)||start,month=localISO(start).slice(0,7);
+  $('#gapCheckMonth').innerHTML=months.map(m=>'<option value="'+m+'">'+esc(new Date(+m.slice(0,4),+m.slice(5)-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'}))+'</option>').join('');
+  $('#gapCheckMonth').value=months.includes(month)?month:(months[0]||'');
+  $('#gapCheckPeriod').value='month';$('#gapCheckStart').value=localISO(start);$('#gapCheckEnd').value=localISO(end);
+  for(const id of ['#gapCheckStart','#gapCheckEnd']){$(id).min=days[0]?.[0]||'';$(id).max=days.at(-1)?.[0]||'';}
+  clearGapCheckReport();gapCheckFormMode();$('#gapCheckModal').classList.add('open');
+}
+function gapCheckChosenRange(){
+  if($('#gapCheckPeriod').value==='month'){
+    const value=$('#gapCheckMonth').value;
+    if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(value))throw new Error('Choose a month.');
+    const year=+value.slice(0,4),month=+value.slice(5)-1;
+    return {start:localISO(new Date(year,month,1)),end:localISO(new Date(year,month+1,0))};
+  }
+  if($('#gapCheckPeriod').value!=='range')throw new Error('Choose a month or date range.');
+  return {start:$('#gapCheckStart').value,end:$('#gapCheckEnd').value};
+}
+function runGapCheck(){
+  if(!canRunGapCheck()){closeGapCheck();return;}
+  if(SYNC.refreshing){$('#gapCheckError').textContent='The rota is still loading. Try again in a moment.';return;}
+  try{
+    const range=gapCheckChosenRange(),report=collectRotaGaps(range.start,range.end);
+    GAP_CHECK.range=range;GAP_CHECK.report=report;GAP_CHECK.generation=SYNC.generation;GAP_CHECK.fingerprint=JSON.stringify(syncSnapshot());GAP_CHECK.checkedAt=new Date();GAP_CHECK.notice='';
+    $('#gapCheckError').textContent='';renderGapCheckReport();
+  }catch(error){clearGapCheckReport('The check has not run.');$('#gapCheckError').textContent=error.message||'Check the selected dates.';}
+}
+function gapCheckDateLabel(iso){const parts=iso.split('-').map(Number);return new Date(parts[0],parts[1]-1,parts[2]).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}
+function gapCheckIdentity(gap){return JSON.stringify([gap.weekId,gap.cellKey,gap.date,gap.section,gap.role]);}
+function updateGapCheckNotice(){
+  if(!GAP_CHECK.report)return;
+  const time=GAP_CHECK.checkedAt?.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})||'';
+  $('#gapCheckNotice').textContent=[GAP_CHECK.notice,'Checked '+time+' against the rota loaded in this browser.',SYNC.dirty?'Includes your unsaved edits.':'',SYNC.lastError?'Connection interrupted — other people’s latest changes may not be included.':''].filter(Boolean).join(' ');
+}
+function renderGapCheckReport(){
+  if(!canRunGapCheck()||!GAP_CHECK.report)return;
+  const report=GAP_CHECK.report,groups=new Map();
+  report.gaps.forEach((gap,index)=>{if(!groups.has(gap.date))groups.set(gap.date,[]);groups.get(gap.date).push({gap,index});});
+  let html='<p class="gap-check-total" tabindex="-1">'+report.gaps.length+' unfilled '+(report.gaps.length===1?'role':'roles')+' · '+report.checkedDays+' '+(report.checkedDays===1?'day':'days')+' checked</p>';
+  html+='<p class="gap-check-note" style="padding:0 0 14px">'+esc(gapCheckDateLabel(report.start))+' – '+esc(gapCheckDateLabel(report.end))+'</p>';
+  if(report.skippedDates.length||report.unresolvedPages.length){
+    html+='<details class="gap-check-skipped"><summary>'+report.skippedDates.length+' '+(report.skippedDates.length===1?'date':'dates')+' not checked'+(report.unresolvedPages.length?' · '+report.unresolvedPages.length+' pages with unreadable dates':'')+'</summary><ul>'+
+      report.skippedDates.map(x=>'<li>'+esc(gapCheckDateLabel(x.date))+' — '+esc(x.reason)+'</li>').join('')+
+      report.unresolvedPages.map(x=>'<li>'+esc(x.weekName)+' — '+esc(x.reason)+'</li>').join('')+'</ul></details>';
+  }
+  if(!report.gaps.length)html+='<p class="gap-check-empty">'+(report.checkedDays?'No unfilled roles found on the checked dates.':'No rota dates could be checked in this range.')+'</p>';
+  groups.forEach((entries,date)=>{
+    html+='<section class="gap-check-day"><h4>'+esc(gapCheckDateLabel(date))+'<span>'+entries.length+' '+(entries.length===1?'gap':'gaps')+'</span></h4>'+
+      entries.map(({gap,index})=>'<div class="gap-check-row"><div class="gap-check-section"><strong>'+esc(gap.section)+'</strong><small>'+esc(gap.weekName)+'</small></div><div><strong>'+esc(gap.role)+'</strong><small>'+(gap.published?'Published':'Unpublished')+(gap.source==='template'?' · Default outline':'')+'</small></div><button type="button" class="ghostbtn" data-gap-index="'+index+'" data-gap-identity="'+esc(gapCheckIdentity(gap))+'" aria-label="'+esc('Open '+gap.role+' in '+gap.section+' on '+gapCheckDateLabel(date))+'">Open rota</button></div>').join('')+'</section>';
+  });
+  const body=$('#gapCheckResults'),scroll=body.closest('.dialogbody'),top=scroll?.scrollTop||0;
+  const hadFocus=body.contains(document.activeElement),focusKey=hadFocus?document.activeElement.closest('[data-gap-identity]')?.dataset.gapIdentity:null;
+  const expanded=body.querySelector('.gap-check-skipped')?.open;
+  body.innerHTML=html;
+  const details=body.querySelector('.gap-check-skipped');if(details&&expanded)details.open=true;
+  if(hadFocus){const target=focusKey?[...body.querySelectorAll('[data-gap-identity]')].find(b=>b.dataset.gapIdentity===focusKey):null;(target||body.querySelector('.gap-check-total'))?.focus({preventScroll:true});}
+  if(scroll)scroll.scrollTop=top;updateGapCheckNotice();
+}
+function refreshGapCheckReport(){
+  if(!$('#gapCheckModal').classList.contains('open'))return;
+  if(!canRunGapCheck()||(GAP_CHECK.report&&GAP_CHECK.generation!==SYNC.generation)){closeGapCheck();return;}
+  if(!GAP_CHECK.report||SYNC.refreshing)return;
+  const fingerprint=JSON.stringify(syncSnapshot());
+  if(fingerprint!==GAP_CHECK.fingerprint){
+    try{GAP_CHECK.report=collectRotaGaps(GAP_CHECK.range.start,GAP_CHECK.range.end);GAP_CHECK.fingerprint=fingerprint;GAP_CHECK.checkedAt=new Date();GAP_CHECK.notice='Updated after the rota changed.';renderGapCheckReport();}
+    catch(_){clearGapCheckReport('The rota changed. Choose dates and run the check again.');}
+  }else updateGapCheckNotice();
+}
+function revealGapCheckCell(cell){
+  scrollRotaTarget(cell);
+  for(let parent=cell.parentElement;parent&&parent!==document.body;parent=parent.parentElement){
+    if(parent.scrollWidth<=parent.clientWidth+1)continue;
+    const box=parent.getBoundingClientRect(),rect=cell.getBoundingClientRect(),role=cell.closest('.row')?.querySelector('.rc'),roleBox=role?.getBoundingClientRect();
+    const inset=role&&getComputedStyle(role).position==='sticky'?(roleBox?.width||0):0;
+    if(rect.right>box.right-10)parent.scrollLeft+=rect.right-box.right+10;
+    else if(rect.left<box.left+inset+10)parent.scrollLeft-=box.left+inset+10-rect.left;
+  }
+  GAP_CHECK.highlight?.classList.remove('gap-check-target');GAP_CHECK.highlight=cell;cell.classList.add('gap-check-target');
+  setTimeout(()=>{cell.classList.remove('gap-check-target');if(GAP_CHECK.highlight===cell)GAP_CHECK.highlight=null;},4500);
+}
+function openGapCheckResult(index){
+  if(!canRunGapCheck()||!GAP_CHECK.report||!Number.isInteger(index)||GAP_CHECK.generation!==SYNC.generation)return;
+  const item=GAP_CHECK.report.gaps[index];if(!item)return;
+  const current=collectRotaGaps(GAP_CHECK.range.start,GAP_CHECK.range.end);
+  const match=current.gaps.find(x=>x.cellKey===item.cellKey&&x.weekId===item.weekId&&x.date===item.date&&x.section===item.section&&x.role===item.role);
+  const position=RAW.weeks.findIndex(w=>w.id===item.weekId);
+  if(!match||position<0){GAP_CHECK.report=current;GAP_CHECK.fingerprint=JSON.stringify(syncSnapshot());GAP_CHECK.checkedAt=new Date();GAP_CHECK.notice='That gap has changed. The list has been refreshed.';renderGapCheckReport();return;}
+  const generation=SYNC.generation,range={...GAP_CHECK.range},identity=gapCheckIdentity(item);
+  $('#gapCheckModal').classList.remove('open');clearDesktopSearch();clearSel();state.idx=position;setView('rota');
+  requestAnimationFrame(()=>{
+    if(!canRunGapCheck()||generation!==SYNC.generation||state.view!=='rota'||week()?.id!==item.weekId)return;
+    const stillOpen=collectRotaGaps(range.start,range.end).gaps.some(g=>gapCheckIdentity(g)===identity);
+    if(!stillOpen){flash('That gap has changed. Run the gap check again for the latest list.');return;}
+    const cell=[...document.querySelectorAll('#grid [data-cell]')].find(el=>el.dataset.cell===item.cellKey);
+    if(cell)revealGapCheckCell(cell);else flash('The rota layout changed. Run the gap check again.');
+  });
+}
+$('#gapCheckForm').addEventListener('submit',e=>{e.preventDefault();runGapCheck();});
+$('#gapCheckForm').addEventListener('change',()=>{gapCheckFormMode();clearGapCheckReport('Dates changed. Run the check to see the updated results.');});
+$('#gapCheckResults').addEventListener('click',e=>{const button=e.target.closest('[data-gap-index]');if(button)openGapCheckResult(Number(button.dataset.gapIndex));});
+
 function parseWeDate(header,y){
   const m=/(\d{1,2})\s+([A-Za-z]{3,})/.exec(header||""); if(!m) return null;
   const mo=MONIDX[m[2].slice(0,3).toLowerCase()]; return mo==null?null:new Date(y||YEAR,mo,+m[1]);
@@ -3729,7 +3914,11 @@ function applyLeaver(name,lastDay,dropFromRoster){
   store.fixedRules=(store.fixedRules||[]).filter(r=>nrm(r.person)!==target);
   store.rotations=(store.rotations||[]).map(r=>({roles:r.roles,names:(r.names||[]).filter(n=>nrm(n)!==target)}))
                                        .filter(r=>(r.names||[]).length);
-  Object.entries(store.parkingPlans||{}).forEach(([date,p])=>{if(mobileDateValue(date)>lastDay){Object.keys(p.bays).forEach(b=>{if(nrm(p.bays[b])===target)delete p.bays[b];});p.unparked=p.unparked.filter(n=>nrm(n)!==target);}});
+  Object.entries(store.parkingPlans||{}).forEach(([date,p])=>{if(mobileDateValue(date)>lastDay){
+    // Resolve legacy intent before removing a leaver changes the old capacity.
+    if(!Array.isArray(p.manualUnparked)){const parked=MCR_STAFF_BAYS.map(b=>p.bays[b]).filter(Boolean),count=new Set([...parked,...p.unparked].map(nrm)).size;p.manualUnparked=parked.length<Math.min(count,count>=8?8:7)?[...p.unparked]:[];}
+    Object.keys(p.bays).forEach(b=>{if(nrm(p.bays[b])===target)delete p.bays[b];});p.unparked=p.unparked.filter(n=>nrm(n)!==target);p.manualUnparked=p.manualUnparked.filter(n=>nrm(n)!==target);
+  }});
   if(dropFromRoster){
     const nm=findPerson(name);
     if(nm){ store.roster=store.roster.filter(x=>x!==nm);
@@ -3843,6 +4032,7 @@ function prepareImport(value){
     if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!mobileDateValue(date)||!object(plan)||!object(plan.bays)||!strings(plan.unparked))throw new Error('Invalid parking plan.');
     if(Object.entries(plan.bays).some(([bay,name])=>!['34','35','36','37','38','39','40','emergency'].includes(bay)||typeof name!=='string'||!name.trim()))throw new Error('Invalid parking bay.');
     const names=[...Object.values(plan.bays),...plan.unparked].map(n=>n.trim().toLowerCase());if(names.some(n=>!n)||new Set(names).size!==names.length)throw new Error('Duplicate parking names.');
+    if(plan.manualUnparked!==undefined&&(!strings(plan.manualUnparked)||plan.manualUnparked.some(n=>!plan.unparked.some(p=>nrm(p)===nrm(n)))||new Set(plan.manualUnparked.map(nrm)).size!==plan.manualUnparked.length))throw new Error('Invalid manual parking choices.');
   });
   const validAllowance=v=>v===null||v===''||((typeof v==='number'||typeof v==='string')&&Number.isFinite(Number(v))&&Number(v)>=0);
   if(out.allowances){Object.entries(out.allowances).forEach(([k,v])=>{if(k==='__years'){if(!object(v)||!Object.entries(v).every(([year,values])=>/^(19|20)\d{2}$/.test(year)&&object(values)&&Object.values(values).every(validAllowance)))throw new Error('Invalid annual allowances.');}else if(!validAllowance(v))throw new Error('Invalid allowances.');});}
@@ -4454,24 +4644,6 @@ function openCellMenu(cell,x,y){
 }
 function closeCellMenu(){ cellMenu.classList.remove("open"); }
 function colDayName(day){ const dts=colDates(data()); const dt=dts[day]; return dt?DAYFULL2[dt.getDay()]:""; }
-function addCol(afterIdx){
-  const d=edit(); const cols=ensureCols(d);
-  const ref=cols[afterIdx]; const base=ref?new Date(ref.y||YEAR,ref.m,ref.d):new Date(YEAR,0,1);
-  base.setDate(base.getDate()+1);
-  cols.splice(afterIdx+1,0,{m:base.getMonth(),d:base.getDate()});
-  d.sections.forEach(sec=>sec.rows.forEach(r=>{ if(r.type==="role") r.assign.splice(afterIdx+1,0,""); }));
-  remapCellMarkers((s,r,day)=>[s,r,/^\d+$/.test(day)&&+day>afterIdx?+day+1:day]);
-  commit(); render();
-}
-function addColBefore(idx){
-  const d=edit(); const cols=ensureCols(d);
-  const ref=cols[idx]; const base=ref?new Date(ref.y||YEAR,ref.m,ref.d):new Date(YEAR,0,1);
-  base.setDate(base.getDate()-1);
-  cols.splice(idx,0,{m:base.getMonth(),d:base.getDate()});
-  d.sections.forEach(sec=>sec.rows.forEach(r=>{ if(r.type==="role") r.assign.splice(idx,0,""); }));
-  remapCellMarkers((s,r,day)=>[s,r,/^\d+$/.test(day)&&+day>=idx?+day+1:day]);
-  commit(); render();
-}
 function delCol(idx){
   const d=edit(); const cols=ensureCols(d);
   if(cols.length<=1){ flash("A week needs at least one day"); return; }
@@ -4485,18 +4657,15 @@ function delCol(idx){
   commit(); render();
 }
 function applyCover(chain,day){
-  const clean=chain.map(x=>(x||"").trim()).filter(Boolean);
-  const map={};
-  for(let i=0;i<clean.length;i++) map[nrm(clean[i])]=(i<clean.length-1)?clean[i+1]:"";
+  if(!state.editing||(SYNC.on&&!SYNC.canEdit))return;
+  const current=data(),w=week();if(!w||w.kind!=='weekday'||current.blocked||current.special)return;
+  const plan=manualCoverPlan(current,day,chain);
+  if(plan.error){flash(plan.error);return;}
+  if(!plan.changes.length){flash('No available cover changes. Fixed positions and cells marked not needed stay unchanged.');return;}
   const d=edit();
-  d.sections.forEach((sec,si)=>{ if(sec.holiday) return; sec.rows.forEach((row,ri)=>{ if(row.type!=="role") return;
-    const cur=nrm(row.assign[day]); if(!cur || !(cur in map)) return;
-    const next=map[cur], k=ckey(si,ri,day);
-    row.assign[day]=next;
-    if(next) store.cellCover[k]=true; else delete store.cellCover[k];
-  }); });
+  plan.changes.forEach(c=>{d.sections[c.si].rows[c.ri].assign[day]=c.name;if(c.name)store.cellCover[c.k]=true;else delete store.cellCover[c.k];});
   commit(); render();
-  flash("Cover applied: "+clean[0]+" off "+(colDayName(day)||""));
+  flash('Cover applied: '+plan.head+' off '+(colDayName(day)||'')+(plan.gaps?' · '+plan.gaps+' unfilled '+(plan.gaps===1?'position':'positions'):''));
 }
 grid.addEventListener("contextmenu",e=>{
   if(state.role!=="ops" || !state.editing) return; // all shared changes use the same edit lease
@@ -4635,20 +4804,57 @@ function renderHeat(){
 
 // ---------- heat-map day popover ----------
 const heatPop=$("#heatPop");
-function closeHeatPop(){ heatPop.classList.remove("open"); }
+var SUMMARY_DAY_STATE=null;
+function closeHeatPop(){ heatPop.classList.remove("open");if(SUMMARY_DAY_STATE?.kind==='heat'&&SUMMARY_DAY_STATE.surface==='popover')SUMMARY_DAY_STATE=null; }
 function openHeatPop(key,x,y){
-  const info=HEAT[key]; if(!info){ closeHeatPop(); return; }
-  const dl=info.date.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  const cl=info.count?info.count+(info.count===1?" person off":" people off"):"Nobody off";
-  const body=info.count
-    ? `<div class="hpl">`+info.names.map(n=>`<div class="nm2">${esc(n)}</div>`).join("")+`</div>`
-    : `<div class="none">No one is in the Holiday list this day.</div>`;
-  if(isPhone()){openSummaryDay(dl,cl,info.names,info.privateCount);return;}
-  heatPop.innerHTML=`<div class="hph"><div class="d">${esc(dl)}</div><div class="c">${cl}</div></div>`+body+(info.privateCount?`<p>${info.privateCount} additional people counted. Names are temporarily unavailable. Ask Operations to check the updated totals SQL.</p>`:"");
-  heatPop.classList.add("open");
-  const w=heatPop.offsetWidth||250, h=heatPop.offsetHeight||200;
-  heatPop.style.left=Math.max(8,Math.min(x+12,innerWidth-w-8))+"px";
-  heatPop.style.top=Math.max(8,Math.min(y+12,innerHeight-h-8))+"px";
+  openSummarySelection('heat',key);
+}
+function closeSummarySelection(){
+  SUMMARY_DAY_STATE=null;
+  ['#heatPop','#officePop','#boothPop','#summaryDayModal'].forEach(id=>$(id).classList.remove('open'));
+  ['#heatPop','#officePop','#boothPop','#summaryDayTitle','#summaryDayBody'].forEach(id=>$(id).textContent='');
+}
+function openSummarySelection(kind,key){
+  closeSummarySelection();
+  SUMMARY_DAY_STATE={kind,key,year:summaryYear(),office:kind==='office'?state.officeSel:kind==='booth'?state.boothSel:kind==='parking'?state.parkingSel:'',half:kind==='booth'?state.boothHalf:'',generation:SYNC.generation,surface:isPhone()||kind==='parking'?'sheet':'popover'};
+  refreshSelectedSummaryDay(true);
+}
+function replaceSummaryHTML(element,html){
+  if(element.innerHTML===html)return;
+  const scroll=element.scrollTop,listScroll=element.querySelector('.hpl')?.scrollTop||0;
+  element.innerHTML=html;element.scrollTop=scroll;
+  const list=element.querySelector('.hpl');if(list)list.scrollTop=listScroll;
+}
+function refreshSelectedSummaryDay(open=false){
+  const selected=SUMMARY_DAY_STATE;if(!selected)return;
+  const {kind,key,office,half,surface}=selected;
+  const pop=$(surface==='sheet'?'#summaryDayModal':kind==='heat'?'#heatPop':kind==='office'?'#officePop':'#boothPop');
+  if(!open&&!pop.classList.contains('open')){SUMMARY_DAY_STATE=null;return;}
+  const currentOffice=kind==='office'?state.officeSel:kind==='booth'?state.boothSel:kind==='parking'?state.parkingSel:'';
+  if((SYNC.on&&!SYNC.accessGranted)||selected.generation!==SYNC.generation||state.view!==kind||selected.year!==summaryYear()||office!==currentOffice||(kind==='booth'&&half!==state.boothHalf)||(surface==='popover'&&isPhone())){closeSummarySelection();return;}
+  const selectors={heat:['#heatView','data-hk'],office:['#officeBody','data-ok'],booth:['#boothBody','data-bk'],parking:['#parkingBody','data-pk']};
+  const [root,attribute]=selectors[kind]||[];
+  if(!root||!/^\d{4}-\d{1,2}-\d{1,2}$/.test(key)){closeSummarySelection();return;}
+  const cell=$(root).querySelector('['+attribute+'="'+key+'"]');
+  const available=!SYNC.on||PUBLIC_SUMMARY.data&&(kind!=='booth'||PUBLIC_SUMMARY.data.boothsIncluded)&&(kind!=='parking'||PUBLIC_SUMMARY.data.parkingIncluded);
+  const map=kind==='heat'?HEAT:kind==='office'?OFFICEHEAT:kind==='booth'?BOOTHHEAT:PARKINGHEAT;
+  const info=available&&map[key];
+  if(!cell||!info){closeSummarySelection();return;}
+  const [y,m,d]=key.split('-').map(Number),date=new Date(y,m,d),names=info.names||[],privateCount=info.privateCount||0;
+  const title=date.toLocaleDateString('en-GB',{dateStyle:'full'});
+  const total=kind==='heat'?(info.count?info.count+(info.count===1?' person off':' people off'):'Nobody off'):kind==='booth'?`${info.count} booth${info.count===1?'':'s'} in use · ${half} · ${office}`:kind==='parking'?`${info.count} driver${info.count===1?'':'s'} · ${office}`:`${info.count} ${info.count===1?'person':'people'} · ${office}`;
+  const stale=SYNC.on&&PUBLIC_SUMMARY.error?'<p class="summary-stale" role="status">Connection interrupted — showing the last loaded names.</p>':'';
+  if(surface==='sheet'){
+    $('#summaryDayTitle').textContent=title;
+    replaceSummaryHTML($('#summaryDayBody'),'<p class="day-total">'+esc(total)+'</p>'+stale+(names.length?'<ul>'+names.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul>':'<p>No names recorded for this day.</p>')+(privateCount?'<p>'+privateCount+' additional people counted; their names are temporarily unavailable.</p>':''));
+    if(!pop.classList.contains('open'))pop.classList.add('open');
+    return;
+  }
+  const missing=privateCount?'<p>'+privateCount+' additional people counted; their names are temporarily unavailable.</p>':'';
+  const html=kind==='heat'?'<div class="hph"><div class="d">'+esc(title)+'</div><div class="c">'+esc(total)+'</div></div>'+stale+(names.length?'<div class="hpl">'+names.map(n=>'<div class="nm2">'+esc(n)+'</div>').join('')+'</div>':'<div class="none">No names recorded for this day.</div>')+missing:'<h4>'+esc(title)+' — '+esc(office)+(kind==='booth'?' · '+esc(half):'')+'</h4>'+stale+'<div class="opnames">'+names.map(n=>'<span>'+esc(n)+'</span>').join('')+'</div><div class="bsum">'+esc(total)+'</div>'+missing;
+  replaceSummaryHTML(pop,html);
+  if(kind==='heat'){pop.style.boxSizing='border-box';pop.style.overflow='auto';}
+  positionSummaryPop(pop,cell);
 }
 $("#heatView").addEventListener("click",e=>{
   const c=e.target.closest(".hd.clk[data-hk]"); if(!c) return;
@@ -4660,6 +4866,22 @@ document.addEventListener("click",e=>{
   if(!e.target.closest("#officePop") && !e.target.closest("#officeBody")) $("#officePop").classList.remove("open");
   if(!e.target.closest("#boothPop") && !e.target.closest("#boothBody")) $("#boothPop").classList.remove("open");
 });
+function positionSummaryPop(pop,cell){
+  const viewport=window.visualViewport;
+  const width=viewport?viewport.width:window.innerWidth,height=viewport?viewport.height:window.innerHeight;
+  const left=(viewport?.offsetLeft||0)+8,top=(viewport?.offsetTop||0)+8;
+  const right=left+Math.max(0,width-16),bottom=top+Math.max(0,height-16);
+  pop.style.maxWidth=Math.max(1,Math.min(250,width-16))+'px';
+  pop.style.maxHeight=Math.max(1,Math.min(400,height-16))+'px';
+  pop.classList.add('open');
+  const r=cell.getBoundingClientRect(),w=pop.offsetWidth,h=pop.offsetHeight;
+  const preferredTop=r.bottom+6+h<=bottom?r.bottom+6:r.top-6-h;
+  pop.style.left=Math.max(left,Math.min(r.left,right-w))+'px';
+  pop.style.top=Math.max(top,Math.min(preferredTop,bottom-h))+'px';
+}
+function closeSummaryPops(){['#heatPop','#officePop','#boothPop'].forEach(id=>$(id).classList.remove('open'));if(SUMMARY_DAY_STATE?.surface==='popover')SUMMARY_DAY_STATE=null;}
+window.addEventListener('resize',closeSummaryPops);
+if(window.visualViewport){window.visualViewport.addEventListener('resize',closeSummaryPops);window.visualViewport.addEventListener('scroll',closeSummaryPops);}
 
 // ---------- admin: holiday allowance & usage ----------
 const DEFAULT_ALLOWANCE=28;
@@ -4693,7 +4915,7 @@ function inSummaryPeriod(y,m,d){return y!==2026 || (m>=10 && (m<11||d<=24));}
 function summaryMonths(year){return year===2026?[10,11]:Array.from({length:12},(_,i)=>i);}
 function filterSummaryYear(map){const year=summaryYear(),prefix=year+'-';return Object.fromEntries(Object.entries(map).filter(([key])=>{const [y,m,d]=key.split('-').map(Number);return key.startsWith(prefix)&&inSummaryPeriod(y,m,d);}));}
 function trialPeriodNote(year){return "";}
-document.addEventListener('change',e=>{if(e.target.classList?.contains('summaryYear')){state.reportYear=Number(e.target.value);renderCurrentView();}});
+document.addEventListener('change',e=>{if(e.target.classList?.contains('summaryYear')){closeSummarySelection();state.reportYear=Number(e.target.value);renderCurrentView();}});
 const ALIAS = RAW.aliases || {};
 function canonName(n){ return ALIAS[nrm(n)] || n; }
 function holidayEntries(){
@@ -4925,12 +5147,12 @@ function renderParking(){
   const peak=Object.values(filterSummaryYear(parkingData(state.parkingSel))).reduce((n,v)=>Math.max(n,v.count),0);
   $('#parkingSub').textContent=SYNC.on&&!PUBLIC_SUMMARY.data?.parkingIncluded?'Totals unavailable':`${state.parkingSel} · busiest day: ${peak} driver${peak===1?'':'s'}`;
 }
-$('#parkingTabs').addEventListener('click',e=>{const b=e.target.closest('[data-parking]');if(b){state.parkingSel=b.dataset.parking;renderParking();}});
+$('#parkingTabs').addEventListener('click',e=>{const b=e.target.closest('[data-parking]');if(b){closeSummarySelection();state.parkingSel=b.dataset.parking;renderParking();}});
 $('#parkingBody').addEventListener('click',e=>{
   const cell=e.target.closest('[data-pk]');if(!cell)return;const info=PARKINGHEAT[cell.dataset.pk];if(!info)return;
   const [y,m,d]=cell.dataset.pk.split('-').map(Number);
   if(state.parkingSel==='Manchester'){openParkingPlan(localISO(new Date(y,m,d)));return;}
-  openSummaryDay(new Date(y,m,d).toLocaleDateString('en-GB',{dateStyle:'full'}),`${info.count} driver${info.count===1?'':'s'} · ${state.parkingSel}`,info.names,0);
+  openSummarySelection('parking',cell.dataset.pk);
 });
 
 // Manchester parking allocations are separate from rota assignments.
@@ -4963,12 +5185,22 @@ function parkingPriorityIssue(plan){
   return '';
 }
 function buildParkingPlan(info,saved){
+  const manualUnparked=(()=>{
+    if(!saved)return [];
+    const waiting=Array.isArray(saved.unparked)?saved.unparked:[];
+    if(Array.isArray(saved.manualUnparked))return waiting.filter(n=>saved.manualUnparked.some(p=>nrm(p)===nrm(n)));
+    // Older plans did not distinguish a deliberate removal from automatic
+    // overflow. Preserve deliberate gaps; a full car park has a waiting list.
+    const parked=MCR_STAFF_BAYS.map(b=>saved.bays?.[b]).filter(Boolean);
+    const count=new Set([...parked,...waiting].map(nrm)).size;
+    return parked.length<Math.min(count,count>=8?8:7)?waiting:[];
+  })();
   const people=[...new Map((info.names||[]).map(n=>[nrm(n),n])).values()].sort((a,b)=>parkingRank(a,info)-parkingRank(b,info)||nrm(a).localeCompare(nrm(b)));
   const byName=new Map(people.map(n=>[nrm(n),n])),pm=new Set((info.pmNames||[]).map(nrm)),used=new Set(),bays={},unparked=[];
   const put=(bay,name)=>{const id=nrm(name);if(!byName.has(id)||used.has(id))return false;bays[bay]=byName.get(id);used.add(id);return true;};
   // Saved manual choices take priority, but only eligible drivers remain.
   MCR_STAFF_BAYS.forEach(b=>{if(b==='emergency'&&people.length<8)return;const n=saved?.bays?.[b];if(n)put(b,n);});
-  (saved?.unparked||[]).forEach(n=>{const id=nrm(n);if(byName.has(id)&&!used.has(id)){unparked.push(byName.get(id));used.add(id);}});
+  manualUnparked.forEach(n=>{const id=nrm(n);if(byName.has(id)&&!used.has(id)){unparked.push(byName.get(id));used.add(id);}});
   const remaining=()=>people.filter(n=>!used.has(nrm(n)));
   ['35','36'].forEach(b=>{if(!bays[b]){const n=remaining().find(n=>pm.has(nrm(n)));if(n)put(b,n);}});
   remaining().forEach(n=>{const b=['34','37','38','39','40','35','36',...(people.length>=8?['emergency']:[])].find(b=>!bays[b]);if(b)put(b,n);else{unparked.push(n);used.add(nrm(n));}});
@@ -4988,7 +5220,7 @@ function buildParkingPlan(info,saved){
     if(bay)[bays[bay],bays.emergency]=[bays.emergency,bays[bay]];
   }
   unparked.sort((a,b)=>parkingRank(a,info)-parkingRank(b,info)||nrm(a).localeCompare(nrm(b)));
-  return {bays,unparked,people,amNames:info.amNames||[]};
+  return {bays,unparked,people,amNames:info.amNames||[],manualUnparked:unparked.filter(n=>manualUnparked.some(p=>nrm(p)===nrm(n)))};
 }
 
 function moveParkingPerson(plan,name,target){
@@ -4997,8 +5229,8 @@ function moveParkingPerson(plan,name,target){
   const person=plan.people.find(n=>nrm(n)===nrm(name));if(!person)return null;
   const next=clone(plan),source=Object.keys(next.bays).find(b=>nrm(next.bays[b])===nrm(person)),occupant=next.bays[target];
   if(source===target)return null;
-  next.unparked=next.unparked.filter(n=>nrm(n)!==nrm(person));if(source)delete next.bays[source];
-  if(target==='unparked')next.unparked.push(person);
+  next.unparked=next.unparked.filter(n=>nrm(n)!==nrm(person));next.manualUnparked=(next.manualUnparked||[]).filter(n=>nrm(n)!==nrm(person));if(source)delete next.bays[source];
+  if(target==='unparked'){next.unparked.push(person);next.manualUnparked.push(person);}
   else {next.bays[target]=person;if(occupant){if(source)next.bays[source]=occupant;else next.unparked.push(occupant);}}
   return next;
 }
@@ -5009,7 +5241,7 @@ function saveParkingMove(name,target,version){
   const date=PARKING_PLAN.date,info=parkingPlanInfo(date);if(!info)return false;
   const plan=buildParkingPlan(info,store.parkingPlans?.[date]),next=moveParkingPerson(plan,name,target);if(!next)return false;
   const issue=parkingPriorityIssue(next);if(issue){PARKING_PLAN.message=issue;flash(issue);renderParkingPlan();return false;}
-  return saveParkingArrangement(date,{bays:next.bays,unparked:next.unparked});
+  return saveParkingArrangement(date,{bays:next.bays,unparked:next.unparked,manualUnparked:next.manualUnparked});
 }
 function saveParkingArrangement(date,plan){
   PARKING_PLAN.selected=null;PARKING_PLAN.message='';
@@ -5021,7 +5253,7 @@ function saveParkingArrangement(date,plan){
     if(epoch!==SYNC.epoch)return;
     if(res?.error==='access-required'){lockRota('Your session has ended. Enter the current Staff PIN.');return;}
     if(!res?.ok){
-      PARKING_PLAN.message=['staff-priority','parking-priority'].includes(res?.error)?'Parking priority is Breakfast first, then other staff, then remaining freelancers. Please choose another swap.':'The parking or rota information changed. Your move was not saved; refresh the plan and try again.';
+      PARKING_PLAN.message=res?.error==='invalid-plan'&&plan?.manualUnparked?'Parking was not saved. Operations needs to install upgrade_parking_recovery.sql before saving updated parking arrangements.':['staff-priority','parking-priority'].includes(res?.error)?'Parking priority is Breakfast first, then other staff, then remaining freelancers. Please choose another swap.':'The parking or rota information changed. Your move was not saved; refresh the plan and try again.';
       if(res?.error==='epoch-mismatch'){handleEpochMismatch(res.epoch);return;}
       pollChanges();refreshPublicSummary();renderParkingPlan();return;
     }
@@ -5219,22 +5451,110 @@ $("#boothTabs").addEventListener("click",e=>{
   if(o) state.boothSel=o.dataset.booth;
   else if(hf) state.boothHalf=hf.dataset.half;
   else return;
-  renderBoothModal(); $("#boothPop").classList.remove("open");
+  closeSummarySelection();renderBoothModal();
 });
 $("#boothBody").addEventListener("click",e=>{
   const cell=e.target.closest(".hd.clk[data-bk]"), pop=$("#boothPop");
   if(!cell){ pop.classList.remove("open"); return; }
   const info=BOOTHHEAT[cell.dataset.bk]; if(!info){ pop.classList.remove("open"); return; }
-  const [y,m,d]=cell.dataset.bk.split("-").map(Number);
-  if(isPhone()){openSummaryDay(new Date(y,m,d).toLocaleDateString("en-GB",{dateStyle:"full"}),`${info.count} booth${info.count===1?"":"s"} in use · ${state.boothHalf} · ${state.boothSel}`,info.names,info.privateCount);return;}
-  pop.innerHTML=`<h4>${DAYLBL[new Date(y,m,d).getDay()]} ${d} ${CALMN[m]} \u00b7 ${esc(state.boothHalf)} \u00b7 ${esc(state.boothSel)}</h4>`+
-    `<div class="opnames">${info.names.map(n=>`<span>${esc(n)}</span>`).join("")}</div>`+
-    `<div class="bsum">${info.count} booth${info.count===1?"":"s"} in use</div>`;
-  const r=cell.getBoundingClientRect();
-  pop.style.left=Math.min(r.left, window.innerWidth-260)+"px";
-  pop.style.top=(r.bottom+6)+"px";
-  pop.classList.add("open");
+  openSummarySelection('booth',cell.dataset.bk);
 });
+// ---- Operations gap report (read-only; the caller controls access) -------
+function gapCheckDateRange(startISO,endISO){
+  const start=mobileDateValue(startISO),end=mobileDateValue(endISO);
+  if(!start||!end)throw new Error('Choose valid start and end dates.');
+  if(start>end)throw new Error('The end date must be on or after the start date.');
+  const dates=[];
+  for(let dt=new Date(start);dt<=end;dt.setDate(dt.getDate()+1)){
+    if(dates.length>=1098)throw new Error('Choose a date range of no more than three years.');
+    dates.push(localISO(dt));
+  }
+  return {start:startISO,end:endISO,dates};
+}
+function gapCheckPageDates(w,d){
+  const days=[];let invalidColumns=0;
+  const valid=dt=>dt&&Number.isFinite(dt.getTime());
+  const labelled=(dt,label)=>{const m=/(\d{1,2})\s*([A-Za-z]{3,})/.exec(label||'');return valid(dt)&&m&&dt.getDate()===+m[1]&&dt.getMonth()===MONIDX[m[2].slice(0,3).toLowerCase()];};
+  const add=(key,date,ok)=>{if(ok)days.push({key,date});else invalidColumns++;};
+  if(d.special){
+    let dates=[];try{dates=specialDates(w,d);}catch(_){}
+    (d.cols||[]).forEach((c,i)=>add(c?.key,dates[i],!!c?.key&&labelled(dates[i],c.sub||c.lbl)));
+    if(!(d.cols||[]).length)invalidColumns++;
+  }else if(w.kind==='weekend'){
+    const sat=parseWeDate(d.satHeader,d.y),sun=parseWeDate(d.sunHeader,d.y);
+    if(labelled(sat,d.satHeader)){
+      const fri=new Date(sat.getFullYear(),sat.getMonth(),sat.getDate()-1);
+      if(isBankHol(fri))days.push({key:'fri',date:fri});
+      days.push({key:'sat',date:sat});
+    }else invalidColumns++;
+    if(labelled(sun,d.sunHeader)){
+      days.push({key:'sun',date:sun});
+      const mon=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+1);
+      if(isBankHol(mon))days.push({key:'mon',date:mon});
+    }else invalidColumns++;
+  }else{
+    let dates=[];try{dates=colDates(d,w);}catch(_){}
+    dates.forEach((dt,i)=>{
+      const c=d.cols?.length?d.cols[i]:null;
+      add(i,dt,valid(dt)&&(!c||(dt.getFullYear()===Number(c.y||YEAR)&&dt.getMonth()===Number(c.m)&&dt.getDate()===Number(c.d))));
+    });
+    if(!dates.length)invalidColumns++;
+  }
+  return {days,invalidColumns};
+}
+function gapCheckWeekendSections(d){
+  const sections=(d.rows||[]).map(()=>'Other'),byRole=new Map(),used=new Set();
+  (d.rows||[]).forEach((r,ri)=>{const key=nrm(r.role);if(!byRole.has(key))byRole.set(key,ri);});
+  WE_BLOCKS.forEach(block=>block.roles.forEach(role=>{const ri=byRole.get(nrm(role));if(ri!==undefined&&!used.has(ri)){sections[ri]=block.title;used.add(ri);}}));
+  return sections;
+}
+function collectRotaGaps(startISO,endISO){
+  const range=gapCheckDateRange(startISO,endISO),wanted=new Set(range.dates),covered=new Set(),skips=new Map();
+  const out={start:range.start,end:range.end,gaps:[],checkedDays:0,checkedCells:0,notNeededCells:0,ignoredUnnamedCells:0,coveredDates:[],skippedDates:[],skippedPages:[],unresolvedPages:[]};
+  const skip=(date,w,reason,kind)=>{const entry={date,weekId:w.id,weekName:w.name,reason};out.skippedPages.push(entry);if(!skips.has(date))skips.set(date,[]);skips.get(date).push({...entry,kind});};
+  (RAW.weeks||[]).forEach(w=>{
+    if((store.deletedWeeks||[]).includes(w.id))return;
+    let d;try{d=store.overrides[w.id]||template(w);}catch(_){out.unresolvedPages.push({weekId:w.id,weekName:w.name,reason:'This rota page could not be read.'});return;}
+    if(!d){out.unresolvedPages.push({weekId:w.id,weekName:w.name,reason:'This rota page has no usable data.'});return;}
+    const page=gapCheckPageDates(w,d);
+    if(page.invalidColumns)out.unresolvedPages.push({weekId:w.id,weekName:w.name,reason:page.invalidColumns+' date '+(page.invalidColumns===1?'column could':'columns could')+' not be matched to a calendar date.'});
+    const days=page.days.filter(day=>wanted.has(localISO(day.date)));if(!days.length)return;
+    const saved=!!store.overrides[w.id],published=isPublic(w.id),source=saved?'saved':'template';
+    const add=(date,section,role,value,cellKey)=>{
+      if(!role){out.ignoredUnnamedCells++;return;}
+      if(store.cellVoid?.[cellKey]){out.notNeededCells++;return;}
+      out.checkedCells++;
+      if(!String(value??'').trim())out.gaps.push({date,weekId:w.id,weekName:w.name,section,role,cellKey,published,source,saved,generated:!!d.generationReport});
+    };
+    const weekendSections=w.kind==='weekend'||d.special?gapCheckWeekendSections(d):null;
+    days.forEach(({key,date})=>{
+      const iso=localISO(date);
+      if(d.blocked){skip(iso,w,typeof d.blocked==='string'?d.blocked:'This date uses a separate rota.','blocked');return;}
+      if(w.kind!=='weekend'&&!d.special&&isBankHol(date)){skip(iso,w,'Bank holiday — checked on the weekend rota where available.','bank-holiday');return;}
+      covered.add(iso);
+      if(w.kind==='weekend'||d.special){
+        (d.rows||[]).forEach((row,ri)=>add(iso,weekendSections[ri],String(row.role||'').trim(),d.special?row.vals?.[key]:row[key],w.id+'|we|'+ri+'|'+key));
+      }else{
+        walkRoles(d,({sec,si,ri,row,area,slot,under})=>{
+          if(!String(row.area||'').trim()&&!String(row.slot||'').trim()){out.ignoredUnnamedCells++;return;}
+          // AM and PM share one displayed patch label, including when it is
+          // stored only on the second row of the pair.
+          let patch=area;const previous=sec.rows[ri-1],next=sec.rows[ri+1];
+          if(/^AM$/i.test(slot)&&next?.type==='role'&&/^PM$/i.test(String(next.slot||'').trim()))patch=String(row.area||'').trim()||String(next.area||'').trim()||area;
+          if(/^PM$/i.test(slot)&&previous?.type==='role'&&/^AM$/i.test(String(previous.slot||'').trim()))patch=String(previous.area||'').trim()||String(row.area||'').trim()||area;
+          const label=roleLabel('',String(patch||'').trim(),slot,under).replace(/^ - /,'');
+          add(iso,sec.title||'Other',label,row.assign?.[key],w.id+'|'+si+'|'+ri+'|'+key);
+        });
+      }
+    });
+  });
+  out.coveredDates=[...covered].sort();out.checkedDays=out.coveredDates.length;
+  range.dates.forEach(date=>{if(covered.has(date))return;const entries=skips.get(date)||[],blocked=entries.find(e=>e.kind==='blocked');out.skippedDates.push({date,reason:blocked?.reason||(entries.length?'Bank holiday — no usable weekend rota covers this date.':'No rota page is available for this date.')});});
+  const order=(a,b)=>a.date.localeCompare(b.date)||String(a.section||'').localeCompare(String(b.section||''),'en-GB')||String(a.role||'').localeCompare(String(b.role||''),'en-GB')||a.weekId.localeCompare(b.weekId)||String(a.cellKey||'').localeCompare(String(b.cellKey||''));
+  out.gaps.sort(order);out.skippedPages.sort(order);
+  return out;
+}
+
 // ---- autofill a week from the default template --------------------------
 // Everyone comes across from the template, except where they are in this week's
 // Away list. Then the cover rules decide who steps in; if nobody can, the slot
@@ -5348,6 +5668,52 @@ function chainAfter(name){                    // the cover chain that applies wh
   for(const ch of chains){ const i=ch.findIndex(x=>nrm(x)===start); if(i>0 && i<ch.length-1) return ch.slice(i); }
   return null;
 }
+function coverDaysOff(d,dts){
+  return dts.map((dt,di)=>{
+    const off=new Set();if(!dt||isBankHol(dt))return off;
+    (d.sections||[]).filter(sec=>sec.holiday).forEach(sec=>(sec.rows||[]).forEach(row=>{if(row.type==='role'){const name=nrm((row.assign||[])[di]);if(name)off.add(name);}}));
+    return off;
+  });
+}
+function coverCandidate(chain,off,reserved){
+  for(let i=1;i<(chain||[]).length;i++){
+    const raw=String(chain[i]||'').trim();if(!raw||!isKnownPerson(raw))continue;
+    const name=findPerson(raw)||raw,key=nrm(name);
+    if(off.has(key)||reserved.has(key))continue;
+    return {name,index:i};
+  }
+  return null;
+}
+function manualCoverPlan(d,day,chain){
+  const clean=(chain||[]).map(x=>String(x||'').trim()).filter(Boolean),dts=colDates(d,week());
+  if(!clean.length||!Number.isInteger(day)||!dts[day]||isBankHol(dts[day]))return {changes:[],error:'Choose a working weekday to apply cover.'};
+  const offBy=coverDaysOff(d,dts),fixed=fixedReservations(d,dts,offBy);
+  if(fixed.errors.length)return {changes:[],error:'Resolve fixed rules before applying cover: '+fixed.errors.join(' ')};
+  const off=new Set(offBy[day]),reserved=new Set(fixed.people[day].keys()),chainNames=new Set(clean.map(nrm));
+  // The command explicitly marks the chain head as needing cover, but does not
+  // write a holiday entry or override an available fixed reservation.
+  off.add(nrm(clean[0]));
+  const cells=[],assign={},queue=[];
+  walkRoles(d,({si,ri,row})=>{
+    const k=ckey(si,ri,day),name=String((row.assign||[])[day]||'').trim();
+    if(store.cellVoid[k])return;
+    const reservation=fixed.slots.get(k);
+    if(reservation&&!offBy[day].has(nrm(reservation.person))){if(name)reserved.add(nrm(name));return;}
+    cells.push({si,ri,k,name});assign[k]=name;
+  });
+  cells.forEach(c=>{if(chainNames.has(nrm(c.name))&&off.has(nrm(c.name))){assign[c.k]='';queue.push({k:c.k,missing:c.name});}});
+  const committed=new Set(reserved);
+  while(queue.length){
+    const job=queue.shift();if(assign[job.k])continue;
+    const index=clean.findIndex(name=>nrm(name)===nrm(job.missing));
+    const path=index>=0?clean.slice(index):chainAfter(job.missing);
+    const next=coverCandidate(path,off,committed);if(!next)continue;
+    assign[job.k]=next.name;committed.add(nrm(next.name));
+    cells.forEach(c=>{if(c.k!==job.k&&nrm(assign[c.k])===nrm(next.name)){assign[c.k]='';queue.push({k:c.k,missing:next.name});}});
+  }
+  const changes=cells.filter(c=>c.name!==assign[c.k]).map(c=>({...c,name:assign[c.k]}));
+  return {head:clean[0],changes,gaps:changes.filter(c=>!c.name).length};
+}
 // Cover comes first. Anyone the cover rules pull in is committed for that week,
 // so the rotation steps around them entirely rather than handing them a role and
 // then having the chain drag people about.
@@ -5430,15 +5796,22 @@ function preserveVoidAssignments(oldD,newD,wid){
   });
 }
 function autofillBaseForWeek(w,current,tpl){
-  const out=clone(tpl||RAW.weekdayTemplate);
+  const source=tpl||RAW.weekdayTemplate,out=clone(source);
   out.type="weekday";
   const n=(current.cols&&current.cols.length) || (colDates(current,w)||[]).length || 5;
   if(current.cols&&current.cols.length) out.cols=clone(current.cols);
   else { const raw=(RAW.weeksData||{})[w.id]; if(raw&&raw.cols) out.cols=clone(raw.cols); else delete out.cols; }
+  // Defaults are weekday patterns. Removing a Monday or Wednesday from the
+  // target week must never slide another weekday's person into its place.
+  const targetDates=colDates(out,w),templateDays=new Map();
+  if(source.cols&&source.cols.length){
+    colDates(source,w).forEach((date,i)=>{if(date&&!templateDays.has(date.getDay()))templateDays.set(date.getDay(),i);});
+  }else{for(let i=0;i<5;i++)templateDays.set(i+1,i);}
   out.sections=out.sections||[];
   out.sections.forEach(sec=>{
     (sec.rows||[]).forEach(r=>{ if(r.type==="role"){
-      const a=(r.assign||[]).slice(0,n); while(a.length<n) a.push(""); r.assign=a;
+      const original=r.assign||[];
+      r.assign=Array.from({length:n},(_,i)=>{const index=templateDays.get(targetDates[i]?.getDay());return index===undefined?'':original[index]||'';});
     }});
   });
   const oldHol=(current.sections||[]).find(s=>s.holiday);
@@ -5470,12 +5843,7 @@ function autofillPlan(){
   const d=autofillBaseForWeek(w,current,tpl);
   const autofillVoid=mappedWeekMarkerKeys(current,d,w.id,store.cellVoid);
   const dts=colDates(d,w);
-  const hol=(d.sections||[]).find(s=>s.holiday);
-  const offBy=dts.map((dt,di)=>{
-    const s=new Set();
-    if(hol && dt && !isBankHol(dt)) hol.rows.forEach(r=>{ if(r.type==="role"){ const n=nrm(r.assign[di]); if(n) s.add(n); } });
-    return s;
-  });
+  const offBy=coverDaysOff(d,dts);
   const awaySet=new Set(); offBy.forEach(s=>s.forEach(n=>awaySet.add(n)));   // genuinely on the Away list
   const plan={ fills:[], covers:[], gaps:[], rotations:[], unknown:new Set(), days:dts, weekName:w.name,
                tplLabel:(tent&&tent.label)||"", awayCount:awaySet.size, base:d,
@@ -5564,13 +5932,9 @@ function autofillPlan(){
       if(assign[v.k]) continue;                        // already refilled by another step
       const chain=chainAfter(v.missing);
       if(!chain){ gapWhy[v.k]={off:v.missing, because:v.because, why:"norule", movedFor:v.movedFor||""}; continue; }
-      let taken=null, step=0;
-      for(let i=1;i<chain.length;i++){
-        const cand=chain[i];
-        if(off.has(nrm(cand)) || fixed.people[di].has(nrm(cand)) || !isKnownPerson(cand)) continue;                // that cover is on holiday too
-        taken=cand; step=i; break;
-      }
-      if(!taken){ gapWhy[v.k]={off:v.missing, because:v.because, why:"allaway", chain, movedFor:v.movedFor||""}; continue; }
+      const candidate=coverCandidate(chain,off,fixed.people[di]);
+      if(!candidate){ gapWhy[v.k]={off:v.missing, because:v.because, why:"allaway", chain, movedFor:v.movedFor||""}; continue; }
+      const taken=candidate.name,step=candidate.index;
       assign[v.k]=taken;
       cover[v.k]={name:taken, off:v.missing, because:v.because, chain:chain.slice(0,step+1), movedFor:v.movedFor||""};
       // whatever the cover was doing is now uncovered — chase it down their own chain
@@ -5781,19 +6145,12 @@ function renderOfficeModal(){
   const nppl=Object.values(store.offices||{}).filter(o=>o===state.officeSel).length;
   $("#officeSub").textContent=SYNC.on&&!PUBLIC_SUMMARY.data?`${nppl} based here · total unavailable`:`${nppl} based here · ${total} person-days in ${summaryYear()}`;
 }
-$("#officeTabs").addEventListener("click",e=>{ const b=e.target.closest("[data-office]"); if(!b) return; state.officeSel=b.dataset.office; renderOfficeModal(); $("#officePop").classList.remove("open"); });
+$("#officeTabs").addEventListener("click",e=>{ const b=e.target.closest("[data-office]"); if(!b) return; closeSummarySelection();state.officeSel=b.dataset.office; renderOfficeModal(); });
 $("#officeBody").addEventListener("click",e=>{
   const cell=e.target.closest(".hd.clk[data-ok]"); const pop=$("#officePop");
   if(!cell){ pop.classList.remove("open"); return; }
   const info=OFFICEHEAT[cell.dataset.ok]; if(!info){ pop.classList.remove("open"); return; }
-  const [y,m,d]=cell.dataset.ok.split("-").map(Number);
-  if(isPhone()){openSummaryDay(new Date(y,m,d).toLocaleDateString("en-GB",{dateStyle:"full"}),`${info.count} ${info.count===1?"person":"people"} · ${state.officeSel}`,info.names,info.privateCount);return;}
-  pop.innerHTML=`<h4>${DAYLBL[new Date(y,m,d).getDay()]} ${d} ${CALMN[m]} — ${esc(state.officeSel)}</h4>`+
-    `<div class="opnames">${info.names.map(n=>`<span>${esc(n)}</span>`).join("")}</div>`+(info.privateCount?`<p>${info.privateCount} additional people counted. Names are temporarily unavailable. Ask Operations to check the updated totals SQL.</p>`:"");
-  const r=cell.getBoundingClientRect();
-  pop.style.left=Math.min(r.left, window.innerWidth-260)+"px";
-  pop.style.top=(r.bottom+6)+"px";
-  pop.classList.add("open");
+  openSummarySelection('office',cell.dataset.ok);
 });
 function closeJump(){ $("#jumpModal").classList.remove("open"); }
 $("#jumpModal").addEventListener("click",e=>{ if(e.target.id==="jumpModal") closeJump(); });
@@ -5842,7 +6199,6 @@ function renderAdmin(){
       `</div>`+
       `<label class="yrsel">Year <select id="adminYear">${yopts}</select></label></div>`+
     (ed?`<details class="viswrap" open><summary>Rota visibility — <b>${nPub}</b> of ${RAW.weeks.length} pages public</summary>`+
-      `<div class="visnote">Holiday, office, booth and parking names and totals include all weeks for everyone, including hidden weeks. Only <b>Public</b> pages show their contents in the Rota view. <b>Hidden</b> pages still appear in the week list, but the team just sees &ldquo;Rota coming soon&rdquo; until you publish them. Click any date to switch that week. The holiday heat map and the figures below include every week you are authorised to view.</div>`+
       `<div class="callegend"><span class="lgd"><i class="sw pub"></i>Public</span><span class="lgd"><i class="sw hid"></i>Hidden</span></div>`+
       `<div class="viscal">${weekCalHTML("vis")}</div></details>`:"")+
     trialPeriodNote(year)+`<div class="adminsub">Every Away day recorded ${trial?"during 1 November–24 December 2026":"between 1 January and 31 December "+year} counts, including weekends, bank holidays and special rotas. Each person/date counts once. `+
@@ -5949,7 +6305,7 @@ function renamePerson(oldName,newName){        // keeps every rota/template/rule
   if(clash && clash!==from) return false;
   if(from===newName) return from;
   store.roster=store.roster.map(n=>n===from?newName:n);
-  Object.values(store.parkingPlans||{}).forEach(p=>{Object.keys(p.bays).forEach(b=>{if(nrm(p.bays[b])===nrm(from))p.bays[b]=newName;});p.unparked=p.unparked.map(n=>nrm(n)===nrm(from)?newName:n);});
+  Object.values(store.parkingPlans||{}).forEach(p=>{Object.keys(p.bays).forEach(b=>{if(nrm(p.bays[b])===nrm(from))p.bays[b]=newName;});p.unparked=p.unparked.map(n=>nrm(n)===nrm(from)?newName:n);if(p.manualUnparked)p.manualUnparked=p.manualUnparked.map(n=>nrm(n)===nrm(from)?newName:n);});
   if(store.drivers?.[from]){store.drivers[newName]=true;delete store.drivers[from];}
   if(store.offices[from]!==undefined){ store.offices[newName]=store.offices[from]; delete store.offices[from]; }
   if(store.allowances[from]!==undefined){ store.allowances[newName]=store.allowances[from]; delete store.allowances[from]; }
@@ -6073,6 +6429,218 @@ function scheduleFlush(){
   clearTimeout(SYNC.flushT);
   SYNC.flushT=setTimeout(flushNow, SYNC_DEBOUNCE);
 }
+// Recovery records retain the original shared values. They are never loaded into
+// the rota until Operations explicitly reviews them after authentication.
+var RECOVERY={id:Date.now().toString(36)+Math.random().toString(36).slice(2),drafts:[],draft:null,items:[],baseline:{},reviewed:false};
+function recoveryPrefix(){return LSKEY+':recovery:';}
+function recoveryAllowed(){return !!(SYNC?.accessGranted&&SYNC.bootstrapped&&SYNC.canEdit&&SYNC.serverRole==='ops'&&!isPhone());}
+function persistRecoveryDraft(){
+  if(!SYNC?.on||!SYNC.bootstrapped||!SYNC.canEdit||!SYNC.accessGranted||SYNC.refreshing||!SYNC.shadow||!RECOVERY)return;
+  const key=recoveryPrefix()+RECOVERY.id,changes=syncDiff();
+  if(!changes.length){localStorage.removeItem(key);return;}
+  const draft={version:1,id:RECOVERY.id,source:SUPABASE_URL,epoch:SYNC.epoch,savedAt:new Date().toISOString(),changes:changes.map(c=>({key:c.key,baseRev:c.baseRev,base:SYNC.shadow[c.key]??null,mine:c.json}))};
+  const baseline=Object.fromEntries(Object.entries(SYNC.shadow).map(([k,v])=>[k,recoveryParse(v)]));
+  let previous=null;try{const saved=JSON.parse(localStorage.getItem(key));if(saved?.source===draft.source&&Number(saved.epoch)===Number(draft.epoch))previous=saved;}catch(_){}
+  draft.layouts=recoveryDraftLayouts(draft.changes,baseline,syncSnapshot(),previous);
+  localStorage.setItem(key,JSON.stringify(draft));
+}
+function recoveryParse(json){
+  if(json===null)return undefined;
+  if(typeof json!=='string')throw new Error('Invalid recovery value');
+  return JSON.parse(json,(k,v)=>{if(['__proto__','prototype','constructor'].includes(k))throw new Error('Invalid recovery key');return v;});
+}
+function readRecoveryDrafts(){
+  if(!recoveryAllowed())return [];
+  const out=[];
+  try{for(let i=0;i<localStorage.length;i++){
+    const storageKey=localStorage.key(i);if(!storageKey?.startsWith(recoveryPrefix())||storageKey===recoveryPrefix()+RECOVERY.id)continue;
+    try{
+      const raw=localStorage.getItem(storageKey),d=JSON.parse(raw);
+      if(d.version!==1||d.source!==SUPABASE_URL||Number(d.epoch)!==Number(SYNC.epoch)||!Array.isArray(d.changes)||!d.changes.length||d.changes.length>10000)continue;
+      const seen=new Set();
+      d.changes.forEach(c=>{const f=String(c.key||'').replace(/^(week:|settings:)/,'');if(!/^(week:|settings:).+/.test(c.key)||['__proto__','constructor','prototype','resetEpoch'].includes(f)||seen.has(c.key))throw new Error('Invalid recovery entry');seen.add(c.key);recoveryParse(c.base);recoveryParse(c.mine);});
+      out.push({...d,storageKey,raw});
+    }catch(_){}
+  }}catch(_){}
+  return out.sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt)));
+}
+function recoverySame(a,b){return JSON.stringify(a)===JSON.stringify(b);}
+function recoveryLayout(value){
+  if(Array.isArray(value))return value.map(recoveryLayout);
+  if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([k])=>!['assign','sat','sun','fri','mon','vals','notes','generationReport'].includes(k)).map(([k,v])=>[k,recoveryLayout(v)]));
+  return value;
+}
+function recoveryMarkerFields(){return ['settings:cellNotes','settings:cellColors','settings:cellVoid','settings:cellCover'];}
+function recoveryMarkerWeeks(value){
+  return new Set(Object.keys(value&&typeof value==='object'?value:{}).map(k=>{const p=k.split('|');return p.length>=4?p.slice(0,-3).join('|'):'';}).filter(Boolean));
+}
+function recoveryWeekLayout(wid,snapshot){
+  // A template cell key does not identify which dated template it came from.
+  // Keep those rare backups for reference rather than guessing its coordinates.
+  if(wid==='__tpl__'||(snapshot['settings:deletedWeeks']||[]).includes(wid))return null;
+  const w=SRC_WEEKS.find(w=>w.id===wid)||(snapshot['settings:extraWeeks']||[]).find(w=>w.id===wid);
+  if(!w)return null;
+  let d=snapshot['week:'+wid];
+  if(!d){
+    const base=RAW.weeksData?.[wid]||(w.kind==='weekday'?RAW.weekdayTemplate:RAW.weekendTemplate);
+    if(!base)return null;
+    d=base;
+    if(w.kind==='weekday'&&!base.blocked&&!base.special){
+      const first=base.cols?.[0],date=first?new Date(first.y||YEAR,first.m,first.d):weekDates(w.name)?.[0];
+      const monday=date?mondayOf(date):null;
+      const templates=(snapshot['settings:templates']||[]).slice().sort((a,b)=>tplFrom(a)-tplFrom(b));
+      let selected=null;templates.forEach(t=>{if(tplFrom(t)<=(monday?monday.getTime():Date.now()))selected=t;});
+      if(selected?.from){d={...selected.data};if(base.cols?.length)d.cols=base.cols;else delete d.cols;}
+    }
+  }
+  const layout=recoveryLayout(d);
+  if(w.kind==='weekday'&&!d.special&&!layout.cols?.length){const dates=weekDates(w.name);if(dates)layout.cols=dates.map(dt=>({y:dt.getFullYear(),m:dt.getMonth(),d:dt.getDate()}));}
+  return layout;
+}
+function recoveryDraftLayouts(changes,baseline,snapshot,previous){
+  const weeks=new Set(),fields=recoveryMarkerFields();
+  changes.forEach(change=>{
+    if(fields.includes(change.key)){
+      const base=recoveryParse(change.base)||{},mine=recoveryParse(change.mine)||{};
+      const changed=Object.fromEntries([...new Set([...Object.keys(base),...Object.keys(mine)])].filter(k=>!recoverySame(base[k],mine[k])).map(k=>[k,true]));
+      recoveryMarkerWeeks(changed).forEach(wid=>weeks.add(wid));
+    }else if(change.key.startsWith('week:')){
+      const wid=change.key.slice(5);
+      if(fields.some(k=>recoveryMarkerWeeks(baseline[k]).has(wid)||recoveryMarkerWeeks(snapshot[k]).has(wid)))weeks.add(wid);
+    }
+  });
+  // A remote structural update may arrive while marker edits are still pending.
+  // Never replace the original coordinate evidence with that newly pulled layout.
+  return Object.fromEntries([...weeks].map(wid=>[wid,{base:previous?.layouts&&Object.prototype.hasOwnProperty.call(previous.layouts,wid)?previous.layouts[wid].base:recoveryWeekLayout(wid,baseline),mine:recoveryWeekLayout(wid,snapshot)}]));
+}
+function recoveryPlan(draft,snapshot){
+  const items=[];
+  for(const change of draft.changes){
+    const base=recoveryParse(change.base),mine=recoveryParse(change.mine),shared=snapshot[change.key];
+    const arrays=change.key.startsWith('week:')&&recoverySame(recoveryLayout(base),recoveryLayout(mine))&&recoverySame(recoveryLayout(base),recoveryLayout(shared));
+    const walk=(b,m,s,path)=>{
+      if(recoverySame(b,m)||recoverySame(m,s))return;
+      const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
+      if(object(b)&&object(m)&&object(s)){
+        for(const k of new Set([...Object.keys(b),...Object.keys(m)]))walk(b[k],m[k],s[k],path.concat(k));
+      }else if(arrays&&Array.isArray(b)&&Array.isArray(m)&&Array.isArray(s)&&b.length===m.length&&b.length===s.length){
+        b.forEach((_,i)=>walk(b[i],m[i],s[i],path.concat(i)));
+      }else{
+        const conflict=!recoverySame(b,s);
+        items.push({key:change.key,path,base:b,mine:m,shared:s,conflict,choice:conflict?'shared':'mine'});
+      }
+    };
+    // A changed week layout cannot safely be merged by row/column coordinates.
+    if(change.key.startsWith('week:')&&!arrays&&!recoverySame(base,mine)&&!recoverySame(mine,shared)){
+      const conflict=!recoverySame(base,shared);items.push({key:change.key,path:[],base,mine,shared,conflict,choice:conflict?'shared':'mine'});
+    }else walk(base,mine,shared,[]);
+  }
+  const markerFields=recoveryMarkerFields();
+  items.forEach(item=>{
+    let blocked=false;
+    if(markerFields.includes(item.key)){
+      const weeks=item.path.length?recoveryMarkerWeeks({[item.path[0]]:true}):new Set([...recoveryMarkerWeeks(item.base),...recoveryMarkerWeeks(item.mine)]);
+      blocked=!weeks.size||[...weeks].some(wid=>{const recorded=draft.layouts?.[wid],shared=recoveryWeekLayout(wid,snapshot);return !recorded?.base||!recorded.mine||!shared||!recoverySame(recorded.base,recorded.mine)||!recoverySame(recorded.mine,shared);});
+    }else if(item.key.startsWith('week:')&&!item.path.length){
+      const wid=item.key.slice(5),associated=!!draft.layouts?.[wid]||markerFields.some(k=>recoveryMarkerWeeks(snapshot[k]).has(wid))||draft.changes.some(c=>markerFields.includes(c.key)&&(recoveryMarkerWeeks(recoveryParse(c.base)).has(wid)||recoveryMarkerWeeks(recoveryParse(c.mine)).has(wid)));
+      if(associated){const mineSnapshot={...snapshot};if(item.mine===undefined)delete mineSnapshot[item.key];else mineSnapshot[item.key]=item.mine;blocked=!recoverySame(recoveryWeekLayout(wid,mineSnapshot),recoveryWeekLayout(wid,snapshot));}
+    }
+    if(blocked){item.blocked=true;item.choice='shared';item.reason='The rows or dates for this backup cannot be matched safely to the shared rota. Keep the shared version and use the retained backup as a reference for manual changes.';}
+  });
+  return items;
+}
+function recoveryItemLabel(item){
+  const weekId=item.key.startsWith('week:')?item.key.slice(5):null;
+  const w=weekId&&RAW.weeks.find(w=>w.id===weekId);
+  let title=w?.name||weekId||item.key.slice(9).replace(/([A-Z])/g,' $1');
+  const p=item.path,d=syncSnapshot()[item.key];
+  if(weekId&&p[0]==='sections'&&p[2]==='rows'){
+    const sec=d?.sections?.[p[1]],row=sec?.rows?.[p[3]];
+    title+=' · '+[sec?.title,row?.area,row?.slot].filter(Boolean).join(' / ');
+    if(p[4]==='assign'&&Number.isInteger(p[5])){const date=colDates(d,w)[p[5]];if(date)title+=' · '+date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});}
+  }else if(p.length)title+=' · '+p.join(' / ');
+  return title;
+}
+function recoveryValueText(value){return value===undefined?'Removed / not set':typeof value==='string'?(value||'—'):JSON.stringify(value,null,2);}
+function removeRecoveryDraft(draft){
+  try{if(localStorage.getItem(draft.storageKey)===draft.raw)localStorage.removeItem(draft.storageKey);}catch(_){}
+}
+function openRecovery(automatic){
+  if(!recoveryAllowed())return;
+  if(automatic&&RECOVERY.offered)return;
+  if(SYNC.saving||SYNC.refreshing||SYNC.dirty||syncDiff().length){if(!automatic)flash('Finish saving your current edits before reviewing a backup.');return;}
+  const current=syncSnapshot();
+  RECOVERY.drafts=readRecoveryDrafts().filter(d=>{if(recoveryPlan(d,current).length)return true;removeRecoveryDraft(d);return false;});
+  if(!RECOVERY.drafts.length){if(!automatic)flash('No unsaved work was found in this browser.');return;}
+  RECOVERY.offered=true;
+  selectRecoveryDraft(RECOVERY.drafts[0].storageKey);
+  $('#recoveryModal').classList.add('open');
+  requestAnimationFrame(()=>$('#recoveryApply').focus());
+}
+function selectRecoveryDraft(storageKey){
+  if(!recoveryAllowed())return;
+  RECOVERY.draft=RECOVERY.drafts.find(d=>d.storageKey===storageKey);if(!RECOVERY.draft)return;
+  const snapshot=syncSnapshot();
+  RECOVERY.baseline=Object.fromEntries(Object.keys(snapshot).map(key=>[key,{json:JSON.stringify(snapshot[key]),rev:SYNC.keyRev[key]||0}]));
+  RECOVERY.layoutBaseline=Object.fromEntries(Object.keys(RECOVERY.draft.layouts||{}).map(wid=>[wid,recoveryWeekLayout(wid,snapshot)]));
+  RECOVERY.items=recoveryPlan(RECOVERY.draft,snapshot);RECOVERY.reviewed=true;
+  renderRecoveryReview();
+}
+function renderRecoveryReview(message){
+  if(!recoveryAllowed()||!RECOVERY.draft)return;
+  const picker=RECOVERY.drafts.length>1?'<label>Browser backup <select id="recoveryDraftSelect">'+RECOVERY.drafts.map(d=>'<option value="'+esc(d.storageKey)+'"'+(d===RECOVERY.draft?' selected':'')+'>'+esc(new Date(d.savedAt).toLocaleString('en-GB'))+'</option>').join('')+'</select></label>':'';
+  const rows=RECOVERY.items.map((item,i)=>{
+    const warning=item.blocked?(item.reason||'The week layout changed. Recreate this edit manually using the backup; automatic recovery is disabled.'):(item.conflict?'The shared rota also changed. Check both versions.':'');
+    return '<section class="recovery-item"><h4>'+esc(recoveryItemLabel(item))+'</h4>'+(warning?'<p class="recovery-conflict">'+esc(warning)+'</p>':'')+
+      '<div class="recovery-values"><div><small>Shared rota</small><pre>'+esc(recoveryValueText(item.shared))+'</pre></div><div><small>Your unsaved edit</small><pre>'+esc(recoveryValueText(item.mine))+'</pre></div></div>'+
+      (item.blocked?'<p>Backup retained for manual comparison.</p>':'<label>Use <select data-recovery-choice="'+i+'"><option value="shared"'+(item.choice==='shared'?' selected':'')+'>Shared rota</option><option value="mine"'+(item.choice==='mine'?' selected':'')+'>My unsaved edit</option></select></label>')+'</section>';
+  }).join('');
+  $('#recoveryBody').innerHTML='<p class="recovery-intro">Compare unsaved work from '+esc(new Date(RECOVERY.draft.savedAt).toLocaleString('en-GB'))+' with the latest shared rota. Where both copies changed, the shared version is selected until you choose otherwise.</p>'+picker+(rows||'<p>This backup already matches the shared rota, or contains no remaining edits to recover.</p>');
+  $('#recoveryMessage').textContent=message||'Nothing is changed until you confirm. Later keeps this backup in this browser.';
+  updateRecoveryButton();
+}
+function updateRecoveryButton(){const n=RECOVERY.items.filter(i=>!i.blocked&&i.choice==='mine').length;$('#recoveryApply').textContent=n?'Recover '+n+' selected '+(n===1?'edit':'edits'):'Keep shared rota';}
+function recoveryMerge(snapshot,items){
+  const result=clone(snapshot);
+  for(const item of items){if(item.blocked||item.choice!=='mine')continue;
+    if(!item.path.length){if(item.mine===undefined)delete result[item.key];else result[item.key]=clone(item.mine);continue;}
+    let obj=result[item.key];for(const p of item.path.slice(0,-1))obj=obj[p];
+    const last=item.path[item.path.length-1];if(item.mine===undefined)delete obj[last];else obj[last]=clone(item.mine);
+  }
+  return result;
+}
+function applyRecovery(){
+  if(!recoveryAllowed()||!RECOVERY.draft||Number(RECOVERY.draft.epoch)!==Number(SYNC.epoch))return;
+  if(SYNC.refreshing||SYNC.saving||SYNC.dirty||SYNC.conflict||syncDiff().length){$('#recoveryMessage').textContent='Finish saving or resolving your current edits first.';return;}
+  const snapshot=syncSnapshot();
+  if(Object.keys(snapshot).some(key=>!(key in RECOVERY.baseline))||Object.entries(RECOVERY.baseline).some(([key,b])=>b.json!==JSON.stringify(snapshot[key])||b.rev!==(SYNC.keyRev[key]||0))||Object.entries(RECOVERY.layoutBaseline||{}).some(([wid,layout])=>!recoverySame(layout,recoveryWeekLayout(wid,snapshot)))){
+    selectRecoveryDraft(RECOVERY.draft.storageKey);$('#recoveryMessage').textContent='The shared rota changed while you were reviewing. Compare the refreshed values and choose again.';return;
+  }
+  const draft=RECOVERY.draft,blocked=RECOVERY.items.some(i=>i.blocked),merged=recoveryMerge(snapshot,RECOVERY.items),keys=new Set(RECOVERY.items.filter(i=>!i.blocked&&i.choice==='mine').map(i=>i.key));
+  if(keys.size){
+    for(const key of keys)writeStoreKey(key,key in merged?JSON.stringify(merged[key]):null);
+    clearRoleCache();invalidateAutofillPreview();recordHistory();SYNC.dirty=syncDiff().length>0;
+    const backedUp=persistLocal();if(backedUp&&!blocked)removeRecoveryDraft(draft);
+    rebuildWeeks();buildWeekSel();renderCurrentView();scheduleFlush();updateSaveUI();
+    flash('Recovered edits are queued for saving. Check All changes saved before closing.');
+  }else{if(!blocked)removeRecoveryDraft(draft);flash(blocked?'Shared rota kept. The backup remains available for manual comparison.':'Shared rota kept.');}
+  $('#recoveryModal').classList.remove('open');clearRecoveryReview();
+}
+function clearRecoveryReview(){if(!RECOVERY)return;RECOVERY.drafts=[];RECOVERY.draft=null;RECOVERY.items=[];RECOVERY.baseline={};RECOVERY.layoutBaseline={};const body=$('#recoveryBody');if(body)body.innerHTML='';const msg=$('#recoveryMessage');if(msg)msg.textContent='';}
+$('#recoveryBody').addEventListener('change',e=>{
+  if(!recoveryAllowed())return;
+  if(e.target.id==='recoveryDraftSelect'){selectRecoveryDraft(e.target.value);return;}
+  if(e.target.dataset.recoveryChoice!==undefined){const item=RECOVERY.items[Number(e.target.dataset.recoveryChoice)];if(item&&!item.blocked&&['mine','shared'].includes(e.target.value)){item.choice=e.target.value;updateRecoveryButton();}}
+});
+$('#recoveryApply').addEventListener('click',applyRecovery);
+$('#recoveryExport').addEventListener('click',()=>{
+  if(!recoveryAllowed()||!RECOVERY.draft)return;
+  const a=document.createElement('a'),url=URL.createObjectURL(new Blob([RECOVERY.draft.raw],{type:'application/json'}));a.href=url;a.download='news-rota-unsaved-recovery.json';a.click();URL.revokeObjectURL(url);
+});
+$('#recoveryDiscard').addEventListener('click',()=>{
+  if(!recoveryAllowed()||!RECOVERY.draft||!confirm('Discard this unsaved backup? The shared rota will not change.'))return;
+  removeRecoveryDraft(RECOVERY.draft);$('#recoveryModal').classList.remove('open');clearRecoveryReview();openRecovery(true);
+});
 function clearSyncTimers(){
   clearTimeout(SYNC.flushT); clearTimeout(SYNC.pollT); clearInterval(SYNC.beatT);
   SYNC.flushT=SYNC.pollT=SYNC.beatT=null;
@@ -6131,6 +6699,11 @@ function applyServerData(map, replaceAll){
   invalidateAutofillPreview();
 }
 function applyServerStatus(res){
+  if(Object.prototype.hasOwnProperty.call(res,'serverSavedAt')){
+    const saved=res.serverSavedAt?new Date(res.serverSavedAt):null;
+    if(saved&&!Number.isNaN(saved.getTime())){if(!SYNC.lastSaved||saved>SYNC.lastSaved)SYNC.lastSaved=saved;}
+    else if(res.serverSavedAt===null)SYNC.lastSaved=null;
+  }
   const oldRole=SYNC.serverRole, oldCan=SYNC.canEdit;
   if((oldRole==="ops"&&res.role&&res.role!=="ops") || (oldRole==="lead"&&res.role==="staff")) closeRestrictedViews();
   if(res.email!==undefined) SYNC.email=res.email||"";
@@ -6179,7 +6752,7 @@ function flushNow(){
   if(!SYNC.on || !SYNC.canEdit || SYNC.refreshing || SYNC.conflict) return;
   if(SYNC.saving){ SYNC.pending=true; return; }
   const changes=syncDiff();
-  if(!changes.length){ SYNC.dirty=false; updateSaveUI(); return; }
+  if(!changes.length){ SYNC.dirty=false; persistLocal(true); updateSaveUI(); return; }
   SYNC.saving=true; updateSaveUI();
   const generation=SYNC.generation, token=SYNC.authToken;
   gasCall("saveChanges", [changes, SYNC.rev, SYNC.epoch, SYNC.authToken||""], res=>{
@@ -6206,10 +6779,12 @@ function flushNow(){
       }
     });
     if(res.conflicts && res.conflicts.length){ handleConflicts(res.conflicts); }
-    else { SYNC.lastSaved=new Date(); SYNC.dirty=syncDiff().length>0; }
+    else { SYNC.dirty=syncDiff().length>0; }
+    persistLocal(true); // Retire acknowledged edits; retain any changes made during the save.
     updateSaveUI();
     if(SYNC.pending || SYNC.dirty){ SYNC.pending=false; scheduleFlush(); }
     refreshPublicSummary();
+    if(!SYNC.dirty&&!SYNC.conflict&&recoveryAllowed())openRecovery(true);
   }, ()=>{
     if(generation!==SYNC.generation || token!==SYNC.authToken) return;
     SYNC.saving=false; SYNC.lastError="offline"; updateSaveUI();
@@ -6228,7 +6803,7 @@ function handleConflicts(list){
   }
   alert("Someone else has changed the rota since this tab loaded, so these changes were NOT saved:\n\n"+
         list.map(c=>c.key.replace(/^week:/,"")).join("\n")+
-        "\n\nYour work is safe in this tab. Reload to pick up their version — export first (⋮ → Export all edits) if you need to keep yours.");
+        "\n\nYour work is kept in this browser. Reload, sign in to Operations and use Recover unsaved work to compare it with the latest rota. You can also export first (⋮ → Export all edits).");
 }
 
 // --- pulling other people's changes in ---
@@ -6387,6 +6962,7 @@ function agoText(d){
   if(s<10) return "just now";
   if(s<60) return s+"s ago";
   if(s<3600) return Math.round(s/60)+" min ago";
+  if(d.toDateString()!==new Date().toDateString())return d.toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
   return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
 }
 function updateSaveUI(){
@@ -6423,33 +6999,19 @@ function updateSaveUI(){
   lab.textContent=label;
   if(when) when.textContent=sub?("· "+sub):"";
   if(document.body?.classList.contains("phone-access-pending"))requestAnimationFrame(()=>{if(enforcePhoneStaff())renderCurrentView();});
+  if(typeof GAP_CHECK!=='undefined'&&GAP_CHECK)refreshGapCheckReport();
 }
 setInterval(()=>{ if(SYNC.lastSaved || SYNC.on) updateSaveUI(); }, 15000);
 
 function syncDetailHTML(){
-  const rows=[];
-  rows.push(["Mode", SYNC.on?"Supabase (shared)":"This browser only"]);
-  if(SYNC.on){
-    if(SYNC.serverRole) rows.push(["Access level", ROLES[SYNC.serverRole]||SYNC.serverRole]);
-    rows.push(["Can edit", SYNC.canEdit?"Yes":"No"]);
-    rows.push(["Editing model", "Multiple Operations editors allowed"]);
-    rows.push(["Server version", "#"+SYNC.rev]);
-    rows.push(["Reset epoch", String(SYNC.epoch)]);
-  }
-  rows.push(["Last saved", SYNC.lastSaved?agoText(SYNC.lastSaved):"—"]);
-  rows.push(["Unsaved changes", SYNC.dirty?"Yes":"No"]);
-  let note;
-  if(SYNC.conflict) note="Someone changed the rota while this tab was open, so your latest change wasn't saved. Export your edits, then reload.";
-  else if(SYNC.lastError==="offline") note="Can't reach the server. Your work is held in this browser and will be sent automatically when the connection returns.";
-  else if(!SYNC.on) note="DATABASE NOT CONNECTED. This browser is not sharing changes. Configure the Supabase Project URL and publishable key in index.html; Editor/Operations remain locked until connected.";
-  else if(SYNC.canEdit && state.editing) note="Concurrent editing is enabled. Changes are written to Supabase within a couple of seconds; if two people change the same saved item from stale versions, the later save is stopped as a conflict rather than silently overwriting it.";
-  else if(SYNC.canEdit) note="Operations access is active. Turn on Edit mode in Admin to make changes; more than one Operations user can edit at the same time.";
-  else if(SYNC.serverRole==="lead") note="Editor / senior leadership access is active. This view can see unpublished weeks and holiday allowances but cannot edit the rota.";
-  else note="You're using Staff access. No account is required; the rota refreshes automatically.";
-  return `<h4>Saving &amp; sync</h4>`+
-    rows.map(r=>`<div class="srow"><span>${esc(r[0])}</span><b>${esc(String(r[1]))}</b></div>`).join("")+
-    `<div class="snote">${esc(note)}</div>`+
-    (SYNC.on&&SYNC.canEdit?`<button class="sbtn" data-act="syncnow">Save now</button>`:"");
+  const role=SYNC.serverRole||state.role;
+  const rows=[
+    ["Last saved", SYNC.lastSaved?agoText(SYNC.lastSaved):"—"],
+    ["Unsaved changes", SYNC.dirty?"Yes":"No"],
+    ["Access level", ROLES[role]||role||"—"],
+    ["Can edit", SYNC.on&&SYNC.canEdit?"Yes":"No"]
+  ];
+  return rows.map(r=>`<div class="srow"><span>${esc(r[0])}</span><b>${esc(String(r[1]))}</b></div>`).join("");
 }
 $("#saveNote").addEventListener("click",()=>{
   const pop=$("#syncPop");
@@ -6459,10 +7021,7 @@ $("#saveNote").addEventListener("click",()=>{
   pop.style.left=Math.max(8,Math.min(r.left, window.innerWidth-345))+"px";
   pop.style.top=(r.bottom+8)+"px"; pop.classList.add("open");
 });
-$("#syncPop").addEventListener("click",e=>{
-  if(e.target.closest('[data-act="syncnow"]')){ clearTimeout(SYNC.flushT); flushNow(); $("#syncPop").classList.remove("open"); }
-});
-window.addEventListener("pagehide",()=>{ /* no global edit lease in concurrent mode */ });
+window.addEventListener("pagehide",()=>{ if(SYNC?.canEdit)persistLocal(true); });
 window.addEventListener("beforeunload",e=>{
   if(PARKING_PLAN.saving||(SYNC.on && SYNC.canEdit && (SYNC.dirty||SYNC.saving))){ e.preventDefault(); e.returnValue=""; return ""; }
 });
@@ -6485,6 +7044,9 @@ function processBootstrap(res, refresh, message){
   if(serverEpoch!==Number(store.resetEpoch||0)){ handleEpochMismatch(serverEpoch); return; }
   applyServerStatus(res);
   SYNC.rev=Number(res.rev)||0;
+  // A bootstrap replaces in-memory edits. Retain their old recovery record even
+  // after an expired session is unlocked without reloading the page.
+  RECOVERY.id=Date.now().toString(36)+Math.random().toString(36).slice(2);RECOVERY.offered=false;
   store.resetEpoch=serverEpoch;
   let publishEmpty=false;
   if(res.empty && SYNC.canEdit){
@@ -6494,7 +7056,7 @@ function processBootstrap(res, refresh, message){
     applyServerData(res.data||{}, true);
     persistLocal(); rebuildWeeks(); buildWeekSel();
     if(!refresh) state.idx=initialWeekIdx();
-    renderCurrentView(); initHistory(); SYNC.lastSaved=new Date(); SYNC.dirty=false;
+    renderCurrentView(); initHistory(); SYNC.dirty=false;
   }
   if(!SYNC.canEdit && state.editing) setEditing(false);
   SYNC.refreshing=false; SYNC.lastError="";
@@ -6506,6 +7068,7 @@ function processBootstrap(res, refresh, message){
   if(message) alert(message);
   updateSaveUI();
   clearTimeout(SYNC.pollT); SYNC.pollT=setTimeout(pollChanges, state.editing?SYNC_POLL_EDIT:SYNC_POLL_VIEW);
+  if(recoveryAllowed())openRecovery(true);
 }
 function refreshBootstrap(message, refresh){
   if(!SYNC.on || SYNC.refreshing) return;
@@ -6544,12 +7107,12 @@ function publicTotals(kind,visible,office){
   return out;
 }
 function summaryNotice(){
-  if(!SYNC.on)return '<p class="summary-note">Local preview totals.</p>';
+  if(!SYNC.on)return '';
   if(!PUBLIC_SUMMARY.data)return '<p class="summary-note" role="status">'+(PUBLIC_SUMMARY.error?'Full totals are unavailable. Retrying automatically; ask Operations to check the totals upgrade.':'Loading totals from all weeks…')+'</p>';
-  return '<p class="summary-note" role="status">Holiday, office, booth and parking names and totals include all saved weeks, including unpublished weeks.'+
-    (!PUBLIC_SUMMARY.data.namesIncluded?' Names from unpublished weeks are unavailable until Operations installs the updated totals SQL.':'')+
-    (PUBLIC_SUMMARY.error?' Connection interrupted — showing the last successfully loaded totals.':'')+
-    (SYNC.canEdit&&SYNC.dirty?' Your pending edits will be included after they save.':'')+'</p>';
+  const messages=[];
+  if(!PUBLIC_SUMMARY.data.namesIncluded)messages.push('Names from unpublished weeks are unavailable until Operations installs the updated totals SQL.');
+  if(PUBLIC_SUMMARY.error)messages.push('Connection interrupted — showing the last successfully loaded totals.');
+  return messages.length?'<p class="summary-note" role="status">'+messages.join(' ')+'</p>':'';
 }
 function refreshPublicSummary(){
   if(!SYNC.on||!SYNC.accessGranted||PUBLIC_SUMMARY.loading)return;
@@ -6573,7 +7136,7 @@ function refreshSummaryView(){
   if(state.view==='parking')renderParking();
   renderParkingPlan();
   if(state.view==='booth')renderBoothModal();
-  ['#heatPop','#officePop','#boothPop'].forEach(s=>$(s).classList.remove('open'));
+  refreshSelectedSummaryDay();
 }
 
 state.idx = initialWeekIdx();
@@ -6752,6 +7315,7 @@ function lockRota(message){
   clearSyncTimers();SYNC.generation++;SYNC.accessGranted=false;SYNC.authToken='';saveAccessToken('');
   SYNC.serverRole='staff';SYNC.canEdit=false;SYNC.bootstrapped=false;SYNC.refreshing=false;SYNC.polling=false;
   SYNC.saving=false;SYNC.pending=false;SYNC.dirty=false;SYNC.conflict=false;
+  SYNC.lastSaved=null;
   state.role='staff';state.editing=false;state.templateMode=false;state.view='rota';
   closeRestrictedViews();closeRoleGate();cancelParkingDrag();PARKING_PLAN.saving=false;PARKING_PLAN.date=null;
   document.querySelectorAll('.modal.open').forEach(el=>el.classList.remove('open'));
@@ -6862,11 +7426,6 @@ function summaryMonthControls(year){
   if(!isPhone())return '';
   const months=summaryMonths(year),month=selectedSummaryMonth(year),i=months.indexOf(month);
   return '<div class="summary-month-controls"><button type="button" data-summary-step="-1" aria-label="Previous month"'+(i===0?' disabled':'')+'>‹</button><strong>'+MONTHF[month]+' '+year+'</strong><button type="button" data-summary-step="1" aria-label="Next month"'+(i===months.length-1?' disabled':'')+'>›</button><button type="button" class="summary-overview" data-summary-overview aria-pressed="'+UI22.yearOverview+'">'+(UI22.yearOverview?'Back to month':'Year overview')+'</button></div>';
-}
-function openSummaryDay(title,total,names,privateCount){
-  $('#summaryDayTitle').textContent=title;
-  $('#summaryDayBody').innerHTML='<p class="day-total">'+esc(total)+'</p>'+(names.length?'<ul>'+names.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul>':'<p>No names recorded for this day.</p>')+(privateCount?'<p>'+privateCount+' additional people counted; their names are temporarily unavailable.</p>':'');
-  $('#summaryDayModal').classList.add('open');
 }
 $('#search').addEventListener('keydown',e=>{if(e.key==='Escape'){clearDesktopSearch();}else if(e.key==='ArrowDown'){const result=$('#searchPop button');if(result){e.preventDefault();result.focus();}}});
 $('#desktopClearSearch').addEventListener('click',clearDesktopSearch);
@@ -7145,6 +7704,9 @@ document.addEventListener("keydown",e=>{
 
 // Keep sensitive overlays consistent with the current access and data.
 function closeRestrictedViews(){
+  closeGapCheck();
+  clearRecoveryReview();
+  if(typeof SUMMARY_DAY_STATE!=='undefined')SUMMARY_DAY_STATE=null;
   cancelParkingDrag();PARKING_PLAN.date=null;PARKING_PLAN.selected=null;$('#parkingPlanBody').innerHTML='';
   $("#mobileDayBody").innerHTML="";
   $("#generationModal").classList.remove("open");$("#generationBody").innerHTML="";
@@ -7155,11 +7717,12 @@ function closeRestrictedViews(){
   AUTOPLAN=null;state.templateMode=false;document.body.classList.remove('template');
 }
 function refreshOpenViews(){
+  refreshGapCheckReport();
   renderParkingPlan();
   if($("#generationModal").classList.contains("open")){if(state.role!=="staff"&&canViewWeek(week())&&data().generationReport)openGenerationInfo();else{$("#generationModal").classList.remove("open");$("#generationBody").innerHTML="";}}
   const person=$('#personModal');
   if(person&&person.classList.contains('open')) openPersonModal($('#personName').textContent);
-  ['#searchPop','#officePop','#boothPop','#heatPop'].forEach(s=>{const e=$(s);if(e)e.classList.remove('open');});
+  $('#searchPop').classList.remove('open');refreshSelectedSummaryDay();
   if($('#jumpModal').classList.contains('open')) $('#jumpBody').innerHTML=weekCalHTML('jump');
   if($('#ruleModal').classList.contains('open')&&!$('#ruleModal').contains(document.activeElement)){renderRuleList();renderRotList();renderFixedList();}
   invalidateAutofillPreview();
@@ -7245,7 +7808,7 @@ function initAccessibleUI(){
     }
     if(top&&e.key==='Escape'){
       const id=top.id;
-      if(id==='setupModal'||id==='helpModal'||id==='mobilePersonModal'||id==='mobileWorkplaceModal')top.classList.remove('open');
+      if(id==='setupModal'||id==='helpModal'||id==='mobilePersonModal'||id==='mobileWorkplaceModal'||id==='recoveryModal'||id==='gapCheckModal')top.classList.remove('open');
       if(id==='roleGate')closeRoleGate();
       if(id==='parkingPlanModal'){cancelParkingDrag();top.classList.remove('open');}
       if(id==='weekendDefaultsModal'){e.preventDefault();e.stopImmediatePropagation();changeWeekendDraft(()=>$('#weekendDefaultsModal').classList.remove('open'));}
