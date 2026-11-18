@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- News Rota v35 — Weekend hub station dropdowns and PDF export fixes. -->
+<!-- News Rota v35.1 — Continuous weekend hub cell borders. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -284,9 +284,19 @@ body.editing .chday .colctl-l{left:3px;right:auto}
   font-weight:600;line-height:24px;border-radius:4px}
 .hub-stations > summary:hover{text-decoration:underline}
 .hub-stations > summary:focus-visible{outline:2px solid var(--mag);outline-offset:2px}
-.hub-stations > .hub-station-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));
+.hub-station-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));
   gap:4px 16px;margin:2px 0 5px;padding:8px 12px;list-style:none;border-radius:6px;
   background:var(--bg);color:var(--muted);font-size:12px;line-height:1.4}
+.hub-station-toggle{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;
+  padding:0 3px 0 1px;min-height:24px;border:0;border-radius:3px;background:transparent;
+  color:var(--mag-ink);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.hub-station-toggle::before{content:"";width:5px;height:5px;border:solid currentColor;
+  border-width:0 1.5px 1.5px 0;transform:rotate(-45deg)}
+.hub-station-toggle[aria-expanded="true"]::before{transform:rotate(45deg)}
+.hub-station-toggle:hover{text-decoration:underline}
+.hub-station-toggle:focus-visible{outline:2px solid var(--mag);outline-offset:2px}
+.cbody > .hub-station-list{margin:0;padding:10px 14px;border-radius:0;border-top:1px solid var(--line)}
+.hub-station-list[hidden]{display:none}
 .mobile-row > .hub-stations{grid-column:1/-1;padding:0}
 .mobile-row > .hub-stations > summary{min-height:32px;line-height:32px;background:none;padding:0;color:var(--mag-ink);font-size:12px}
 
@@ -1070,8 +1080,8 @@ body.filling #grid *{user-select:none}
   .name,.nm{padding:3px 6px;font-size:9.5px}
   .area,.txt{font-size:9px}
   .subrow{padding:3px 8px;font-size:8px}
-  .hub-stations:not([open]),.hub-stations > summary{display:none !important}
-  .hub-stations > .hub-station-list{font-size:8px;padding:2px 8px;line-height:1.25}
+  .hub-stations:not([open]),.hub-stations > summary,.hub-station-toggle{display:none !important}
+  .hub-station-list,.cbody > .hub-station-list{font-size:8px;padding:2px 8px;line-height:1.25;break-inside:avoid}
   .ptag{font-size:7.5px}
   .row.pair .rc{padding:3px 8px}
 
@@ -1665,7 +1675,7 @@ body:not(.role-ops) [data-act="backupviewer"]{display:none}
 <div class="modal" id="summaryDayModal"><div class="modalcard"><div class="modalhead"><h3 id="summaryDayTitle">Day details</h3><button class="x" aria-label="Close day details" data-close-overlay="summaryDayModal">×</button></div><div id="summaryDayBody" class="summary-day-body"></div><div class="modalfoot"><button class="primary" data-close-overlay="summaryDayModal">Done</button></div></div></div>
 
 <footer class="foot">
-  <span class="pill">News Rota v35</span>
+  <span class="pill">News Rota v35.1</span>
   <span>Choose a date or find your name. <button type="button" id="helpBtn">Help using the rota</button></span>
 </footer>
 
@@ -2815,12 +2825,15 @@ document.addEventListener('toggle',event=>{
   else openHubStations.delete(key);
 },true);
 
+function hubStationItems(stations){
+  return stations.map(station=>`<li>${esc(station)}</li>`).join('');
+}
 function hubStationsMarkup(role,key){
   const stations=HUBLOCS[nrm(role)];
   if(!Array.isArray(stations))return '';
   return `<details class="hub-stations" data-hub-stations="${esc(key)}"${openHubStations.has(key)?' open':''}>`+
     `<summary aria-label="Stations for ${esc(role)}">Stations</summary><ul class="hub-station-list">`+
-    stations.map(station=>`<li>${esc(station)}</li>`).join('')+'</ul></details>';
+    hubStationItems(stations)+'</ul></details>';
 }
 
 // away names per weekend day (keyed by day key: sat/sun/fri/mon or a special sheet's col key)
@@ -2881,8 +2894,15 @@ function renderWeekend(d){
   const used=new Set();
   const rowHTML=(ri)=>{
     const r=d.rows[ri];
+    const stations=HUBLOCS[nrm(r.role)];
+    const stationKey=ckey("we",ri,"stations");
+    const panelId="weekend-hub-stations-"+ri;
+    const expanded=openHubStations.has(stationKey);
+    const stationButton=Array.isArray(stations)
+      ? `<button type="button" class="hub-station-toggle" data-act="hubstations" data-key="${esc(stationKey)}" aria-expanded="${expanded}" aria-controls="${panelId}" aria-label="Stations for ${esc(r.role)}">Stations</button>`
+      : "";
     let s=`<div class="row roleRow"><div class="rc"><div class="rolebox"><span class="txt">`+
-      `<span class="area" data-edit="werole" data-row="${ri}">${esc(r.role)}</span></span>`+
+      `<span class="area" data-edit="werole" data-row="${ri}">${esc(r.role)}</span>${stationButton}</span>`+
       `<span class="rowtools"><button data-act="wedel" data-row="${ri}" title="Remove">&times;</button></span></div></div>`;
     days.forEach(day=>{
       if(BLOCKED){ s+=`<div class="dc bhcell blockcell" data-blocked="1"></div>`; return; }
@@ -2892,7 +2912,9 @@ function renderWeekend(d){
       s+=`<div class="dc${noteCls(k)}${vac}${conf?" conflict":""}${tagCls(v,k)}" data-cell="${k}"${cellStyle(k)}${noteAttr(k)}><span class="name${v?"":" empty"}" ${ed}>${esc(v)}</span>${conf?WARN:""}</div>`;
     });
     s+='</div>';
-    s+=hubStationsMarkup(r.role,ckey("we",ri,"stations"));
+    if(stationButton){
+      s+=`<ul id="${panelId}" class="hub-station-list" aria-label="Stations for ${esc(r.role)}"${expanded?"":" hidden"}>${hubStationItems(stations)}</ul>`;
+    }
     return s;
   };
   const cardHTML=(title,idxs)=>{
@@ -3512,6 +3534,16 @@ document.addEventListener("click",e=>{
   if(!btn) return;
   const act=btn.dataset.act;
 
+  if(act==="hubstations"){
+    const list=document.getElementById(btn.getAttribute("aria-controls"));
+    if(!list)return;
+    const expand=list.hidden;
+    list.hidden=!expand;
+    btn.setAttribute("aria-expanded",String(expand));
+    if(expand)openHubStations.add(btn.dataset.key);
+    else openHubStations.delete(btn.dataset.key);
+    return;
+  }
   if(act==="holtoggle"){
     if(state.editing && e.target.closest("[data-edit]")) return; // let title edits through
     state.holOpen=!state.holOpen;
